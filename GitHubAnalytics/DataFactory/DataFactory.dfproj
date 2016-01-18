@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>ffa75f62-780f-4997-9ea5-251b0a2a5863</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>DataFactory</AssemblyName>
+    <ApiVersion>2015-08-01</ApiVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Name>DataFactory</Name>
+    <RootNamespace>DataFactory</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ADFConfigFileToPublish>
+    </ADFConfigFileToPublish>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Dependencies\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Script Include="BatchProcessor.json" />
+    <Script Include="EventDetailRawFilesDl.json" />
+    <Script Include="EventDetailRawFilesBlob.json" />
+    <Script Include="GHTorrentAzureStorage.json" />
+    <Script Include="GHTorrentCopy.json" />
+    <Script Include="GHTorrentEventDetailPipeline.json" />
+    <Script Include="GitHubAnalyticsAzureStorage.json" />
+    <Script Include="GitHubAnalyticsDataLake.json" />
+    <Script Include="MongoDbDump.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MongoDBDumpTransformActivity\MongoDBDumpTransformActivity.csproj">
+      <Name>MongoDbDumpTransformActivity</Name>
+      <Project>{165bcdf3-cf9d-4b92-8bd5-6817c7d30769}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(AppData)\Microsoft\DataFactory Tools for Visual Studio\MsBuild\1.0\DataFactory.targets" />
+</Project>
