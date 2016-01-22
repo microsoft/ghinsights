@@ -23,6 +23,7 @@ using System.Web;
 using Hyak.Common;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
+using DataLakeStream;
 
 namespace MongoDbDumpTransformActivity
 {
@@ -67,15 +68,14 @@ namespace MongoDbDumpTransformActivity
                 as AzureStorageLinkedService;
 
             var inConnectionString = inputLinkedService.ConnectionString; // To create an input storage client.
-            var inContainerName = GetContainerName(inputDataset);
             var inFolderPath = GetFolderPath(inputDataset, sliceYear, sliceMonth, sliceDay);
             var inFileName = GetFileName(inputDataset, sliceYear, sliceMonth, sliceDay);
             
-
+            
             CloudStorageAccount inputStorageAccount = CloudStorageAccount.Parse(inConnectionString);
             CloudBlobClient inputClient = inputStorageAccount.CreateCloudBlobClient();
 
-            var inputBlobUri = new Uri(inputStorageAccount.BlobEndpoint, inContainerName + (String.IsNullOrWhiteSpace(inFolderPath)?null:"/" + inFolderPath) + "/" + inFileName);
+            var inputBlobUri = new Uri(inputStorageAccount.BlobEndpoint, inFolderPath + "/" + inFileName);
             var sourceBlob = inputClient.GetBlobReferenceFromServer(inputBlobUri);
 
             ////////////////
@@ -88,24 +88,23 @@ namespace MongoDbDumpTransformActivity
                 linkedService =>
                 linkedService.Name ==
                 outputDataset.Properties.LinkedServiceName).Properties.TypeProperties
-                as AzureStorageLinkedService;
+                as AzureDataLakeStoreLinkedService;
 
-            var outConnectionString = outputLinkedService.ConnectionString; // To create an input storage client.
             var outFolderPath = GetFolderPath(outputDataset, sliceYear, sliceMonth, sliceDay);
             var outFileName = GetFileName(outputDataset, sliceYear, sliceMonth, sliceDay);
-            var outContainerName = GetContainerName(outputDataset);
+            
 
 
-            CloudStorageAccount outputStorageAccount = CloudStorageAccount.Parse(outConnectionString);
-            CloudBlobClient outputClient = outputStorageAccount.CreateCloudBlobClient();
-            var outContainer = outputClient.GetContainerReference("raw");
-            outContainer.CreateIfNotExists();
-
-            //format output path string
+            ////format output path string
             var outputFilenameFormatString = String.Concat(outFolderPath, "/", outFileName).Replace("{EventName}", "{0}");
 
-
-
+            var tenantId = "72f988bf-86f1-41af-91ab-2d7cd011db47";
+            var subscriptionId = "b44f0353-37bd-4376-bb56-351d8622535f";
+            var appClientId = "42730763-ac15-41a5-a274-845e502dc23f";
+            var resourceAppIdUri = "https://management.core.windows.net/";
+            var managementCertificate = GetCertificate("7489979ECACD7A21E0B68B01B4180AF3159A524A");
+            logger.Write("CertInfo {0} {1} {2}", managementCertificate.HasPrivateKey, managementCertificate.Thumbprint, managementCertificate.SubjectName);
+            
 
 
             using (var sourceBlobStream = sourceBlob.OpenRead())
@@ -121,21 +120,25 @@ namespace MongoDbDumpTransformActivity
                     if (taredFileName.Extension == ".bson")
                     {
                         var tableName = taredFileName.Name.Split('.')[0];
-                        var outputBlob = outContainer.GetBlockBlobReference(String.Format(outputFilenameFormatString,tableName));
 
-                        using (var outBlobStream = outputBlob.OpenWrite())
-                        using (var gzipOut = new GZipStream(outBlobStream, System.IO.Compression.CompressionLevel.Optimal))
-                        using (var outText = new StreamWriter(gzipOut, Encoding.UTF8))
+                        var credentials = GetAppCertificateCredentials(tenantId, subscriptionId, appClientId, managementCertificate, resourceAppIdUri);
+                        var dlClient = new DataLakeStoreFileSystemManagementClient(credentials);
+                        var dlFrontEnd = new DataLakeStoreFrontEndAdapter("kelewis", dlClient);
+
+                        var outputFilePath = String.Format(outputFilenameFormatString, tableName);
+                        using (var dlStream = new DataLakeStream.DataLakeStream(dlFrontEnd, outputFilePath))
+                        using (var gzipOut = new GZipStream(dlStream, System.IO.Compression.CompressionLevel.Optimal))
+                        using (var outText = new StreamWriter(gzipOut, Encoding.UTF8, 4 * 1024 * 1024))
                         using (var reader = new BsonReader(tarStream))
                         {
 
-                            logger.Write("BlobWrite: {0}/{1}", outContainerName, outputBlob.Name);
+                            logger.Write("BlobWrite: {0}", outputFilePath);
 
                             reader.CloseInput = false;
 
                             var jsonSerializer = new JsonSerializer();
 
-
+                            var test = dlClient.GetHttpPipeline();
                             reader.ReadRootValueAsArray = false;
                             reader.SupportMultipleContent = true;
 
@@ -146,6 +149,7 @@ namespace MongoDbDumpTransformActivity
                                 var outString = row.ToString(Formatting.None);
 
                                 outText.WriteLine(outString);
+
                             }
                         }
                     }
@@ -161,7 +165,17 @@ namespace MongoDbDumpTransformActivity
         /// <summary>
         /// Gets the folderPath value from the input/output dataset.   
         /// </summary>
+        private static SubscriptionCloudCredentials GetAppCertificateCredentials(string tenantId, string subscriptionId, string clientId, X509Certificate2 cert, string resourceAppIdUri)
+        {
+            var authority = $"https://login.windows.net/{tenantId}";
+            var authContext = new Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext(authority);
+            var clientCertCredential = new ClientAssertionCertificate(clientId, cert);
 
+
+            var authResult = authContext.AcquireToken(resourceAppIdUri, clientCertCredential);
+            var credentials = new TokenCloudCredentials(subscriptionId, authResult.AccessToken);
+            return credentials;
+        }
         private static string GetFolderPath(Dataset dataArtifact, string sliceYear, string sliceMonth, string sliceDay)
         {
             if (dataArtifact == null || dataArtifact.Properties == null)
@@ -169,15 +183,48 @@ namespace MongoDbDumpTransformActivity
                 return null;
             }
 
-            AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
-            if (blobDataset == null)
+            string folderPath = null;
+
+            if (dataArtifact.Properties.Type == "AzureBlob")
             {
-                return null;
+                AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
+
+                if (blobDataset == null)
+                {
+                    return null;
+                }
+                folderPath = blobDataset.FolderPath;
             }
 
-            return blobDataset.FolderPath.Replace(GetContainerName(dataArtifact),"").TrimStart('/').TrimEnd('/').Replace("{Year}", sliceYear).Replace("{Month}", sliceMonth).Replace("{Day}", sliceDay);
-        }
+            if (dataArtifact.Properties.Type == "AzureDataLakeStore")
+            {
+                AzureDataLakeStoreDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureDataLakeStoreDataset;
 
+                if (blobDataset == null)
+                {
+                    return null;
+                }
+                folderPath = blobDataset.FolderPath;
+            }
+
+            if (folderPath != null)
+                return
+                    folderPath.TrimStart('/')
+                        .TrimEnd('/')
+                        .Replace("{Year}", sliceYear)
+                        .Replace("{Month}", sliceMonth)
+                        .Replace("{Day}", sliceDay);
+            else
+                return null;
+        }
+        private static X509Certificate2 GetCertificate(string thumbprint)
+        {
+            var store = new X509Store(StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+            var managementCertificate = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false)[0];
+
+            return managementCertificate;
+        }
 
         /// <summary>
         /// Gets the fileName value from the input/output dataset.   
@@ -190,29 +237,52 @@ namespace MongoDbDumpTransformActivity
                 return null;
             }
 
-            AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
-            if (blobDataset == null)
+            string fileName = null;
+
+            if (dataArtifact.Properties.Type == "AzureBlob")
             {
-                return null;
+                AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
+
+                if (blobDataset == null)
+                {
+                    return null;
+                }
+                fileName = blobDataset.FileName;
             }
 
-            return blobDataset.FileName.Replace("{Year}", sliceYear).Replace("{Month}", sliceMonth).Replace("{Day}", sliceDay);
+            if (dataArtifact.Properties.Type == "AzureDataLakeStore")
+            {
+                AzureDataLakeStoreDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureDataLakeStoreDataset;
+
+                if (blobDataset == null)
+                {
+                    return null;
+                }
+                fileName = blobDataset.FileName;
+            }
+
+            if (fileName != null)
+                return
+                    fileName.Replace("{Year}", sliceYear).Replace("{Month}", sliceMonth).Replace("{Day}", sliceDay);
+            else
+                return null;
+
         }
-        private static string GetContainerName(Dataset dataArtifact)
-        {
-            if (dataArtifact == null || dataArtifact.Properties == null)
-            {
-                return null;
-            }
+        //private static string GetContainerName(Dataset dataArtifact)
+        //{
+        //    if (dataArtifact == null || dataArtifact.Properties == null)
+        //    {
+        //        return null;
+        //    }
 
-            AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
-            if (blobDataset == null)
-            {
-                return null;
-            }
+        //    AzureBlobDataset blobDataset = dataArtifact.Properties.TypeProperties as AzureBlobDataset;
+        //    if (blobDataset == null)
+        //    {
+        //        return null;
+        //    }
 
-            return blobDataset.FolderPath.Split('/')[0];
-        }
+        //    return blobDataset.FolderPath.Split('/')[0];
+        //}
 
     }
 }

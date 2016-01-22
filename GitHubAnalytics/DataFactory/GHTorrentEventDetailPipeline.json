@@ -8,7 +8,7 @@
         "name": "MongoDbDumpTransformActivity",
         "type": "DotNetActivity",
         "inputs": [ { "name": "MongoDbDump" } ],
-        "outputs": [ { "name": "EventDetailRawFilesBlob" } ],
+        "outputs": [ { "name": "EventDetailRawFiles" } ],
         "typeProperties": {
           "assemblyName": "MongoDbDumpTransformActivity.dll",
           "entryPoint": "MongoDbDumpTransformActivity.MongoDbDumpTransformActivity",
@@ -22,8 +22,8 @@
         },
         "linkedServiceName": "BatchProcessor",
         "policy": {
-          "concurrency": 24,
-          "executionPriorityOrder": "NewestFirst",
+          "concurrency": 1,
+          "executionPriorityOrder": "OldestFirst",
           "retry": 0,
           "timeout": "04:00:00"
         },
@@ -33,7 +33,9 @@
         }
       }
     ],
+    "pipelineMode": "Scheduled",
+    "isPaused": false,
     "start": "2015-12-01T00:00:00Z",
-    "end": "2015-12-31T00:00:00Z"
+    "end": "2015-12-11T00:00:00Z"
   }
 }
