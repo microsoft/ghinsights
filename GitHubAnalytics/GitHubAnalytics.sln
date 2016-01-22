@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDbDumpTransformActivit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFactoryActivityExec", "DataFactoryActivityExec\DataFactoryActivityExec.csproj", "{0547D4F8-7F05-4F4D-9DBB-F919652EA998}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLakeStream", "DataLakeStream\DataLakeStream.csproj", "{DCB806EC-F9CC-4B56-8D75-629AD83116CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,14 @@ Global
 		{0547D4F8-7F05-4F4D-9DBB-F919652EA998}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0547D4F8-7F05-4F4D-9DBB-F919652EA998}.Release|x86.ActiveCfg = Release|Any CPU
 		{0547D4F8-7F05-4F4D-9DBB-F919652EA998}.Release|x86.Build.0 = Release|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{DCB806EC-F9CC-4B56-8D75-629AD83116CD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

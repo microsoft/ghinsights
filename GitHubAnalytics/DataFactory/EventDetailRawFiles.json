@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
-  "name": "EventDetailRawFilesDl",
+  "name": "EventDetailRawFiles",
   "properties": {
     "type": "AzureDataLakeStore",
-    "linkedServiceName": "AzureDataLakeStoreLinkedService",
+    "linkedServiceName": "GitHubAnalyticsDataLake",
     //"structure": [
     //    {
     //        "name": "<name of the column>",
@@ -12,8 +12,8 @@
     //],
     "typeProperties": {
 
-      "folderPath": "Raw/MongoDump/V1/EventName/{Year}/{Month}/",
-      //"folderName": "EventName_{Year}_{Month}_{Day}.json.gz",
+      "folderPath": "raw/MongoDump/V1/{EventName}/{Year}/{Month}",
+      "fileName":  "{EventName}_{Year}_{Month}_{Day}.json.gz",
       //            "fileName": "<Azure Data Lake Store file name>",
       //"format": {
       //    "type": "<Two formats are supported: TextFormat, AvroFormat. If the type is 'TextFormat', you can specify the following properties. The type 'Avro' does not require any additional properties>",
