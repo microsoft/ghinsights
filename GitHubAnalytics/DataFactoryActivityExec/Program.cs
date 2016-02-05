@@ -10,6 +10,7 @@ using Microsoft.Azure.Management.DataFactories.Common.Models;
 using Microsoft.Azure.Management.DataFactories.Core.Registration.Models;
 using Microsoft.Azure.Management.DataFactories.Models;
 using Microsoft.Azure.Management.DataFactories.Runtime;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DataFactoryActivityExec
@@ -23,7 +24,7 @@ namespace DataFactoryActivityExec
 
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",
-                    new LinkedServiceProperties(new AzureStorageLinkedService("DefaultEndpointsProtocol=https;AccountName=kelewis;AccountKey=hCvPmKWV532FXwo+S1XvTeq64QDt/ibWdewU2oHDSrs9slXaHIHpbxUCHL99WF/1O4AR53WhHHOKu2BKf3UNbA==")))
+                    new LinkedServiceProperties(new CustomDataSourceLinkedService(JObject.Parse("{\"sasUri\": \"https://ghtstorage.blob.core.windows.net/downloads?restype=container&comp=list&sv=2015-04-05&sr=c&sig=VaU0Tw0n9uUO77hoeIty0yzHI8G%2FQ2eyoo99CQ8Q0%2FI%3D&se=2018-02-02T22%3A02%3A16Z&sp=rl\"}"))))
                 ,new LinkedService("GitHubAnalyticsAzureStorage",
                     new LinkedServiceProperties(new AzureStorageLinkedService("DefaultEndpointsProtocol=https;AccountName=kelewis;AccountKey=hCvPmKWV532FXwo+S1XvTeq64QDt/ibWdewU2oHDSrs9slXaHIHpbxUCHL99WF/1O4AR53WhHHOKu2BKf3UNbA==")))
             };
