@@ -22,7 +22,7 @@
         },
         "linkedServiceName": "BatchProcessor",
         "policy": {
-          "concurrency": 24,
+          "concurrency": 6,
           "executionPriorityOrder": "NewestFirst",
           "retry": 0,
           "timeout": "04:00:00"
@@ -34,6 +34,6 @@
       }
     ],
     "start": "2015-12-01T00:00:00Z",
-    "end": "2015-12-31T00:00:00Z"
+    "end": "2016-02-01T00:00:00Z"
   }
 }

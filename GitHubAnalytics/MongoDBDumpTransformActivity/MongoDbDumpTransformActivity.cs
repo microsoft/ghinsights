@@ -59,24 +59,29 @@ namespace MongoDbDumpTransformActivity
             // Open up input Blob
 
             var inputDataset = datasets.Single(dataset => dataset.Name == activity.Inputs.Single().Name);
-            
+            //TODO: first vs single
             var inputLinkedService = linkedServices.Single(
                 linkedService =>
                 linkedService.Name ==
                 inputDataset.Properties.LinkedServiceName).Properties.TypeProperties
-                as AzureStorageLinkedService;
+                as CustomDataSourceLinkedService;
 
-            var inConnectionString = inputLinkedService.ConnectionString; // To create an input storage client.
+            var inConnectionString = inputLinkedService.ServiceExtraProperties["sasUri"].Value<string>(); // To create an input storage client.
             var inContainerName = GetContainerName(inputDataset);
             var inFolderPath = GetFolderPath(inputDataset, sliceYear, sliceMonth, sliceDay);
             var inFileName = GetFileName(inputDataset, sliceYear, sliceMonth, sliceDay);
-            
 
-            CloudStorageAccount inputStorageAccount = CloudStorageAccount.Parse(inConnectionString);
-            CloudBlobClient inputClient = inputStorageAccount.CreateCloudBlobClient();
+            // TODO: clean up prep and parsing functionality into new specific types
 
-            var inputBlobUri = new Uri(inputStorageAccount.BlobEndpoint, inContainerName + (String.IsNullOrWhiteSpace(inFolderPath)?null:"/" + inFolderPath) + "/" + inFileName);
-            var sourceBlob = inputClient.GetBlobReferenceFromServer(inputBlobUri);
+            //CloudStorageAccount inputStorageAccount = CloudStorageAccount.Parse(inConnectionString);
+            //CloudBlobClient inputClient = inputStorageAccount.CreateCloudBlobClient();
+            //var inputBlobUri = new Uri(inputStorageAccount.BlobEndpoint, inContainerName + (String.IsNullOrWhiteSpace(inFolderPath)?null:"/" + inFolderPath) + "/" + inFileName);
+            //var sourceBlob = inputClient.GetBlobReferenceFromServer(inputBlobUri);
+
+            var inputContainer = new CloudBlobContainer(new Uri(inConnectionString));
+            var inputBlobFullPath = (String.IsNullOrWhiteSpace(inFolderPath) ? null : inFolderPath + "/")  + inFileName;
+
+            var sourceBlob = inputContainer.GetBlobReferenceFromServer(inputBlobFullPath);
 
             ////////////////
             // Get output location
@@ -114,13 +119,16 @@ namespace MongoDbDumpTransformActivity
             {
 
                 logger.Write("BlobRead: {0}", sourceBlob.Name);
-                do
+                do // TODO: while at top.. call nextfile() here, setting up the first file (if one exists)
                 {
                     var taredFileName = new System.IO.FileInfo(tarStream.CurrentFilename);
+                    // TODO: use to get names and extentions Path.GetFileNameWithoutExtension()
 
                     if (taredFileName.Extension == ".bson")
                     {
+                        //TODO: redo all this with Path
                         var tableName = taredFileName.Name.Split('.')[0];
+                        
                         var outputBlob = outContainer.GetBlockBlobReference(String.Format(outputFilenameFormatString,tableName));
 
                         using (var outBlobStream = outputBlob.OpenWrite())
@@ -149,7 +157,7 @@ namespace MongoDbDumpTransformActivity
                             }
                         }
                     }
-
+                    //TODO: flip the while to the top
                 } while (tarStream.NextFile());
             }
 

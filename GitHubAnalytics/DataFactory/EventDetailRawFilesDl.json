@@ -3,7 +3,7 @@
   "name": "EventDetailRawFilesDl",
   "properties": {
     "type": "AzureDataLakeStore",
-    "linkedServiceName": "AzureDataLakeStoreLinkedService",
+    "linkedServiceName": "GitHubAnalyticsDataLake",
     //"structure": [
     //    {
     //        "name": "<name of the column>",
