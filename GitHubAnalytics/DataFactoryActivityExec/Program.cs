@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Management.DataFactories;
+using GitHubAnalytics.DataFactory;
 using Microsoft.Azure.Management.DataFactories.Common.Models;
-using Microsoft.Azure.Management.DataFactories.Core.Registration.Models;
 using Microsoft.Azure.Management.DataFactories.Models;
 using Microsoft.Azure.Management.DataFactories.Runtime;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DataFactoryActivityExec
@@ -20,16 +14,18 @@ namespace DataFactoryActivityExec
     {
         static void Main(string[] args)
         {
-            var customActivity = new MongoDbDumpTransformActivity.MongoDbDumpTransformActivity();
+            var customActivity = new MongoDbDumpTransformActivity();
 
-         
+            var config =
+                JObject.Parse(
+                    File.ReadAllText(@"..\..\..\DataFactory\Developer-KeLewis.json"));
+
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",
-                    new LinkedServiceProperties(new AzureStorageLinkedService("DefaultEndpointsProtocol=https;AccountName=kelewis;AccountKey=hCvPmKWV532FXwo+S1XvTeq64QDt/ibWdewU2oHDSrs9slXaHIHpbxUCHL99WF/1O4AR53WhHHOKu2BKf3UNbA==")))
-                ,new LinkedService("GitHubAnalyticsDataLake",
-                    new LinkedServiceProperties(new AzureDataLakeStoreLinkedService() {AccountName = "kelewis",Authorization = "auth", DataLakeStoreUri = "azuredatalakestore.net", ResourceGroupName = "kelewis",SessionId = "sessionId", SubscriptionId = "b44f0353-37bd-4376-bb56-351d8622535f"}))
+                    new LinkedServiceProperties(new CustomDataSourceLinkedService(JObject.Parse(String.Format("{{\"sasUri\": \"{0}\"}}", config["GHTorrentAzureStorage"][0]["value"].Value<string>())))))
+                ,new LinkedService("GitHubAnalyticsAzureStorage",
+                    new LinkedServiceProperties(new AzureStorageLinkedService(config["GitHubAnalyticsAzureStorage"][0]["value"].Value<string>())))
             };
-
             
             var mongoDbDump = new Dataset("MongoDbDump",
                 new DatasetProperties(new AzureBlobDataset()
@@ -63,10 +59,10 @@ namespace DataFactoryActivityExec
                 },
                     new Availability("Daily", 1), "GHTorrentAzureStorage"));
 
-            var eventDetailRawFilesBlob = new Dataset("EventDetailRawFilesDl",
-                new DatasetProperties(new AzureDataLakeStoreDataset()
+            var eventDetailRawFilesBlob = new Dataset("EventDetail",
+                new DatasetProperties(new AzureBlobDataset()
                 {
-                    FolderPath = @"test/MongoDump/V1/{EventName}/{Year}/{Month}",
+                   FolderPath = @"test/{EventName}/v1/{Year}/{Month}",
                    FileName = "{EventName}_{Year}_{Month}_{Day}.json.gz",
                     PartitionedBy = new List<Partition>()
                     {
@@ -93,7 +89,7 @@ namespace DataFactoryActivityExec
                         }
                     }
                 },
-                    new Availability("Daily", 1), "GitHubAnalyticsDataLake"));
+                    new Availability("Daily", 1), "GitHubAnalyticsAzureStorage"));
             
 
             var datasets = new List<Dataset>() { mongoDbDump, eventDetailRawFilesBlob };
@@ -101,11 +97,11 @@ namespace DataFactoryActivityExec
 
             var activity = new Activity()
             {
-                Description = "<Enter the Pipeline description here>",
+                Description = "Fake Activity",
                 Inputs = new ActivityInput[] {new ActivityInput("MongoDbDump")},
                 LinkedServiceName = "BatchProcessor",
                 Name = "GHTorrentEventDetailPipeline",
-                Outputs = new ActivityOutput[] {new ActivityOutput("EventDetailRawFilesDl") },
+                Outputs = new ActivityOutput[] {new ActivityOutput("EventDetail") },
                 Policy =
                     new ActivityPolicy()
                     {
@@ -115,17 +111,16 @@ namespace DataFactoryActivityExec
                         Timeout = TimeSpan.Parse("04:00:00")
                     },
                 Scheduler = new Scheduler("Day", 1),
-                //Type = "MongoDbDumpTransformActivity",
-                TypeProperties = new DotNetActivity("MongoDbDumpTransformActivity.dll"
-                    , "MongoDbDumpTransformActivity.MongoDbDumpTransformActivity"
-                    , "datafactory/MongoDbDumpTransformActivity.zip"
+                TypeProperties = new DotNetActivity("DataFactoryLib.dll"
+                    , "DataFactoryLib.MongoDbDumpTransformActivity"
+                    , "datafactory/DataFactoryLib.zip"
                     , "GitHubAnalyticsAzureStorage")
                 {
                     ExtendedProperties = new Dictionary<string, string>()
                     {
                         {"Year", "2015"},
                         {"Month", "12"},
-                        {"Day", "01"}
+                        {"Day", "02"}
                     }
                 }
             };
