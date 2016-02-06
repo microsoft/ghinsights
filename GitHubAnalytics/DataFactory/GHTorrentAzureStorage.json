@@ -3,10 +3,9 @@
 
   "name": "GHTorrentAzureStorage",
   "properties": {
-    "hubName": "kelewis_hub",
     "type": "AzureStorageSas",
     "typeProperties": {
-      "sasUri": "https://ghtstorage.blob.core.windows.net/downloads?restype=container&comp=list&sv=2015-04-05&sr=c&sig=VaU0Tw0n9uUO77hoeIty0yzHI8G%2FQ2eyoo99CQ8Q0%2FI%3D&se=2018-02-02T22%3A02%3A16Z&sp=rl"
+      "sasUri": ""
     }
   }
 }

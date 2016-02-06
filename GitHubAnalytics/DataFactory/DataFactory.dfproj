@@ -28,18 +28,16 @@
   </ItemGroup>
   <ItemGroup>
     <Script Include="BatchProcessor.json" />
-    <Script Include="EventDetailRawFilesDl.json" />
-    <Script Include="EventDetailRawFilesBlob.json" />
+    <Script Include="Developer-KeLewis.json" />
+    <Script Include="EventDetail.json" />
     <Script Include="GHTorrentAzureStorage.json" />
-    <Script Include="GHTorrentCopy.json" />
     <Script Include="GHTorrentEventDetailPipeline.json" />
     <Script Include="GitHubAnalyticsAzureStorage.json" />
-    <Script Include="GitHubAnalyticsDataLake.json" />
     <Script Include="MongoDbDump.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MongoDBDumpTransformActivity\MongoDBDumpTransformActivity.csproj">
-      <Name>MongoDbDumpTransformActivity</Name>
+    <ProjectReference Include="..\MongoDBDumpTransformActivity\GitHubAnalytics.DataFactory.csproj">
+      <Name>GitHubAnalytics.DataFactory</Name>
       <Project>{165bcdf3-cf9d-4b92-8bd5-6817c7d30769}</Project>
       <Private>True</Private>
     </ProjectReference>

@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Management.DataFactories;
+using System.IO;
+using GitHubAnalytics.DataFactory;
 using Microsoft.Azure.Management.DataFactories.Common.Models;
-using Microsoft.Azure.Management.DataFactories.Core.Registration.Models;
 using Microsoft.Azure.Management.DataFactories.Models;
 using Microsoft.Azure.Management.DataFactories.Runtime;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DataFactoryActivityExec
@@ -19,14 +14,17 @@ namespace DataFactoryActivityExec
     {
         static void Main(string[] args)
         {
-            var customActivity = new MongoDbDumpTransformActivity.MongoDbDumpTransformActivity();
+            var customActivity = new MongoDbDumpTransformActivity();
 
+            var config =
+                JObject.Parse(
+                    File.ReadAllText(@"..\..\..\DataFactory\Developer-KeLewis.json"));
 
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",
-                    new LinkedServiceProperties(new CustomDataSourceLinkedService(JObject.Parse("{\"sasUri\": \"https://ghtstorage.blob.core.windows.net/downloads?restype=container&comp=list&sv=2015-04-05&sr=c&sig=VaU0Tw0n9uUO77hoeIty0yzHI8G%2FQ2eyoo99CQ8Q0%2FI%3D&se=2018-02-02T22%3A02%3A16Z&sp=rl\"}"))))
+                    new LinkedServiceProperties(new CustomDataSourceLinkedService(JObject.Parse(String.Format("{{\"sasUri\": \"{0}\"}}", config["GHTorrentAzureStorage"][0]["value"].Value<string>())))))
                 ,new LinkedService("GitHubAnalyticsAzureStorage",
-                    new LinkedServiceProperties(new AzureStorageLinkedService("DefaultEndpointsProtocol=https;AccountName=kelewis;AccountKey=hCvPmKWV532FXwo+S1XvTeq64QDt/ibWdewU2oHDSrs9slXaHIHpbxUCHL99WF/1O4AR53WhHHOKu2BKf3UNbA==")))
+                    new LinkedServiceProperties(new AzureStorageLinkedService(config["GitHubAnalyticsAzureStorage"][0]["value"].Value<string>())))
             };
             
             var mongoDbDump = new Dataset("MongoDbDump",
@@ -61,10 +59,10 @@ namespace DataFactoryActivityExec
                 },
                     new Availability("Daily", 1), "GHTorrentAzureStorage"));
 
-            var eventDetailRawFilesBlob = new Dataset("EventDetailRawFilesBlob",
+            var eventDetailRawFilesBlob = new Dataset("EventDetail",
                 new DatasetProperties(new AzureBlobDataset()
                 {
-                    FolderPath = @"raw/MongoDump/V1/{EventName}/{Year}/{Month}",
+                   FolderPath = @"test/{EventName}/v1/{Year}/{Month}",
                    FileName = "{EventName}_{Year}_{Month}_{Day}.json.gz",
                     PartitionedBy = new List<Partition>()
                     {
@@ -99,11 +97,11 @@ namespace DataFactoryActivityExec
 
             var activity = new Activity()
             {
-                Description = "<Enter the Pipeline description here>",
+                Description = "Fake Activity",
                 Inputs = new ActivityInput[] {new ActivityInput("MongoDbDump")},
                 LinkedServiceName = "BatchProcessor",
                 Name = "GHTorrentEventDetailPipeline",
-                Outputs = new ActivityOutput[] {new ActivityOutput("EventDetailRawFilesBlob") },
+                Outputs = new ActivityOutput[] {new ActivityOutput("EventDetail") },
                 Policy =
                     new ActivityPolicy()
                     {
@@ -113,10 +111,9 @@ namespace DataFactoryActivityExec
                         Timeout = TimeSpan.Parse("04:00:00")
                     },
                 Scheduler = new Scheduler("Day", 1),
-                //Type = "MongoDbDumpTransformActivity",
-                TypeProperties = new DotNetActivity("MongoDbDumpTransformActivity.dll"
-                    , "MongoDbDumpTransformActivity.MongoDbDumpTransformActivity"
-                    , "datafactory/MongoDbDumpTransformActivity.zip"
+                TypeProperties = new DotNetActivity("DataFactoryLib.dll"
+                    , "DataFactoryLib.MongoDbDumpTransformActivity"
+                    , "datafactory/DataFactoryLib.zip"
                     , "GitHubAnalyticsAzureStorage")
                 {
                     ExtendedProperties = new Dictionary<string, string>()
