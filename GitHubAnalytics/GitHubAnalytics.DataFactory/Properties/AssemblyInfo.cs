@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DataFactoryActivityExec")]
+[assembly: AssemblyTitle("MongoDBDumpTransformActivity")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DataFactoryActivityExec")]
+[assembly: AssemblyProduct("MongoDBDumpTransformActivity")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0547d4f8-7f05-4f4d-9dbb-f919652ea998")]
+[assembly: Guid("165bcdf3-cf9d-4b92-8bd5-6817c7d30769")]
 
 // Version information for an assembly consists of the following four values:
 //
