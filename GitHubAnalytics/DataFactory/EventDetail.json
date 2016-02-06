@@ -1,11 +1,11 @@
 ﻿{
   "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
-  "name": "EventDetailRawFilesBlob",
+  "name": "EventDetail",
   "properties": {
     "type": "AzureBlob",
     "linkedServiceName": "GitHubAnalyticsAzureStorage",
     "typeProperties": {
-      "folderPath": "raw/MongoDump/{EventName}/V1/{Year}/{Month}",
+      "folderPath": "raw/{EventName}/v1/{Year}/{Month}",
       "fileName": "{EventName}_{Year}_{Month}_{Day}.json.gz",
       "partitionedBy": [
         {
