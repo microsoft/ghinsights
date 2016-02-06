@@ -36,7 +36,7 @@
     <Script Include="MongoDbDump.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MongoDBDumpTransformActivity\GitHubAnalytics.DataFactory.csproj">
+    <ProjectReference Include="..\GitHubAnalytics.DataFactory\GitHubAnalytics.DataFactory.csproj">
       <Name>GitHubAnalytics.DataFactory</Name>
       <Project>{165bcdf3-cf9d-4b92-8bd5-6817c7d30769}</Project>
       <Private>True</Private>
