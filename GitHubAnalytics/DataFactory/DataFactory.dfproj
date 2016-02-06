@@ -28,7 +28,8 @@
   </ItemGroup>
   <ItemGroup>
     <Script Include="BatchProcessor.json" />
-    <Script Include="Developer-KeLewis.json" />
+    <Script Include="ConfigTemplate.json" />
+    <Script Include="DevEnvironment.json" />
     <Script Include="EventDetail.json" />
     <Script Include="GHTorrentAzureStorage.json" />
     <Script Include="GHTorrentEventDetailPipeline.json" />
