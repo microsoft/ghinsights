@@ -23,10 +23,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="RawEvents.usql">
-      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>kelewis</ClusterComputeAccount>
+      <ClusterDatabase>ghtorrent</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
     </Script>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
