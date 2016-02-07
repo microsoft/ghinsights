@@ -1,13 +1,28 @@
 ﻿
+REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
 @rows =
-    EXTRACT Line string
-    FROM "wasb://raw@kelewis.blob.core.windows.net/MongoDump/users/V1/{date:yyyy}/{date:MM}/{*}"
-    USING Extractors.Tsv(Encoding.UTF8);
+    EXTRACT  EventName string
+            ,IngestDate DateTime
+            ,Data SqlMap<string, string>
+    FROM "wasb://raw@<storage account>.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.{*}"
+    USING GitHubAnalytics.USql.Extractors.FlatJson(outputColumnName: "Data");
 
-@count =
-    SELECT COUNT(*) AS RowCount FROM @rows;
 
-OUTPUT @count TO "/my/rowcount.txt" USING Outputters.Csv();
-    
+
+CREATE TABLE dbo.RawEvents
+(
+    INDEX IX_RawEvents
+    CLUSTERED(EventName, IngestDate)
+    PARTITIONED BY
+    HASH(EventName, IngestDate)
+)
+AS
+SELECT EventName,
+       IngestDate,
+       Data
+FROM @rows
+WHERE IngestDate >= DateTime.Parse("2015-01-04")
+      AND IngestDate <= DateTime.Parse("2017-01-04");
