@@ -22,13 +22,40 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Script Include="RawEvents.usql">
+    <Script Include="CreateTables.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>Staging</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessSubTableData.usql">
       <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
       <ClusterComputeAccount>kelewis</ClusterComputeAccount>
-      <ClusterDatabase>ghtorrent</ClusterDatabase>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="StageData.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>ghtorrent</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessData.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>ghtorrent</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>kelewis</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
   </ItemGroup>

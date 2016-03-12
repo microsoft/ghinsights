@@ -2,15 +2,9 @@
 using Microsoft.Analytics.Types.Sql;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Dynamic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace GitHubAnalytics.USql
@@ -22,7 +16,7 @@ namespace GitHubAnalytics.USql
             return new FlatJsonExtractor(outputColumnName);
         }
     }
-
+    
     [SqlUserDefinedExtractor(AtomicFileProcessing = true)]
     internal class FlatJsonExtractor : IExtractor
     {
@@ -42,26 +36,7 @@ namespace GitHubAnalytics.USql
                 {
                     var row = JToken.ReadFrom(reader);
                     
-                    var data = new Dictionary<string, string>();
-
-                    foreach (var column in FlattenJson(row))
-                    {
-                        if (column.Value != null)
-                        {
-                            var outString = column.Value.ToString();
-
-                            if (Encoding.UTF8.GetBytes(outString).Length <= 100000)
-                            {
-                                data[column.Key] = outString;
-                            }
-                            else
-                            {
-                                data[column.Key] = String.Format("##StringTooLong##,{0}", Encoding.UTF8.GetBytes(outString).Length);
-                            }
-                        }
-                    }
-
-                    output.Set(_outputColumnName, new SqlMap<string, string>(data));
+                    output.Set(_outputColumnName, new SqlMap<string, SqlArray<byte[]>>(FlattenJson(row)));
 
                     yield return output.AsReadOnly();
 
@@ -69,10 +44,10 @@ namespace GitHubAnalytics.USql
             }
         }
 
-        private IDictionary<string, object> FlattenJson(JToken input)
+        private IDictionary<string, SqlArray<byte[]>> FlattenJson(JToken input)
         {
         
-            Dictionary<string, object> dict = new Dictionary<string, object>();
+            var dict = new Dictionary<string, SqlArray<byte[]>>();
 
             FlattenJson(input, dict);
 
@@ -81,7 +56,7 @@ namespace GitHubAnalytics.USql
         }
 
 
-        private void FlattenJson(JToken input, Dictionary<string, object> dict)
+        private void FlattenJson(JToken input, Dictionary<string, SqlArray<byte[]>> dict)
         {
             if (input.Type == JTokenType.Object || input.Type == JTokenType.Property || input.Type == JTokenType.Array)
             {
@@ -94,7 +69,12 @@ namespace GitHubAnalytics.USql
             }
             else
             {
-                dict.Add(input.Path, input.Value<string>());
+                if (!String.IsNullOrWhiteSpace(input.Value<string>()))
+                {
+                    SqlArray<byte[]> data =
+                        new SqlArray<byte[]>(new byte[][] { Encoding.UTF8.GetBytes(input.Value<string>()), Encoding.UTF8.GetBytes(input.Type.ToString())});
+                    dict.Add(input.Path, data);
+                }
             }
 
         }

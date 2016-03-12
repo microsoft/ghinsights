@@ -46,6 +46,7 @@
     <Reference Include="Microsoft.Analytics.Types" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utility.cs" />
     <Compile Include="Extractors.Json.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
