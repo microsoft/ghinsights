@@ -1,0 +1,51 @@
+﻿
+REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@Watcher =
+SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
+		,GitHubAnalytics.USql.Utility.GetString(Data, "owner") AS Owner
+		,GitHubAnalytics.USql.Utility.GetString(Data, "login") AS Login
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS WatcherId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "bio") AS Bio
+		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "blog") AS Blog
+		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "company") AS Company
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "email") AS Email
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "followers") AS Followers
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "following") AS Following
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "hireable") AS Hireable
+		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "location") AS Location
+		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "name") AS Name
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "public_gists") AS PublicGists
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "public_repos") AS PublicRepos
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "type") AS Type
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "watchers";
+
+@WatcherDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY WatcherId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+FROM @Watcher;
+
+DROP TABLE IF EXISTS dbo.Watcher;
+
+CREATE TABLE dbo.Watcher
+(
+    INDEX IX_Watcher
+    CLUSTERED(Repo, Owner, Login)
+    PARTITIONED BY
+    HASH(Repo, Owner, Login)
+    INTO 20
+)
+AS
+SELECT *
+FROM @WatcherDeDupe
+WHERE RowNumber == 1;
+
+
+

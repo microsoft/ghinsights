@@ -62,7 +62,17 @@ namespace GitHubAnalytics.USql
             {
                 return null;
             }
-            return DateTime.Parse(value);
+
+            try
+            {
+                DateTime dateTime;
+                DateTime.TryParse(value, out dateTime);
+                return dateTime;
+            }
+            catch (FormatException)
+            {
+                throw new FormatException($"Error trying to parse using GetDateTime - {value}");
+            }
         }
 
         public static Int64? GetInteger(SqlMap<string, byte[]> inputColumn, string path)
@@ -112,7 +122,17 @@ namespace GitHubAnalytics.USql
             {
                 return null;
             }
-            return DateTime.Parse(value);
+
+            try
+            {
+                DateTime dateTime;
+                DateTime.TryParse(value, out dateTime);
+                return dateTime;
+            }
+            catch (FormatException)
+            {
+                throw new FormatException($"Error trying to parse using GetDateTime - {value}");
+            }
         }
 
         public static Int64? GetInteger(SqlMap<string, SqlArray<byte[]>> inputColumn, string path)
@@ -173,16 +193,21 @@ namespace GitHubAnalytics.USql
             return null;
         }
 
-        private static string HashEmail(string inString)
+        public static string HashEmail(string inString)
         {
+            if (inString == null)
+            {
+                return null;
+            }
+
             var regex =
                 new Regex(
                     @"(?<alias>\A[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?<alias>:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*)@(?<domain>(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9]))?\z", RegexOptions.CultureInvariant);
-            var matches = regex.Matches(inString);
-            if (matches.Count > 1)
+            var matches = regex.Matches(inString.Trim().ToLowerInvariant());
+            if (matches.Count >= 1)
             {
                 var sha = new SHA256Managed();
-                var shaString = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(matches[0].Groups["alias"].Value)));
+                var shaString = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(matches[0].Groups["alias"].Value))).Replace("-","").ToLowerInvariant();
                 return String.Concat(shaString, "@", matches[0].Groups["domain"].Value);
             }
 

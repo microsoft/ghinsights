@@ -22,6 +22,24 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Script Include="ProcessCommit.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessCommitComment.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
     <Script Include="CreateTables.usql">
       <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
@@ -31,12 +49,102 @@
       <ClusterDatabase>Staging</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
+    <Script Include="ProcessEvent.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessFork.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessGeoCache.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessIssue.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessIssueComment.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessIssueEvent.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessOrgMember.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessPullRequest.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessPullRequestComment.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessRepoLabel.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
     <Script Include="ProcessSubTableData.usql">
       <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>kelewis</ClusterComputeAccount>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
       <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
@@ -54,7 +162,7 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>ghtorrent</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>kelewis</ClusterComputeAccount>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
       <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
