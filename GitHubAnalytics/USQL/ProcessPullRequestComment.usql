@@ -2,7 +2,6 @@
 REFERENCE ASSEMBLY [GitHubAnalytics.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-
 @PullRequestComment =
 SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
 		,GitHubAnalytics.USql.Utility.GetString(Data, "owner") AS Owner
@@ -11,7 +10,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
 		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.html.href") AS LinksHtmlHref
 		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.pull_request.href") AS LinksPullRequestHref
 		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.self.href") AS LinksSelfHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "body") AS Body
+		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "body") AS Body
 		,GitHubAnalytics.USql.Utility.GetString(Data, "commit_id") AS CommitId
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GitHubAnalytics.USql.Utility.GetString(Data, "diff_hunk") AS DiffHunk
