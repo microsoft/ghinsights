@@ -9,7 +9,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "login") AS Login
         ,GitHubAnalytics.USql.Utility.GetPiiString(Data, "blog") AS Blog
 		,GitHubAnalytics.USql.Utility.GetPiiString(Data, "company") AS Company
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
-        ,GitHubAnalytics.USql.Utility.GetString(Data, "email") AS Email
+        ,GitHubAnalytics.USql.Utility.GetPiiString(Data, "email") AS Email
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "followers") AS Followers
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "following") AS Following
 		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "hireable") AS Hireable

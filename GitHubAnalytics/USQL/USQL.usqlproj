@@ -23,7 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="ProcessCommit.usql">
-      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
@@ -50,10 +50,13 @@
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessCommitFile.usql">
-      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessCommitParent.usql" />
     <Script Include="ProcessEvent.usql">
@@ -192,8 +195,21 @@
       <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
-    <Script Include="ProcessUser.usql" />
-    <Script Include="ProcessWatcher.usql" />
+    <Script Include="ProcessUser.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
+    <Script Include="ProcessWatcher.usql">
+      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+    </Script>
     <Script Include="StageData.usql">
       <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
