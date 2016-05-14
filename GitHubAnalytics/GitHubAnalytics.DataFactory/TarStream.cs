@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -43,7 +44,7 @@ namespace GitHubAnalytics.DataFactory
             {
                 return false;
             }
-
+            Debug.Assert(_currentFilePosition % 512 == 0);
             CurrentFilename = Encoding.ASCII.GetString(binaryReader.ReadBytes(100)).TrimEnd((char) (0));
 
             if (string.IsNullOrWhiteSpace(CurrentFilename))
@@ -90,13 +91,16 @@ namespace GitHubAnalytics.DataFactory
         public bool NextFile()
         {
             // move to start of next file, returning false if the next file isn't available
-
-            //TODO: will break if the remaining length of the file is type long
             if (_currentFileLength > 0)
             {
-                var remainingBytes =
-                    (int) (_currentFileLength + (512 - (_currentFileLength%512)) - _currentFilePosition);
-                _binaryReader.ReadBytes(remainingBytes);
+                long remainingBytes;
+                while ((remainingBytes = (_currentFileLength + (512 - (_currentFileLength%512)) - _currentFilePosition)) > 0)
+                {
+                    var countToRead = (int)Math.Min(remainingBytes, 1024*1024*8);
+                    _binaryReader.ReadBytes(countToRead);
+                    _currentFilePosition += countToRead;
+                }
+
             }
 
             var isNextHeaderValid = ReadHeader(_binaryReader);

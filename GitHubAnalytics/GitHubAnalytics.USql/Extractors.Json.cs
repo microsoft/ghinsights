@@ -2,10 +2,12 @@
 using Microsoft.Analytics.Types.Sql;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 
 namespace GitHubAnalytics.USql
 {
@@ -17,9 +19,11 @@ namespace GitHubAnalytics.USql
         }
     }
     
-    [SqlUserDefinedExtractor(AtomicFileProcessing = true)]
+    [SqlUserDefinedExtractor(AtomicFileProcessing = false)]
     internal class FlatJsonExtractor : IExtractor
     {
+        private const int _dataLakeMaxRowSize = 4194304;
+
         private string _outputColumnName;
 
         internal FlatJsonExtractor(string outputColumnName)
@@ -31,12 +35,47 @@ namespace GitHubAnalytics.USql
             using (var reader = new JsonTextReader(new StreamReader(input.BaseStream, Encoding.UTF8)))
             {
                 reader.SupportMultipleContent = true;
-
+                
                 while (reader.Read())
                 {
                     var row = JToken.ReadFrom(reader);
-                    
-                    output.Set(_outputColumnName, new SqlMap<string, SqlArray<byte[]>>(FlattenJson(row)));
+
+                    var size = 0;
+                    var flattendData = GitHubAnalytics.USql.Utility.FlattenJson(row, ref size);
+
+                    if (size < (_dataLakeMaxRowSize))
+                    {
+                        output.Set(_outputColumnName, new SqlMap<string, byte[]>(flattendData));
+                    }
+                    else
+                    {
+                        var compressedData = GitHubAnalytics.USql.Utility.GzipByteArray(Encoding.UTF8.GetBytes(row.ToString(Formatting.None)));
+
+                        if (compressedData.Length < (_dataLakeMaxRowSize))
+                        {
+                            var compressedRow = new Dictionary<string, byte[]>
+                                {
+                                    {
+                                        "!CompressedRow",
+                                        compressedData
+                                    }
+                                };
+                            output.Set(_outputColumnName, new SqlMap<string, byte[]>(compressedRow));
+                        }
+                        else {
+                            //throw new ArgumentOutOfRangeException($"Resulting SqlMap is too large: {size} - {row.ToString(Formatting.None).Substring(0,100)}");
+                            var error = new Dictionary<string, byte[]>
+                                {
+                                    {
+                                        "!RowExtractorError",
+                                        Encoding.UTF8.GetBytes($"Resulting SqlMap is too large: OriginalSize:{size} CompressedSize: {compressedData.Length} - {row.ToString(Formatting.None).Substring(0, 100)}")
+                                    }
+                                };
+                            output.Set(_outputColumnName, new SqlMap<string, byte[]>(error));
+                        }
+
+                    }
+                        
 
                     yield return output.AsReadOnly();
 
@@ -44,39 +83,7 @@ namespace GitHubAnalytics.USql
             }
         }
 
-        private IDictionary<string, SqlArray<byte[]>> FlattenJson(JToken input)
-        {
-        
-            var dict = new Dictionary<string, SqlArray<byte[]>>();
-
-            FlattenJson(input, dict);
-
-            return dict;
-
-        }
-
-
-        private void FlattenJson(JToken input, Dictionary<string, SqlArray<byte[]>> dict)
-        {
-            if (input.Type == JTokenType.Object || input.Type == JTokenType.Property || input.Type == JTokenType.Array)
-            {
-                foreach (var v in input.Children())
-                {
-
-                    FlattenJson(v, dict);
-
-                }
-            }
-            else
-            {
-                if (!String.IsNullOrWhiteSpace(input.Value<string>()))
-                {
-                    SqlArray<byte[]> data =
-                        new SqlArray<byte[]>(new byte[][] { Encoding.UTF8.GetBytes(input.Value<string>()), Encoding.UTF8.GetBytes(input.Type.ToString())});
-                    dict.Add(input.Path, data);
-                }
-            }
-
-        }
     }
+
+
 }
