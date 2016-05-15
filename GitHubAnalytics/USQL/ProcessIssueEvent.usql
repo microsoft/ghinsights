@@ -31,7 +31,7 @@ WHERE EventName == "issue_events";
 
 @IssueEventDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueEventId ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY IssueEventId ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @IssueEvent;
 
 DROP TABLE IF EXISTS dbo.IssueEvent;

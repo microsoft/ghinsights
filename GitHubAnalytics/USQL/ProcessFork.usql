@@ -96,7 +96,7 @@ WHERE EventName == "forks";
 
 @ForkDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY ForkId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY ForkId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Fork;
 
 DROP TABLE IF EXISTS dbo.Fork;

@@ -2,8 +2,6 @@
 REFERENCE ASSEMBLY [GitHubAnalytics.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-
-
 @Event =
 SELECT	 GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "actor.id") AS ActorId
@@ -16,7 +14,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.comment._links.html.href") AS PayloadCommentLinksHtmlHref
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.comment._links.pull_request.href") AS PayloadCommentLinksPullRequestHref
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.comment._links.self.href") AS PayloadCommentLinksSelfHref
-		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "payload.comment.body") AS PayloadCommentBody
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "payload.comment.body") AS PayloadCommentBody
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.comment.commit_id") AS PayloadCommentCommitId
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.comment.created_at") AS PayloadCommentCreatedAt
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.comment.diff_hunk") AS PayloadCommentDiffHunk
@@ -67,7 +65,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.issue.assignee.login") AS PayloadIssueAssigneeLogin
 		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.issue.assignee.site_admin") AS PayloadIssueAssigneeSiteAdmin
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.issue.assignee.type") AS PayloadIssueAssigneeType
-		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "payload.issue.body") AS PayloadIssueBody
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "payload.issue.body") AS PayloadIssueBody
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.issue.closed_at") AS PayloadIssueClosedAt
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.issue.comments") AS PayloadIssueComments
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.issue.created_at") AS PayloadIssueCreatedAt
@@ -102,131 +100,6 @@ SELECT	 GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.member.site_admin") AS PayloadMemberSiteAdmin
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.member.type") AS PayloadMemberType
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.number") AS PayloadNumber
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.comments.href") AS PayloadPullRequestLinksCommentsHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.commits.href") AS PayloadPullRequestLinksCommitsHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.html.href") AS PayloadPullRequestLinksHtmlHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.issue.href") AS PayloadPullRequestLinksIssueHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.review_comment.href") AS PayloadPullRequestLinksReviewCommentHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.review_comments.href") AS PayloadPullRequestLinksReviewCommentsHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.self.href") AS PayloadPullRequestLinksSelfHref
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request._links.statuses.href") AS PayloadPullRequestLinksStatusesHref
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.additions") AS PayloadPullRequestAdditions
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.assignee.id") AS PayloadPullRequestAssigneeId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.assignee.login") AS PayloadPullRequestAssigneeLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.assignee.site_admin") AS PayloadPullRequestAssigneeSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.assignee.type") AS PayloadPullRequestAssigneeType
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.label") AS PayloadPullRequestBaseLabel
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.ref") AS PayloadPullRequestBaseRef
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.created_at") AS PayloadPullRequestBaseRepoCreatedAt
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.default_branch") AS PayloadPullRequestBaseRepoDefaultBranch
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.description") AS PayloadPullRequestBaseRepoDescription
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.fork") AS PayloadPullRequestBaseRepoFork
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks") AS PayloadPullRequestBaseRepoForks
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks_count") AS PayloadPullRequestBaseRepoForksCount
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.full_name") AS PayloadPullRequestBaseRepoFullName
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_downloads") AS PayloadPullRequestBaseRepoHasDownloads
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_issues") AS PayloadPullRequestBaseRepoHasIssues
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_pages") AS PayloadPullRequestBaseRepoHasPages
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_wiki") AS PayloadPullRequestBaseRepoHasWiki
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.homepage") AS PayloadPullRequestBaseRepoHomepage
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.id") AS PayloadPullRequestBaseRepoId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.language") AS PayloadPullRequestBaseRepoLanguage
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.name") AS PayloadPullRequestBaseRepoName
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.open_issues") AS PayloadPullRequestBaseRepoOpenIssues
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.open_issues_count") AS PayloadPullRequestBaseRepoOpenIssuesCount
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.owner.id") AS PayloadPullRequestBaseRepoOwnerId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.owner.login") AS PayloadPullRequestBaseRepoOwnerLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.owner.site_admin") AS PayloadPullRequestBaseRepoOwnerSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.repo.owner.type") AS PayloadPullRequestBaseRepoOwnerType
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.private") AS PayloadPullRequestBaseRepoPrivate
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.pushed_at") AS PayloadPullRequestBaseRepoPushedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.size") AS PayloadPullRequestBaseRepoSize
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.stargazers_count") AS PayloadPullRequestBaseRepoStargazersCount
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.updated_at") AS PayloadPullRequestBaseRepoUpdatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.watchers") AS PayloadPullRequestBaseRepoWatchers
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.watchers_count") AS PayloadPullRequestBaseRepoWatchersCount
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.sha") AS PayloadPullRequestBaseSha
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.base.user.id") AS PayloadPullRequestBaseUserId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.user.login") AS PayloadPullRequestBaseUserLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.base.user.site_admin") AS PayloadPullRequestBaseUserSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.base.user.type") AS PayloadPullRequestBaseUserType
-		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "payload.pull_request.body") AS PayloadPullRequestBody
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.changed_files") AS PayloadPullRequestChangedFiles
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.closed_at") AS PayloadPullRequestClosedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.comments") AS PayloadPullRequestComments
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.commits") AS PayloadPullRequestCommits
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.created_at") AS PayloadPullRequestCreatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.deletions") AS PayloadPullRequestDeletions
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.label") AS PayloadPullRequestHeadLabel
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.ref") AS PayloadPullRequestHeadRef
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.created_at") AS PayloadPullRequestHeadRepoCreatedAt
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.default_branch") AS PayloadPullRequestHeadRepoDefaultBranch
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.description") AS PayloadPullRequestHeadRepoDescription
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.fork") AS PayloadPullRequestHeadRepoFork
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.forks") AS PayloadPullRequestHeadRepoForks
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.forks_count") AS PayloadPullRequestHeadRepoForksCount
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.full_name") AS PayloadPullRequestHeadRepoFullName
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_downloads") AS PayloadPullRequestHeadRepoHasDownloads
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_issues") AS PayloadPullRequestHeadRepoHasIssues
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_pages") AS PayloadPullRequestHeadRepoHasPages
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_wiki") AS PayloadPullRequestHeadRepoHasWiki
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.homepage") AS PayloadPullRequestHeadRepoHomepage
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.id") AS PayloadPullRequestHeadRepoId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.language") AS PayloadPullRequestHeadRepoLanguage
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.name") AS PayloadPullRequestHeadRepoName
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.open_issues") AS PayloadPullRequestHeadRepoOpenIssues
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.open_issues_count") AS PayloadPullRequestHeadRepoOpenIssuesCount
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.owner.id") AS PayloadPullRequestHeadRepoOwnerId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.owner.login") AS PayloadPullRequestHeadRepoOwnerLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.owner.site_admin") AS PayloadPullRequestHeadRepoOwnerSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.repo.owner.type") AS PayloadPullRequestHeadRepoOwnerType
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.private") AS PayloadPullRequestHeadRepoPrivate
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.pushed_at") AS PayloadPullRequestHeadRepoPushedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.size") AS PayloadPullRequestHeadRepoSize
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.stargazers_count") AS PayloadPullRequestHeadRepoStargazersCount
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.updated_at") AS PayloadPullRequestHeadRepoUpdatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.watchers") AS PayloadPullRequestHeadRepoWatchers
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.watchers_count") AS PayloadPullRequestHeadRepoWatchersCount
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.sha") AS PayloadPullRequestHeadSha
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.head.user.id") AS PayloadPullRequestHeadUserId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.user.login") AS PayloadPullRequestHeadUserLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.head.user.site_admin") AS PayloadPullRequestHeadUserSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.head.user.type") AS PayloadPullRequestHeadUserType
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.id") AS PayloadPullRequestId
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.locked") AS PayloadPullRequestLocked
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.merge_commit_sha") AS PayloadPullRequestMergeCommitSha
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.mergeable") AS PayloadPullRequestMergeable
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.mergeable_state") AS PayloadPullRequestMergeableState
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.merged") AS PayloadPullRequestMerged
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.merged_at") AS PayloadPullRequestMergedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.merged_by.id") AS PayloadPullRequestMergedById
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.merged_by.login") AS PayloadPullRequestMergedByLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.merged_by.site_admin") AS PayloadPullRequestMergedBySiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.merged_by.type") AS PayloadPullRequestMergedByType
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.closed_at") AS PayloadPullRequestMilestoneClosedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.closed_issues") AS PayloadPullRequestMilestoneClosedIssues
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.created_at") AS PayloadPullRequestMilestoneCreatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.creator.id") AS PayloadPullRequestMilestoneCreatorId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.milestone.creator.login") AS PayloadPullRequestMilestoneCreatorLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.milestone.creator.site_admin") AS PayloadPullRequestMilestoneCreatorSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.milestone.creator.type") AS PayloadPullRequestMilestoneCreatorType
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.milestone.description") AS PayloadPullRequestMilestoneDescription
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.due_on") AS PayloadPullRequestMilestoneDueOn
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.id") AS PayloadPullRequestMilestoneId
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.number") AS PayloadPullRequestMilestoneNumber
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.open_issues") AS PayloadPullRequestMilestoneOpenIssues
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.milestone.state") AS PayloadPullRequestMilestoneState
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.milestone.title") AS PayloadPullRequestMilestoneTitle
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.updated_at") AS PayloadPullRequestMilestoneUpdatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.number") AS PayloadPullRequestNumber
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.review_comments") AS PayloadPullRequestReviewComments
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.state") AS PayloadPullRequestState
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.title") AS PayloadPullRequestTitle
-		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.pull_request.updated_at") AS PayloadPullRequestUpdatedAt
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.pull_request.user.id") AS PayloadPullRequestUserId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.user.login") AS PayloadPullRequestUserLogin
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.pull_request.user.site_admin") AS PayloadPullRequestUserSiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pull_request.user.type") AS PayloadPullRequestUserType
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.push_id") AS PayloadPushId
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.pusher_type") AS PayloadPusherType
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.ref") AS PayloadRef
@@ -235,7 +108,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.release.author.login") AS PayloadReleaseAuthorLogin
 		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.release.author.site_admin") AS PayloadReleaseAuthorSiteAdmin
 		,GitHubAnalytics.USql.Utility.GetString(Data, "payload.release.author.type") AS PayloadReleaseAuthorType
-		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "payload.release.body") AS PayloadReleaseBody
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "payload.release.body") AS PayloadReleaseBody
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "payload.release.created_at") AS PayloadReleaseCreatedAt
 		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "payload.release.draft") AS PayloadReleaseDraft
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "payload.release.id") AS PayloadReleaseId
@@ -256,7 +129,7 @@ WHERE EventName == "events";
 
 @EventDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Event;
 
 DROP TABLE IF EXISTS dbo.Event;
@@ -266,8 +139,8 @@ CREATE TABLE dbo.Event
     INDEX IX_Event
     CLUSTERED(EventId)
     PARTITIONED BY
-    HASH(EventId)
-    INTO 20
+    HASH(EventId, EtlSourceId)
+    INTO 60
 )
 AS
 SELECT   EventId
@@ -367,131 +240,6 @@ SELECT   EventId
 		,PayloadMemberSiteAdmin
 		,PayloadMemberType
 		,PayloadNumber
-		,PayloadPullRequestLinksCommentsHref
-		,PayloadPullRequestLinksCommitsHref
-		,PayloadPullRequestLinksHtmlHref
-		,PayloadPullRequestLinksIssueHref
-		,PayloadPullRequestLinksReviewCommentHref
-		,PayloadPullRequestLinksReviewCommentsHref
-		,PayloadPullRequestLinksSelfHref
-		,PayloadPullRequestLinksStatusesHref
-		,PayloadPullRequestAdditions
-		,PayloadPullRequestAssigneeId
-		,PayloadPullRequestAssigneeLogin
-		,PayloadPullRequestAssigneeSiteAdmin
-		,PayloadPullRequestAssigneeType
-		,PayloadPullRequestBaseLabel
-		,PayloadPullRequestBaseRef
-		,PayloadPullRequestBaseRepoCreatedAt
-		,PayloadPullRequestBaseRepoDefaultBranch
-		,PayloadPullRequestBaseRepoDescription
-		,PayloadPullRequestBaseRepoFork
-		,PayloadPullRequestBaseRepoForks
-		,PayloadPullRequestBaseRepoForksCount
-		,PayloadPullRequestBaseRepoFullName
-		,PayloadPullRequestBaseRepoHasDownloads
-		,PayloadPullRequestBaseRepoHasIssues
-		,PayloadPullRequestBaseRepoHasPages
-		,PayloadPullRequestBaseRepoHasWiki
-		,PayloadPullRequestBaseRepoHomepage
-		,PayloadPullRequestBaseRepoId
-		,PayloadPullRequestBaseRepoLanguage
-		,PayloadPullRequestBaseRepoName
-		,PayloadPullRequestBaseRepoOpenIssues
-		,PayloadPullRequestBaseRepoOpenIssuesCount
-		,PayloadPullRequestBaseRepoOwnerId
-		,PayloadPullRequestBaseRepoOwnerLogin
-		,PayloadPullRequestBaseRepoOwnerSiteAdmin
-		,PayloadPullRequestBaseRepoOwnerType
-		,PayloadPullRequestBaseRepoPrivate
-		,PayloadPullRequestBaseRepoPushedAt
-		,PayloadPullRequestBaseRepoSize
-		,PayloadPullRequestBaseRepoStargazersCount
-		,PayloadPullRequestBaseRepoUpdatedAt
-		,PayloadPullRequestBaseRepoWatchers
-		,PayloadPullRequestBaseRepoWatchersCount
-		,PayloadPullRequestBaseSha
-		,PayloadPullRequestBaseUserId
-		,PayloadPullRequestBaseUserLogin
-		,PayloadPullRequestBaseUserSiteAdmin
-		,PayloadPullRequestBaseUserType
-		,PayloadPullRequestBody
-		,PayloadPullRequestChangedFiles
-		,PayloadPullRequestClosedAt
-		,PayloadPullRequestComments
-		,PayloadPullRequestCommits
-		,PayloadPullRequestCreatedAt
-		,PayloadPullRequestDeletions
-		,PayloadPullRequestHeadLabel
-		,PayloadPullRequestHeadRef
-		,PayloadPullRequestHeadRepoCreatedAt
-		,PayloadPullRequestHeadRepoDefaultBranch
-		,PayloadPullRequestHeadRepoDescription
-		,PayloadPullRequestHeadRepoFork
-		,PayloadPullRequestHeadRepoForks
-		,PayloadPullRequestHeadRepoForksCount
-		,PayloadPullRequestHeadRepoFullName
-		,PayloadPullRequestHeadRepoHasDownloads
-		,PayloadPullRequestHeadRepoHasIssues
-		,PayloadPullRequestHeadRepoHasPages
-		,PayloadPullRequestHeadRepoHasWiki
-		,PayloadPullRequestHeadRepoHomepage
-		,PayloadPullRequestHeadRepoId
-		,PayloadPullRequestHeadRepoLanguage
-		,PayloadPullRequestHeadRepoName
-		,PayloadPullRequestHeadRepoOpenIssues
-		,PayloadPullRequestHeadRepoOpenIssuesCount
-		,PayloadPullRequestHeadRepoOwnerId
-		,PayloadPullRequestHeadRepoOwnerLogin
-		,PayloadPullRequestHeadRepoOwnerSiteAdmin
-		,PayloadPullRequestHeadRepoOwnerType
-		,PayloadPullRequestHeadRepoPrivate
-		,PayloadPullRequestHeadRepoPushedAt
-		,PayloadPullRequestHeadRepoSize
-		,PayloadPullRequestHeadRepoStargazersCount
-		,PayloadPullRequestHeadRepoUpdatedAt
-		,PayloadPullRequestHeadRepoWatchers
-		,PayloadPullRequestHeadRepoWatchersCount
-		,PayloadPullRequestHeadSha
-		,PayloadPullRequestHeadUserId
-		,PayloadPullRequestHeadUserLogin
-		,PayloadPullRequestHeadUserSiteAdmin
-		,PayloadPullRequestHeadUserType
-		,PayloadPullRequestId
-		,PayloadPullRequestLocked
-		,PayloadPullRequestMergeCommitSha
-		,PayloadPullRequestMergeable
-		,PayloadPullRequestMergeableState
-		,PayloadPullRequestMerged
-		,PayloadPullRequestMergedAt
-		,PayloadPullRequestMergedById
-		,PayloadPullRequestMergedByLogin
-		,PayloadPullRequestMergedBySiteAdmin
-		,PayloadPullRequestMergedByType
-		,PayloadPullRequestMilestoneClosedAt
-		,PayloadPullRequestMilestoneClosedIssues
-		,PayloadPullRequestMilestoneCreatedAt
-		,PayloadPullRequestMilestoneCreatorId
-		,PayloadPullRequestMilestoneCreatorLogin
-		,PayloadPullRequestMilestoneCreatorSiteAdmin
-		,PayloadPullRequestMilestoneCreatorType
-		,PayloadPullRequestMilestoneDescription
-		,PayloadPullRequestMilestoneDueOn
-		,PayloadPullRequestMilestoneId
-		,PayloadPullRequestMilestoneNumber
-		,PayloadPullRequestMilestoneOpenIssues
-		,PayloadPullRequestMilestoneState
-		,PayloadPullRequestMilestoneTitle
-		,PayloadPullRequestMilestoneUpdatedAt
-		,PayloadPullRequestNumber
-		,PayloadPullRequestReviewComments
-		,PayloadPullRequestState
-		,PayloadPullRequestTitle
-		,PayloadPullRequestUpdatedAt
-		,PayloadPullRequestUserId
-		,PayloadPullRequestUserLogin
-		,PayloadPullRequestUserSiteAdmin
-		,PayloadPullRequestUserType
 		,PayloadPushId
 		,PayloadPusherType
 		,PayloadRef

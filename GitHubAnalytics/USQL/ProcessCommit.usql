@@ -15,7 +15,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "sha") AS CommitSha
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "commit.committer.date") AS CommitCommitterDate
         ,GitHubAnalytics.USql.Utility.GetPiiString(Data, "commit.committer.email") AS CommitCommitterEmail
         ,GitHubAnalytics.USql.Utility.GetPiiString(Data, "commit.committer.name") AS CommitCommitterName
-		,GitHubAnalytics.USql.Utility.GetString(Data, "commit.message") AS CommitMessage
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "commit.message") AS CommitMessage
 		,GitHubAnalytics.USql.Utility.GetString(Data, "commit.tree.sha") AS CommitTreeSha
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "committer.id") AS CommitterId
 		,GitHubAnalytics.USql.Utility.GetString(Data, "committer.login") AS CommitterLogin
@@ -31,7 +31,7 @@ WHERE EventName == "commits";
 
 @CommitDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Commit;
 
 DROP TABLE IF EXISTS dbo.Commit;
@@ -41,8 +41,8 @@ CREATE TABLE dbo.Commit
     INDEX IX_Commit
     CLUSTERED(CommitSha)
     PARTITIONED BY
-    HASH(CommitSha)
-    INTO 20
+    HASH(CommitSha, CommitAuthorDate)
+    INTO 60
 )
 AS
 SELECT   CommitSha

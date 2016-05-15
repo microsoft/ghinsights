@@ -30,7 +30,7 @@ WHERE EventName == "pull_request_comments";
 
 @PullRequestCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY PullRequestCommentId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY PullRequestCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @PullRequestComment;
 
 DROP TABLE IF EXISTS dbo.PullRequestComment;

@@ -137,7 +137,7 @@ WHERE EventName == "pull_requests";
 
 @PullRequestDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY PullRequestId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY PullRequestId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @PullRequest;
 
 DROP TABLE IF EXISTS dbo.PullRequest;

@@ -27,7 +27,7 @@ WHERE EventName == "users";
 
 @UserDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY UserId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY UserId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @User;
 
 DROP TABLE IF EXISTS dbo.User;
@@ -38,7 +38,6 @@ CREATE TABLE dbo.User
     CLUSTERED(Login)
     PARTITIONED BY
     HASH(Login)
-    INTO 20
 )
 AS
 SELECT   Login

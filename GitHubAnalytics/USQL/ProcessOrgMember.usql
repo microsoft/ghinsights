@@ -17,7 +17,7 @@ WHERE EventName == "org_members";
 
 @OrgMemberDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY OrgMemberId ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY OrgMemberId ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @OrgMember;
 
 DROP TABLE IF EXISTS dbo.OrgMember;

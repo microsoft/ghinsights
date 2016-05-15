@@ -15,7 +15,7 @@ WHERE EventName == "repo_labels";
 
 @RepoLabelDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Name ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Name ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @RepoLabel;
 
 DROP TABLE IF EXISTS dbo.RepoLabel;

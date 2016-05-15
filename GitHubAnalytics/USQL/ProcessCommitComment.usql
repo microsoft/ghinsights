@@ -6,7 +6,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 @CommitComment =
 SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "commit_id") AS CommitSha
 		,(int)GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "body") AS Body
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GitHubAnalytics.USql.Utility.GetInteger(Data, "line") AS Line
 		,GitHubAnalytics.USql.Utility.GetString(Data, "path") AS Path
@@ -23,7 +23,7 @@ WHERE EventName == "commit_comments";
 
 @CommitCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY  CommitCommentId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY  CommitCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @CommitComment;
 
 DROP TABLE IF EXISTS dbo.CommitComment;
@@ -31,7 +31,7 @@ DROP TABLE IF EXISTS dbo.CommitComment;
 CREATE TABLE dbo.CommitComment
 (
     INDEX IX_CommitComment
-    CLUSTERED(CommitSha, CommitCommentId)
+    CLUSTERED(CommitSha)
     PARTITIONED BY
     HASH(CommitSha, CommitCommentId)
     INTO 20

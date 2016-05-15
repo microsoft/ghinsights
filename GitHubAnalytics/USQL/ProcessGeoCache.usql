@@ -20,7 +20,7 @@ WHERE EventName == "geo_cache";
 
 @GeoCacheDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Key ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Key ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @GeoCache;
 
 DROP TABLE IF EXISTS dbo.GeoCache;

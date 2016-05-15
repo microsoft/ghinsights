@@ -104,7 +104,7 @@ WHERE EventName == "repos";
 
 @RepoDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY RepoId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY RepoId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Repo;
 
 DROP TABLE IF EXISTS dbo.Repo;

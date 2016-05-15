@@ -37,6 +37,7 @@ SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
 		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.state") AS MilestoneState
 		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.title") AS MilestoneTitle
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "milestone.updated_at") AS MilestoneUpdatedAt
+		,GitHubAnalytics.USql.Utility.GetString(Data, "pull_request.url") AS PullRequestUrl
 		,GitHubAnalytics.USql.Utility.GetString(Data, "state") AS State
 		,GitHubAnalytics.USql.Utility.GetString(Data, "title") AS Title
 		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
@@ -51,7 +52,7 @@ WHERE EventName == "issues";
 
 @IssueDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY IssueId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Issue;
 
 DROP TABLE IF EXISTS dbo.Issue;
@@ -59,7 +60,7 @@ DROP TABLE IF EXISTS dbo.Issue;
 CREATE TABLE dbo.Issue
 (
     INDEX IX_Issue
-    CLUSTERED(Repo, Owner, Number)
+    CLUSTERED(Repo)
     PARTITIONED BY
     HASH(Repo, Owner, Number)
     INTO 20

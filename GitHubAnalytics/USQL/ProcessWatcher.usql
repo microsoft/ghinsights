@@ -29,7 +29,7 @@ WHERE EventName == "watchers";
 
 @WatcherDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY WatcherId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY WatcherId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Watcher;
 
 DROP TABLE IF EXISTS dbo.Watcher;

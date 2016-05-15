@@ -1,6 +1,5 @@
 ﻿USE GitHubAnalytics;
 
-
 REFERENCE ASSEMBLY [GitHubAnalytics.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
@@ -10,8 +9,8 @@ DECLARE @IngestDatePartition = @IngestDate.ToString("yyyy-MM-dd");
 @ExtractedData =
     EXTRACT  EventName string
             ,IngestDate DateTime
-            ,Data SqlMap<string,SqlArray<byte[]>>
-    FROM "wasb://raw@ghtdev.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
+            ,Data SqlMap<string, byte[]>
+    FROM "wasb://raw@githubanalytics.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
     USING GitHubAnalytics.USql.Extractors.FlatJson(outputColumnName: "Data");
 
 ALTER TABLE Staging.GHTorrent.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);

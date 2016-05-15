@@ -24,7 +24,7 @@ WHERE EventName == "issue_comments";
 
 @IssueCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueCommentId, UpdatedAt ORDER BY EtlSourceId) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY IssueCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @IssueComment;
 
 DROP TABLE IF EXISTS dbo.IssueComment;
