@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using GitHubAnalytics.DataFactory;
+using GHInsights.DataFactory;
 using Microsoft.Azure.Management.DataFactories.Common.Models;
 using Microsoft.Azure.Management.DataFactories.Models;
 using Microsoft.Azure.Management.DataFactories.Runtime;
@@ -23,8 +23,8 @@ namespace DataFactoryActivityExec
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",
                     new LinkedServiceProperties(new CustomDataSourceLinkedService(JObject.Parse(String.Format("{{\"sasUri\": \"{0}\"}}", config["GHTorrentAzureStorage"][0]["value"].Value<string>())))))
-                ,new LinkedService("GitHubAnalyticsAzureStorage",
-                    new LinkedServiceProperties(new AzureStorageLinkedService(config["GitHubAnalyticsAzureStorage"][0]["value"].Value<string>())))
+                ,new LinkedService("GHInsightsAzureStorage",
+                    new LinkedServiceProperties(new AzureStorageLinkedService(config["GHInsightsAzureStorage"][0]["value"].Value<string>())))
             };
             
             var mongoDbDump = new Dataset("MongoDbDump",
@@ -89,7 +89,7 @@ namespace DataFactoryActivityExec
                         }
                     }
                 },
-                    new Availability("Daily", 1), "GitHubAnalyticsAzureStorage"));
+                    new Availability("Daily", 1), "GHInsightsAzureStorage"));
             
 
             var datasets = new List<Dataset>() { mongoDbDump, eventDetailRawFilesBlob };
@@ -114,7 +114,7 @@ namespace DataFactoryActivityExec
                 TypeProperties = new DotNetActivity("DataFactoryLib.dll"
                     , "DataFactoryLib.MongoDbDumpTransformActivity"
                     , "datafactory/DataFactoryLib.zip"
-                    , "GitHubAnalyticsAzureStorage")
+                    , "GHInsightsAzureStorage")
                 {
                     ExtendedProperties = new Dictionary<string, string>()
                     {

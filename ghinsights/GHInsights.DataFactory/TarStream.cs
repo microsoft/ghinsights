@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace GitHubAnalytics.DataFactory
+namespace GHInsights.DataFactory
 {
     public class TarStream : Stream
     {

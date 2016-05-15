@@ -2,7 +2,7 @@
 using Microsoft.Azure.Management.DataFactories.Models;
 using Newtonsoft.Json.Linq;
 
-namespace GitHubAnalytics.DataFactory
+namespace GHInsights.DataFactory
 {
     internal class BlobLocation
     {

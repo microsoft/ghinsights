@@ -1,14 +1,14 @@
 ﻿
-REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
 @RepoLabel =
-SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
-		,GitHubAnalytics.USql.Utility.GetString(Data, "owner") AS Owner
-		,GitHubAnalytics.USql.Utility.GetString(Data, "color") AS Color
-		,GitHubAnalytics.USql.Utility.GetString(Data, "name") AS Name
-		,GitHubAnalytics.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
+		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
+		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
+		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHTorrent.GitHubData AS e
 WHERE EventName == "repo_labels";

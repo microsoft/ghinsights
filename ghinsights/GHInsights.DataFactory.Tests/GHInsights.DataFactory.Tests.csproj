@@ -6,8 +6,8 @@
     <ProjectGuid>{236EE9BF-5E3D-4D1A-9B9B-B3495DD52DDC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GitHubAnalytics.DataFactory.Tests</RootNamespace>
-    <AssemblyName>GitHubAnalytics.DataFactory.Tests</AssemblyName>
+    <RootNamespace>GHInsights.DataFactory.Tests</RootNamespace>
+    <AssemblyName>GHInsights.DataFactory.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -60,7 +60,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GHInsights.DataFactory\GHInsights.DataFactory.csproj">
       <Project>{165BCDF3-CF9D-4B92-8BD5-6817C7D30769}</Project>
-      <Name>GitHubAnalytics.DataFactory</Name>
+      <Name>GHInsights.DataFactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

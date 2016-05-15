@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 
-namespace GitHubAnalytics.DataFactory
+namespace GHInsights.DataFactory
 {
     public class MongoDbDumpTransformActivity : IDotNetActivity
     {

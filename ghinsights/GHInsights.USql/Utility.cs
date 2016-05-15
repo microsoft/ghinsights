@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.IO.Compression;
 
-namespace GitHubAnalytics.USql
+namespace GHInsights.USql
 {
     public class Utility
     {

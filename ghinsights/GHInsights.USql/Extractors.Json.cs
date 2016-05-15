@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 
-namespace GitHubAnalytics.USql
+namespace GHInsights.USql
 {
     public class Extractors
     {
@@ -41,7 +41,7 @@ namespace GitHubAnalytics.USql
                     var row = JToken.ReadFrom(reader);
 
                     var size = 0;
-                    var flattendData = GitHubAnalytics.USql.Utility.FlattenJson(row, ref size);
+                    var flattendData = GHInsights.USql.Utility.FlattenJson(row, ref size);
 
                     if (size < (_dataLakeMaxRowSize))
                     {
@@ -49,7 +49,7 @@ namespace GitHubAnalytics.USql
                     }
                     else
                     {
-                        var compressedData = GitHubAnalytics.USql.Utility.GzipByteArray(Encoding.UTF8.GetBytes(row.ToString(Formatting.None)));
+                        var compressedData = GHInsights.USql.Utility.GzipByteArray(Encoding.UTF8.GetBytes(row.ToString(Formatting.None)));
 
                         if (compressedData.Length < (_dataLakeMaxRowSize))
                         {

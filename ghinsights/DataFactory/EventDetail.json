@@ -3,7 +3,7 @@
   "name": "EventDetail",
   "properties": {
     "type": "AzureBlob",
-    "linkedServiceName": "GitHubAnalyticsAzureStorage",
+    "linkedServiceName": "GHInsightsAzureStorage",
     "typeProperties": {
       "folderPath": "raw/{EventName}/v1/{Year}/{Month}",
       "fileName": "{EventName}_{Year}_{Month}_{Day}.json.gz",

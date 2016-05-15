@@ -7,8 +7,8 @@
     <ProjectGuid>{165BCDF3-CF9D-4B92-8BD5-6817C7D30769}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GitHubAnalytics.DataFactory</RootNamespace>
-    <AssemblyName>GitHubAnalytics.DataFactory</AssemblyName>
+    <RootNamespace>GHInsights.DataFactory</RootNamespace>
+    <AssemblyName>GHInsights.DataFactory</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>

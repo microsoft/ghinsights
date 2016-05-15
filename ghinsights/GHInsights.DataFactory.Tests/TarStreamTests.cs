@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 
-namespace GitHubAnalytics.DataFactory.Tests
+namespace GHInsights.DataFactory.Tests
 {
     [TestClass]
     public class TarStreamTests

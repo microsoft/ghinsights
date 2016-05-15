@@ -27,8 +27,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessCommitComment.usql">
@@ -36,16 +36,16 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="CreateTables.usql">
       <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
-      <LocalDatabase>ghtorrent</LocalDatabase>
+      <LocalDatabase>GHInsights</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
       <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
@@ -54,8 +54,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessCommitParent.usql">
@@ -63,8 +63,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEvent.usql">
@@ -72,8 +72,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEventPayloadCommit.usql">
@@ -81,8 +81,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEventPayloadIssueLabel.usql">
@@ -90,8 +90,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEventPayloadPage.usql">
@@ -99,8 +99,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEventPayloadPullRequest.usql">
@@ -108,8 +108,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessEventPayloadReleaseAsset.usql">
@@ -117,8 +117,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessFork.usql">
@@ -126,8 +126,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessGeoCache.usql">
@@ -135,8 +135,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessIssue.usql">
@@ -144,8 +144,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessIssueComment.usql">
@@ -153,8 +153,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessIssueEvent.usql">
@@ -162,8 +162,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessIssueLabel.usql">
@@ -171,8 +171,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessOrgMember.usql">
@@ -180,8 +180,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessPullRequest.usql">
@@ -189,8 +189,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessPullRequestComment.usql">
@@ -198,8 +198,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessRepo.usql">
@@ -207,8 +207,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessRepoLabel.usql">
@@ -216,8 +216,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessUser.usql">
@@ -225,8 +225,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>master</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessWatcher.usql">
@@ -234,8 +234,8 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>githubanalytics</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="StageData.usql">
@@ -244,7 +244,7 @@
       <LocalDatabase>ghtorrent</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
       <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
-      <ClusterDatabase>GitHubAnalytics</ClusterDatabase>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
   </ItemGroup>

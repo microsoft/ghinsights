@@ -88,9 +88,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GitHubAnalytics.DataFactory\GitHubAnalytics.DataFactory.csproj">
+    <ProjectReference Include="..\GHInsights.DataFactory\GHInsights.DataFactory.csproj">
       <Project>{165bcdf3-cf9d-4b92-8bd5-6817c7d30769}</Project>
-      <Name>GitHubAnalytics.DataFactory</Name>
+      <Name>GHInsights.DataFactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

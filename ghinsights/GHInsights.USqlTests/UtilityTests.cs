@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GitHubAnalytics.USql;
+using GHInsights.USql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GitHubAnalytics.USql.Tests
+namespace GHInsights.USql.Tests
 {
     [TestClass()]
     public class UtilityTests

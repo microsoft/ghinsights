@@ -55,7 +55,7 @@
     <Compile Include="UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GitHubAnalytics.USql\GitHubAnalytics.USql.csproj">
+    <ProjectReference Include="..\GHInsights.USql\GHInsights.USql.csproj">
       <Project>{1B3E7106-6D16-4B96-87C5-F15E18FFC08F}</Project>
       <Name>GitHubAnalytics.USql</Name>
     </ProjectReference>

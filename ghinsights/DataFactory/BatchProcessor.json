@@ -6,9 +6,9 @@
     "typeProperties": {
       "accountName": "",
       "accessKey": "",
-      "poolName": "GitHubAnalyticsBatchProcessor",
+      "poolName": "GHInsightsBatchProcessor",
       "batchUri": "https://eastus2.batch.azure.com",
-      "linkedServiceName": "GitHubAnalyticsAzureStorage"
+      "linkedServiceName": "GHInsightsAzureStorage"
     }
   }
 }

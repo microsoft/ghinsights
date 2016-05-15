@@ -1,16 +1,16 @@
 ﻿
-REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
 
 @OrgMember =
-SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "org") AS Org
-		,GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
-		,GitHubAnalytics.USql.Utility.GetString(Data, "login") AS Login
-		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
-		,GitHubAnalytics.USql.Utility.GetString(Data, "type") AS Type
-		,GitHubAnalytics.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+SELECT	 GHInsights.USql.Utility.GetString(Data, "org") AS Org
+		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
+		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
+		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHTorrent.GitHubData AS e
 WHERE EventName == "org_members";

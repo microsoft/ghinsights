@@ -10,7 +10,7 @@
       "value": "<name of batch processor account>"
     }
   ],
-  "GitHubAnalyticsAzureStorage": [
+  "GHInsightsAzureStorage": [
     {
       "name": "$.properties.typeProperties.connectionString",
       "value": "<connection string to destination azure storage>"
