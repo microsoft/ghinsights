@@ -11,11 +11,14 @@ $ErrorActionPreference = "Stop"
 
 #Get a list of tables that we will be writing to a file
 
-$src_account = "githubanalytics"
-$src_db = "GitHubAnalytics" # NOTE the database name is CASE-SENSITIVE!!!
+$src_account = "ghinsights"
+$src_db = "GHInsights" # NOTE the database name is CASE-SENSITIVE!!!
 $src_db_schema = $src_db + ".dbo"
-$staging_folder_name = "GitHubAnalytics.StagingData"
+$staging_location = "adl://ghinsights.azuredatalakestore.net"
+$staging_folder_name = "ghinsights.StagingData"
 
+$export_file_path = "Export.usql"
+$import_file_path = "Import.usql"
 
 function doublequote( $s )
 {
@@ -28,39 +31,40 @@ function get-tables( $account, $db )
     Get-AzureRmDataLakeAnalyticsCatalogItem -Account $account -ItemType Table -Path $db
 }
 
+
 $tables = get-tables $src_account $src_db_schema 
 
 
-Write-Host
-Write-Host
-Write-Host
-Write-Host // BEGIN --------------------------------------------------------------------
-Write-Host // This script runs on the sourvce account called $src_account
-Write-Host
+"
+
+
+ // BEGIN --------------------------------------------------------------------
+ // This script runs on the service account called $src_account
+" | Out-File -FilePath $export_file_path
 
 #Get the script that will write the table to csv files
 foreach ($table in $tables)
 {
     $tablename = $table.DatabaseName+"."+$table.SchemaName+"."+$table.Name
-    $outputpath = "@" + (doublequote ("/" + $staging_folder_name + "/" + $tablename))
-    Write-Host "OUTPUT $tablename TO $outputpath USING Outputters.Tsv();";
+    $outputpath = "@" + (doublequote ($staging_location + "/" + $staging_folder_name + "/" + $tablename))
+    "OUTPUT $tablename TO $outputpath USING Outputters.Tsv();" | Out-File -FilePath $export_file_path -Append
 }
  
-Write-Host
-Write-Host // END ----------------------------------------------------------------------
-Write-Host
-Write-Host
-Write-Host
+"
+ // END ----------------------------------------------------------------------
 
 
-Write-Host
-Write-Host
-Write-Host
-Write-Host // BEGIN --------------------------------------------------------------------
-Write-Host // This script runs on the GHT consumers account 
-Write-Host
+" | Out-File -FilePath $export_file_path -Append
 
-Write-Host "CREATE DATABASE IF NOT EXISTS $src_db;"
+
+"
+
+
+ // BEGIN --------------------------------------------------------------------
+ // This script runs on the GHInsights consumers account 
+" | Out-File -FilePath $import_file_path
+
+"CREATE DATABASE IF NOT EXISTS $src_db;" | Out-File -FilePath $import_file_path -Append
 
 #Get the DDL statements that will recreate the tables
 foreach ($table in $tables)
@@ -73,7 +77,10 @@ foreach ($table in $tables)
     {
         $col = $table.ColumnList[$i];
         $base += $col.Name + " ";
+        
         $type = $col.Type.Replace("System.","").Replace("32","");
+        $type = $type.Replace("Int64", "long");
+        $type = $type.Replace("Boolean", "bool");
         if (!$type.Contains("DateTime") -And !$type.Contains("Single"))
         {
             $type=$type.ToLower();
@@ -143,7 +150,7 @@ foreach ($table in $tables)
         }
 
 
-        if ($i -ne $index.Columns.Count-1)
+        if ($i -ne $distribution.Keys.Count-1)
         {
             $partition+=","
         }
@@ -156,15 +163,15 @@ foreach ($table in $tables)
     
     $base+=$partition;
     $base+=");"
-    Write-Host $base;
+    $base  | Out-File -FilePath $import_file_path -Append
 }
 
 
-Write-Host
-Write-Host
-Write-Host
-Write-Host
+"
 
+
+
+"  | Out-File -FilePath $import_file_path -Append
 
 #Get the DDL statements that will read from the TSV files the data to insert into the tables created above
 foreach ($table in $tables)
@@ -177,6 +184,8 @@ foreach ($table in $tables)
         $col = $table.ColumnList[$i];
         $base += $col.Name + " ";
         $type = $col.Type.Replace("System.","").Replace("32","");
+        $type = $type.Replace("Int64", "long");
+        $type = $type.Replace("Boolean", "bool");
         
         if (!$type.Contains("DateTime") -And !$type.Contains("Single"))
         {
@@ -199,11 +208,11 @@ foreach ($table in $tables)
     $srcfile = "@" + (doublequote $srcfile)
     $base += "FROM $srcfile USING Extractors.Tsv(); "
     $base += "INSERT INTO $tablename SELECT * FROM @populate;";
-    Write-Host $base;
+    $base | Out-File -FilePath $import_file_path -Append
 }
 
-Write-Host
-Write-Host // END ----------------------------------------------------------------------
-Write-Host
-Write-Host
-Write-Host
+"
+// END ----------------------------------------------------------------------
+
+
+" | Out-File -FilePath $import_file_path -Append
