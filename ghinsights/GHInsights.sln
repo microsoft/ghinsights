@@ -9,13 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFactoryActivityExec", "
 EndProject
 Project("{182E2583-ECAD-465B-BB50-91101D7C24CE}") = "USQL", "USQL\USQL.usqlproj", "{66FF7871-5F67-4412-B989-7B671192397B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubAnalytics.DataFactory", "GitHubAnalytics.DataFactory\GitHubAnalytics.DataFactory.csproj", "{165BCDF3-CF9D-4B92-8BD5-6817C7D30769}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHInsights.DataFactory", "GHInsights.DataFactory\GHInsights.DataFactory.csproj", "{165BCDF3-CF9D-4B92-8BD5-6817C7D30769}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubAnalytics.USql", "GitHubAnalytics.USql\GitHubAnalytics.USql.csproj", "{1B3E7106-6D16-4B96-87C5-F15E18FFC08F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHInsights.USql", "GHInsights.USql\GHInsights.USql.csproj", "{1B3E7106-6D16-4B96-87C5-F15E18FFC08F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubAnalytics.USql.Tests", "GitHubAnalytics.USqlTests\GitHubAnalytics.USql.Tests.csproj", "{E4F8B773-43BC-4610-A660-FA1E62B23A88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHInsights.USql.Tests", "GHInsights.USqlTests\GHInsights.USql.Tests.csproj", "{E4F8B773-43BC-4610-A660-FA1E62B23A88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubAnalytics.DataFactory.Tests", "GitHubAnalytics.DataFactory.Tests\GitHubAnalytics.DataFactory.Tests.csproj", "{236EE9BF-5E3D-4D1A-9B9B-B3495DD52DDC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHInsights.DataFactory.Tests", "GHInsights.DataFactory.Tests\GHInsights.DataFactory.Tests.csproj", "{236EE9BF-5E3D-4D1A-9B9B-B3495DD52DDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

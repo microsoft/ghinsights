@@ -58,7 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GitHubAnalytics.DataFactory\GitHubAnalytics.DataFactory.csproj">
+    <ProjectReference Include="..\GHInsights.DataFactory\GHInsights.DataFactory.csproj">
       <Project>{165BCDF3-CF9D-4B92-8BD5-6817C7D30769}</Project>
       <Name>GitHubAnalytics.DataFactory</Name>
     </ProjectReference>
