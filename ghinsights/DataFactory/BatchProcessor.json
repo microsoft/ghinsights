@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.LinkedService.json",
+  "name": "BatchProcessor",
+  "properties": {
+    "type": "AzureBatch",
+    "typeProperties": {
+      "accountName": "",
+      "accessKey": "",
+      "poolName": "GitHubAnalyticsBatchProcessor",
+      "batchUri": "https://eastus2.batch.azure.com",
+      "linkedServiceName": "GitHubAnalyticsAzureStorage"
+    }
+  }
+}

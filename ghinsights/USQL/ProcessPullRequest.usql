@@ -1,0 +1,284 @@
+﻿
+REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@PullRequest =
+SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "repo") AS Repo
+		,GitHubAnalytics.USql.Utility.GetString(Data, "owner") AS Owner
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "number") AS Number
+        ,GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS PullRequestId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.comments.href") AS LinksCommentsHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.commits.href") AS LinksCommitsHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.html.href") AS LinksHtmlHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.issue.href") AS LinksIssueHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.review_comment.href") AS LinksReviewCommentHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.review_comments.href") AS LinksReviewCommentsHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.self.href") AS LinksSelfHref
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_links.statuses.href") AS LinksStatusesHref
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "additions") AS Additions
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "assignee.id") AS AssigneeId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "assignee.login") AS AssigneeLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "assignee.site_admin") AS AssigneeSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "assignee.type") AS AssigneeType
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.label") AS BaseLabel
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.ref") AS BaseRef
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "base.repo.created_at") AS BaseRepoCreatedAt
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.default_branch") AS BaseRepoDefaultBranch
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.description") AS BaseRepoDescription
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.fork") AS BaseRepoFork
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.forks") AS BaseRepoForks
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.forks_count") AS BaseRepoForksCount
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.full_name") AS BaseRepoFullName
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.has_downloads") AS BaseRepoHasDownloads
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.has_issues") AS BaseRepoHasIssues
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.has_pages") AS BaseRepoHasPages
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.has_wiki") AS BaseRepoHasWiki
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.homepage") AS BaseRepoHomepage
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.id") AS BaseRepoId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.language") AS BaseRepoLanguage
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.name") AS BaseRepoName
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.open_issues") AS BaseRepoOpenIssues
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.open_issues_count") AS BaseRepoOpenIssuesCount
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.owner.id") AS BaseRepoOwnerId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.owner.login") AS BaseRepoOwnerLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.owner.site_admin") AS BaseRepoOwnerSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.repo.owner.type") AS BaseRepoOwnerType
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.repo.private") AS BaseRepoPrivate
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "base.repo.pushed_at") AS BaseRepoPushedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.size") AS BaseRepoSize
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.stargazers_count") AS BaseRepoStargazersCount
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "base.repo.updated_at") AS BaseRepoUpdatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.watchers") AS BaseRepoWatchers
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.repo.watchers_count") AS BaseRepoWatchersCount
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.sha") AS BaseSha
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "base.user.id") AS BaseUserId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.user.login") AS BaseUserLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "base.user.site_admin") AS BaseUserSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "base.user.type") AS BaseUserType
+		,GitHubAnalytics.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "changed_files") AS ChangedFiles
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "closed_at") AS ClosedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "comments") AS Comments
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "commits") AS Commits
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "deletions") AS Deletions
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.label") AS HeadLabel
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.ref") AS HeadRef
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "head.repo.created_at") AS HeadRepoCreatedAt
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.default_branch") AS HeadRepoDefaultBranch
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.description") AS HeadRepoDescription
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.fork") AS HeadRepoFork
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.forks") AS HeadRepoForks
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.forks_count") AS HeadRepoForksCount
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.full_name") AS HeadRepoFullName
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.has_downloads") AS HeadRepoHasDownloads
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.has_issues") AS HeadRepoHasIssues
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.has_pages") AS HeadRepoHasPages
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.has_wiki") AS HeadRepoHasWiki
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.homepage") AS HeadRepoHomepage
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.id") AS HeadRepoId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.language") AS HeadRepoLanguage
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.name") AS HeadRepoName
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.open_issues") AS HeadRepoOpenIssues
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.open_issues_count") AS HeadRepoOpenIssuesCount
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.owner.id") AS HeadRepoOwnerId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.owner.login") AS HeadRepoOwnerLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.owner.site_admin") AS HeadRepoOwnerSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.repo.owner.type") AS HeadRepoOwnerType
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.repo.private") AS HeadRepoPrivate
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "head.repo.pushed_at") AS HeadRepoPushedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.size") AS HeadRepoSize
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.stargazers_count") AS HeadRepoStargazersCount
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "head.repo.updated_at") AS HeadRepoUpdatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.watchers") AS HeadRepoWatchers
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.repo.watchers_count") AS HeadRepoWatchersCount
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.sha") AS HeadSha
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "head.user.id") AS HeadUserId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.user.login") AS HeadUserLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "head.user.site_admin") AS HeadUserSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "head.user.type") AS HeadUserType
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "locked") AS Locked
+		,GitHubAnalytics.USql.Utility.GetString(Data, "merge_commit_sha") AS MergeCommitSha
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "mergeable") AS Mergeable
+		,GitHubAnalytics.USql.Utility.GetString(Data, "mergeable_state") AS MergeableState
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "merged") AS Merged
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "merged_at") AS MergedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "merged_by.id") AS MergedById
+		,GitHubAnalytics.USql.Utility.GetString(Data, "merged_by.login") AS MergedByLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "merged_by.site_admin") AS MergedBySiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "merged_by.type") AS MergedByType
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "milestone.closed_at") AS MilestoneClosedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "milestone.closed_issues") AS MilestoneClosedIssues
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "milestone.created_at") AS MilestoneCreatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "milestone.creator.id") AS MilestoneCreatorId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.creator.login") AS MilestoneCreatorLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "milestone.creator.site_admin") AS MilestoneCreatorSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.creator.type") AS MilestoneCreatorType
+		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.description") AS MilestoneDescription
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "milestone.due_on") AS MilestoneDueOn
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "milestone.id") AS MilestoneId
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "milestone.number") AS MilestoneNumber
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "milestone.open_issues") AS MilestoneOpenIssues
+		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.state") AS MilestoneState
+		,GitHubAnalytics.USql.Utility.GetString(Data, "milestone.title") AS MilestoneTitle
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "milestone.updated_at") AS MilestoneUpdatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "review_comments") AS ReviewComments
+		,GitHubAnalytics.USql.Utility.GetString(Data, "state") AS State
+		,GitHubAnalytics.USql.Utility.GetString(Data, "title") AS Title
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "user.id") AS UserId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "user.login") AS UserLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "user.type") AS UserType
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "pull_requests";
+
+@PullRequestDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY PullRequestId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @PullRequest;
+
+DROP TABLE IF EXISTS dbo.PullRequest;
+
+CREATE TABLE dbo.PullRequest
+(
+    INDEX IX_PullRequest
+    CLUSTERED(Repo, Owner, Number)
+    PARTITIONED BY
+    HASH(Repo, Owner, Number)
+    INTO 20
+)
+AS
+SELECT   Repo
+		,Owner
+		,Number
+        ,PullRequestId
+		,LinksCommentsHref
+		,LinksCommitsHref
+		,LinksHtmlHref
+		,LinksIssueHref
+		,LinksReviewCommentHref
+		,LinksReviewCommentsHref
+		,LinksSelfHref
+		,LinksStatusesHref
+		,Additions
+		,AssigneeId
+		,AssigneeLogin
+		,AssigneeSiteAdmin
+		,AssigneeType
+		,BaseLabel
+		,BaseRef
+		,BaseRepoCreatedAt
+		,BaseRepoDefaultBranch
+		,BaseRepoDescription
+		,BaseRepoFork
+		,BaseRepoForks
+		,BaseRepoForksCount
+		,BaseRepoFullName
+		,BaseRepoHasDownloads
+		,BaseRepoHasIssues
+		,BaseRepoHasPages
+		,BaseRepoHasWiki
+		,BaseRepoHomepage
+		,BaseRepoId
+		,BaseRepoLanguage
+		,BaseRepoName
+		,BaseRepoOpenIssues
+		,BaseRepoOpenIssuesCount
+		,BaseRepoOwnerId
+		,BaseRepoOwnerLogin
+		,BaseRepoOwnerSiteAdmin
+		,BaseRepoOwnerType
+		,BaseRepoPrivate
+		,BaseRepoPushedAt
+		,BaseRepoSize
+		,BaseRepoStargazersCount
+		,BaseRepoUpdatedAt
+		,BaseRepoWatchers
+		,BaseRepoWatchersCount
+		,BaseSha
+		,BaseUserId
+		,BaseUserLogin
+		,BaseUserSiteAdmin
+		,BaseUserType
+		,Body
+		,ChangedFiles
+		,ClosedAt
+		,Comments
+		,Commits
+		,CreatedAt
+		,Deletions
+		,HeadLabel
+		,HeadRef
+		,HeadRepoCreatedAt
+		,HeadRepoDefaultBranch
+		,HeadRepoDescription
+		,HeadRepoFork
+		,HeadRepoForks
+		,HeadRepoForksCount
+		,HeadRepoFullName
+		,HeadRepoHasDownloads
+		,HeadRepoHasIssues
+		,HeadRepoHasPages
+		,HeadRepoHasWiki
+		,HeadRepoHomepage
+		,HeadRepoId
+		,HeadRepoLanguage
+		,HeadRepoName
+		,HeadRepoOpenIssues
+		,HeadRepoOpenIssuesCount
+		,HeadRepoOwnerId
+		,HeadRepoOwnerLogin
+		,HeadRepoOwnerSiteAdmin
+		,HeadRepoOwnerType
+		,HeadRepoPrivate
+		,HeadRepoPushedAt
+		,HeadRepoSize
+		,HeadRepoStargazersCount
+		,HeadRepoUpdatedAt
+		,HeadRepoWatchers
+		,HeadRepoWatchersCount
+		,HeadSha
+		,HeadUserId
+		,HeadUserLogin
+		,HeadUserSiteAdmin
+		,HeadUserType
+		,Locked
+		,MergeCommitSha
+		,Mergeable
+		,MergeableState
+		,Merged
+		,MergedAt
+		,MergedById
+		,MergedByLogin
+		,MergedBySiteAdmin
+		,MergedByType
+		,MilestoneClosedAt
+		,MilestoneClosedIssues
+		,MilestoneCreatedAt
+		,MilestoneCreatorId
+		,MilestoneCreatorLogin
+		,MilestoneCreatorSiteAdmin
+		,MilestoneCreatorType
+		,MilestoneDescription
+		,MilestoneDueOn
+		,MilestoneId
+		,MilestoneNumber
+		,MilestoneOpenIssues
+		,MilestoneState
+		,MilestoneTitle
+		,MilestoneUpdatedAt
+		,ReviewComments
+		,State
+		,Title
+		,UpdatedAt
+		,UserId
+		,UserLogin
+		,UserSiteAdmin
+		,UserType
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @PullRequestDeDupe
+WHERE RowNumber == 1;

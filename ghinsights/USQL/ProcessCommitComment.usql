@@ -1,0 +1,55 @@
+﻿
+REFERENCE ASSEMBLY [GitHubAnalytics.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+
+@CommitComment =
+SELECT	 GitHubAnalytics.USql.Utility.GetString(Data, "commit_id") AS CommitSha
+		,(int)GitHubAnalytics.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
+		,GitHubAnalytics.USql.Utility.GetUSqlString(Data, "body") AS Body
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "line") AS Line
+		,GitHubAnalytics.USql.Utility.GetString(Data, "path") AS Path
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "position") AS Position
+		,GitHubAnalytics.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+		,GitHubAnalytics.USql.Utility.GetInteger(Data, "user.id") AS UserId
+		,GitHubAnalytics.USql.Utility.GetString(Data, "user.login") AS UserLogin
+		,GitHubAnalytics.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
+		,GitHubAnalytics.USql.Utility.GetString(Data, "user.type") AS UserType
+		,GitHubAnalytics.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "commit_comments";
+
+@CommitCommentDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY  CommitCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @CommitComment;
+
+DROP TABLE IF EXISTS dbo.CommitComment;
+
+CREATE TABLE dbo.CommitComment
+(
+    INDEX IX_CommitComment
+    CLUSTERED(CommitSha)
+    PARTITIONED BY
+    HASH(CommitSha, CommitCommentId)
+    INTO 20
+)
+AS
+SELECT   CommitSha
+		,CommitCommentId
+		,Body
+		,CreatedAt
+		,Line
+		,Path
+		,Position
+		,UpdatedAt
+		,UserId
+		,UserLogin
+		,UserSiteAdmin
+		,UserType
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @CommitCommentDeDupe
+WHERE RowNumber == 1;

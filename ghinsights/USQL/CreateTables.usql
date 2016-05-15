@@ -1,0 +1,22 @@
+﻿CREATE DATABASE IF NOT EXISTS GitHubAnalytics;
+
+CREATE DATABASE IF NOT EXISTS Staging;
+
+USE Staging;
+
+CREATE SCHEMA IF NOT EXISTS GHTorrent;
+
+DROP TABLE IF EXISTS GHTorrent.GitHubData;
+
+CREATE TABLE IF NOT EXISTS GHTorrent.GitHubData (
+     EventName string
+    ,IngestDate string
+    ,MongoId string
+    ,Data SqlMap<string, byte[]>
+    ,INDEX IX_Stage_GitHubData
+        CLUSTERED (EventName, MongoId)
+        PARTITIONED BY
+            BUCKETS (IngestDate)
+            HASH(EventName, MongoId) INTO 20
+);
+

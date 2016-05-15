@@ -1,0 +1,26 @@
+﻿{
+  "$schema": "http://datafactories.schema.management.azure.com/vsschemas/V1/Microsoft.DataFactory.Config.json",
+  "BatchProcessor": [
+    {
+      "name": "$.properties.typeProperties.accessKey",
+      "value": "<access key for batch processor account>"
+    },
+    {
+      "name": "$.properties.typeProperties.accountName",
+      "value": "<name of batch processor account>"
+    }
+  ],
+  "GitHubAnalyticsAzureStorage": [
+    {
+      "name": "$.properties.typeProperties.connectionString",
+      "value": "<connection string to destination azure storage>"
+    }
+  ],
+  "GHTorrentAzureStorage": [
+    {
+      "name": "$.properties.typeProperties.sasUri",
+      "value": "<read only sas key to GHTorrent public download container>"
+    }
+  ]
+}
+
