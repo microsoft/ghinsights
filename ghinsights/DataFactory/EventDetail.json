@@ -1,0 +1,43 @@
+﻿{
+  "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
+  "name": "EventDetail",
+  "properties": {
+    "type": "AzureBlob",
+    "linkedServiceName": "GHInsightsAzureStorage",
+    "typeProperties": {
+      "folderPath": "raw/{EventName}/v1/{Year}/{Month}",
+      "fileName": "{EventName}_{Year}_{Month}_{Day}.json.gz",
+      "partitionedBy": [
+        {
+          "name": "Year",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "yyyy"
+          }
+        },
+        {
+          "name": "Month",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "MM"
+          }
+        },
+        {
+          "name": "Day",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "dd"
+          }
+        }
+      ]
+    },
+    "external": false,
+    "availability": {
+      "frequency": "Day",
+      "interval": 1
+    }
+  }
+}

@@ -1,0 +1,39 @@
+﻿{
+  "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Pipeline.json",
+  "name": "GHTorrentEventDetailPipeline",
+  "properties": {
+    "description": "Custom DotNetActivity pipeline to gather mongodb backups and unpack the seperate events into a new container.",
+    "activities": [
+      {
+        "name": "MongoDbDumpTransformActivity",
+        "type": "DotNetActivity",
+        "inputs": [ { "name": "MongoDbDump" } ],
+        "outputs": [ { "name": "EventDetail" } ],
+        "typeProperties": {
+          "assemblyName": "GHInsights.DataFactory.dll",
+          "entryPoint": "GHInsights.DataFactory.MongoDbDumpTransformActivity",
+          "packageLinkedService": "GHInsightsAzureStorage",
+          "packageFile": "datafactory/GHInsights.DataFactory.zip",
+          "extendedProperties": {
+            "Year": "$$Text.Format('{0:yyyy}',SliceStart)",
+            "Month": "$$Text.Format('{0:MM}',SliceStart)",
+            "Day": "$$Text.Format('{0:dd}',SliceStart)"
+          }
+        },
+        "linkedServiceName": "BatchProcessor",
+        "policy": {
+          "concurrency": 6,
+          "executionPriorityOrder": "NewestFirst",
+          "retry": 0,
+          "timeout": "04:00:00"
+        },
+        "scheduler": {
+          "frequency": "Day",
+          "interval": 1
+        }
+      }
+    ],
+    "start": "2015-12-01T00:00:00Z",
+    "end": "9999-09-09T00:00:00Z"
+  }
+}

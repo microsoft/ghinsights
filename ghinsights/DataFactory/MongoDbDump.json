@@ -1,0 +1,61 @@
+﻿{
+    "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
+    "name": "MongoDbDump",
+  "properties": {
+    "type": "AzureBlob",
+    "linkedServiceName": "GHTorrentAzureStorage",
+    // "structure": [],
+    "typeProperties": {
+      "folderPath": "downloads/",
+      "fileName": "mongo-dump-{Year}-{Month}-{Day}.tar.gz",
+      "partitionedBy": [
+        {
+          "name": "Year",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "yyyy"
+          }
+        },
+        {
+          "name": "Month",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "MM"
+          }
+        },
+        {
+          "name": "Day",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "dd"
+          }
+        }
+      ]
+      //,"format": {
+      //      "type": "<Two formats are supported: TextFormat, AvroFormat. If the type is 'TextFormat', you can specify the following properties. The type 'Avro' does not require any additional properties>",
+      //      "columnDelimiter": "<The character used as a column separator in a file.This property is optional. The default value is comma (,)>",
+      //      "rowDelimiter": "<The character used as a row separator in a file. This property is optional. The default value is any of the following: (” \n”)>",
+      //      "EscapeChar": "<The character used to escape any special character in the blob content. This property is optional. No default value>",
+      //      "NullValue": "<The character used to represent null value in the blob content. This property is optional. The default value is ” \n”>"
+      //  }
+    },
+    "external": true,
+    "availability": {
+      "frequency": "Day",
+      "interval": 1
+    },
+    "policy": {
+        "validation": {
+          "minimumSizeMB": 0.1
+        },
+        "externalData": {
+          "retryInterval": "01:00:00",
+          "retryTimeout": "00:10:00",
+          "maximumRetry": 24
+        }
+      }
+    }
+}

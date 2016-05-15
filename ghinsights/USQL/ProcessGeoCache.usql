@@ -1,0 +1,48 @@
+﻿
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+
+
+@GeoCache =
+SELECT	 GHInsights.USql.Utility.GetString(Data, "key") AS Key
+		,GHInsights.USql.Utility.GetString(Data, "city") AS City
+		,GHInsights.USql.Utility.GetString(Data, "country") AS Country
+		,GHInsights.USql.Utility.GetString(Data, "country_code") AS CountryCode
+		,GHInsights.USql.Utility.GetString(Data, "lat") AS Latitude
+		,GHInsights.USql.Utility.GetString(Data, "long") AS Longitude
+		,GHInsights.USql.Utility.GetString(Data, "state") AS State
+		,GHInsights.USql.Utility.GetString(Data, "status") AS Status
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "geo_cache";
+
+@GeoCacheDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY Key ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @GeoCache;
+
+DROP TABLE IF EXISTS dbo.GeoCache;
+
+CREATE TABLE dbo.GeoCache
+(
+    INDEX IX_GeoCache
+    CLUSTERED(Key)
+    PARTITIONED BY
+    HASH(Key)
+    INTO 20
+)
+AS
+SELECT   Key
+		,City
+		,Country
+		,CountryCode
+		,Latitude
+		,Longitude
+		,State
+		,Status
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @GeoCacheDeDupe
+WHERE RowNumber == 1;

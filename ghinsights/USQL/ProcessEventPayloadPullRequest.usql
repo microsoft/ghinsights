@@ -1,0 +1,266 @@
+﻿
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@Event =
+SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
+        ,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.id") AS EventPayloadPullRequestId
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.additions") AS Additions
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.assignee.id") AS AssigneeId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.assignee.login") AS AssigneeLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.assignee.site_admin") AS AssigneeSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.assignee.type") AS AssigneeType
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.label") AS BaseLabel
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.ref") AS BaseRef
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.created_at") AS BaseRepoCreatedAt
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.default_branch") AS BaseRepoDefaultBranch
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.description") AS BaseRepoDescription
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.fork") AS BaseRepoFork
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks") AS BaseRepoForks
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks_count") AS BaseRepoForksCount
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.full_name") AS BaseRepoFullName
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_downloads") AS BaseRepoHasDownloads
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_issues") AS BaseRepoHasIssues
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_pages") AS BaseRepoHasPages
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.has_wiki") AS BaseRepoHasWiki
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.homepage") AS BaseRepoHomepage
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.id") AS BaseRepoId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.language") AS BaseRepoLanguage
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.name") AS BaseRepoName
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.open_issues") AS BaseRepoOpenIssues
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.open_issues_count") AS BaseRepoOpenIssuesCount
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.owner.id") AS BaseRepoOwnerId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.owner.login") AS BaseRepoOwnerLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.owner.site_admin") AS BaseRepoOwnerSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.owner.type") AS BaseRepoOwnerType
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.private") AS BaseRepoPrivate
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.pushed_at") AS BaseRepoPushedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.size") AS BaseRepoSize
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.stargazers_count") AS BaseRepoStargazersCount
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.updated_at") AS BaseRepoUpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.watchers") AS BaseRepoWatchers
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.watchers_count") AS BaseRepoWatchersCount
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.sha") AS BaseSha
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.user.id") AS BaseUserId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.user.login") AS BaseUserLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.user.site_admin") AS BaseUserSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.user.type") AS BaseUserType
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.pull_request.body") AS Body
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.changed_files") AS ChangedFiles
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.closed_at") AS ClosedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.comments") AS Comments
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.commits") AS Commits
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.created_at") AS CreatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.deletions") AS Deletions
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.label") AS HeadLabel
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.ref") AS HeadRef
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.created_at") AS HeadRepoCreatedAt
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.default_branch") AS HeadRepoDefaultBranch
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.description") AS HeadRepoDescription
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.fork") AS HeadRepoFork
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.forks") AS HeadRepoForks
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.forks_count") AS HeadRepoForksCount
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.full_name") AS HeadRepoFullName
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_downloads") AS HeadRepoHasDownloads
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_issues") AS HeadRepoHasIssues
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_pages") AS HeadRepoHasPages
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.has_wiki") AS HeadRepoHasWiki
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.homepage") AS HeadRepoHomepage
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.id") AS HeadRepoId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.language") AS HeadRepoLanguage
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.name") AS HeadRepoName
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.open_issues") AS HeadRepoOpenIssues
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.open_issues_count") AS HeadRepoOpenIssuesCount
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.owner.id") AS HeadRepoOwnerId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.owner.login") AS HeadRepoOwnerLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.owner.site_admin") AS HeadRepoOwnerSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.repo.owner.type") AS HeadRepoOwnerType
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.repo.private") AS HeadRepoPrivate
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.pushed_at") AS HeadRepoPushedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.size") AS HeadRepoSize
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.stargazers_count") AS HeadRepoStargazersCount
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.head.repo.updated_at") AS HeadRepoUpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.watchers") AS HeadRepoWatchers
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.repo.watchers_count") AS HeadRepoWatchersCount
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.sha") AS HeadSha
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.head.user.id") AS HeadUserId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.user.login") AS HeadUserLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.head.user.site_admin") AS HeadUserSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.head.user.type") AS HeadUserType
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.locked") AS Locked
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.merge_commit_sha") AS MergeCommitSha
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.mergeable") AS Mergeable
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.mergeable_state") AS MergeableState
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.merged") AS Merged
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.merged_at") AS MergedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.merged_by.id") AS MergedById
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.merged_by.login") AS MergedByLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.merged_by.site_admin") AS MergedBySiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.merged_by.type") AS MergedByType
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.closed_at") AS MilestoneClosedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.closed_issues") AS MilestoneClosedIssues
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.created_at") AS MilestoneCreatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.creator.id") AS MilestoneCreatorId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.milestone.creator.login") AS MilestoneCreatorLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.milestone.creator.site_admin") AS MilestoneCreatorSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.milestone.creator.type") AS MilestoneCreatorType
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.milestone.description") AS MilestoneDescription
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.due_on") AS MilestoneDueOn
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.id") AS MilestoneId
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.number") AS MilestoneNumber
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.milestone.open_issues") AS MilestoneOpenIssues
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.milestone.state") AS MilestoneState
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.milestone.title") AS MilestoneTitle
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.milestone.updated_at") AS MilestoneUpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.number") AS Number
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.review_comments") AS ReviewComments
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.state") AS State
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.title") AS Title
+		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.updated_at") AS UpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.user.id") AS UserId
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.user.login") AS UserLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.user.site_admin") AS UserSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.user.type") AS UserType
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "events" AND Data["payload.pull_request.id"] IS NOT NULL;
+
+@EventDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @Event;
+
+DROP TABLE IF EXISTS dbo.EventPayloadPullRequest;
+
+CREATE TABLE dbo.EventPayloadPullRequest
+(
+    INDEX IX_EventPayloadPullRequest
+    CLUSTERED(EventId)
+    PARTITIONED BY
+    HASH(EventId, EtlSourceId)
+    INTO 60
+)
+AS
+SELECT   EventId
+		,EventPayloadPullRequestId
+		,Additions
+		,AssigneeId
+		,AssigneeLogin
+		,AssigneeSiteAdmin
+		,AssigneeType
+		,BaseLabel
+		,BaseRef
+		,BaseRepoCreatedAt
+		,BaseRepoDefaultBranch
+		,BaseRepoDescription
+		,BaseRepoFork
+		,BaseRepoForks
+		,BaseRepoForksCount
+		,BaseRepoFullName
+		,BaseRepoHasDownloads
+		,BaseRepoHasIssues
+		,BaseRepoHasPages
+		,BaseRepoHasWiki
+		,BaseRepoHomepage
+		,BaseRepoId
+		,BaseRepoLanguage
+		,BaseRepoName
+		,BaseRepoOpenIssues
+		,BaseRepoOpenIssuesCount
+		,BaseRepoOwnerId
+		,BaseRepoOwnerLogin
+		,BaseRepoOwnerSiteAdmin
+		,BaseRepoOwnerType
+		,BaseRepoPrivate
+		,BaseRepoPushedAt
+		,BaseRepoSize
+		,BaseRepoStargazersCount
+		,BaseRepoUpdatedAt
+		,BaseRepoWatchers
+		,BaseRepoWatchersCount
+		,BaseSha
+		,BaseUserId
+		,BaseUserLogin
+		,BaseUserSiteAdmin
+		,BaseUserType
+		,Body
+		,ChangedFiles
+		,ClosedAt
+		,Comments
+		,Commits
+		,CreatedAt
+		,Deletions
+		,HeadLabel
+		,HeadRef
+		,HeadRepoCreatedAt
+		,HeadRepoDefaultBranch
+		,HeadRepoDescription
+		,HeadRepoFork
+		,HeadRepoForks
+		,HeadRepoForksCount
+		,HeadRepoFullName
+		,HeadRepoHasDownloads
+		,HeadRepoHasIssues
+		,HeadRepoHasPages
+		,HeadRepoHasWiki
+		,HeadRepoHomepage
+		,HeadRepoId
+		,HeadRepoLanguage
+		,HeadRepoName
+		,HeadRepoOpenIssues
+		,HeadRepoOpenIssuesCount
+		,HeadRepoOwnerId
+		,HeadRepoOwnerLogin
+		,HeadRepoOwnerSiteAdmin
+		,HeadRepoOwnerType
+		,HeadRepoPrivate
+		,HeadRepoPushedAt
+		,HeadRepoSize
+		,HeadRepoStargazersCount
+		,HeadRepoUpdatedAt
+		,HeadRepoWatchers
+		,HeadRepoWatchersCount
+		,HeadSha
+		,HeadUserId
+		,HeadUserLogin
+		,HeadUserSiteAdmin
+		,HeadUserType
+		,Locked
+		,MergeCommitSha
+		,Mergeable
+		,MergeableState
+		,Merged
+		,MergedAt
+		,MergedById
+		,MergedByLogin
+		,MergedBySiteAdmin
+		,MergedByType
+		,MilestoneClosedAt
+		,MilestoneClosedIssues
+		,MilestoneCreatedAt
+		,MilestoneCreatorId
+		,MilestoneCreatorLogin
+		,MilestoneCreatorSiteAdmin
+		,MilestoneCreatorType
+		,MilestoneDescription
+		,MilestoneDueOn
+		,MilestoneId
+		,MilestoneNumber
+		,MilestoneOpenIssues
+		,MilestoneState
+		,MilestoneTitle
+		,MilestoneUpdatedAt
+		,Number
+		,ReviewComments
+		,State
+		,Title
+		,UpdatedAt
+		,UserId
+		,UserLogin
+		,UserSiteAdmin
+		,UserType
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @EventDeDupe
+WHERE RowNumber == 1;

@@ -1,0 +1,111 @@
+﻿
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+
+
+@Issue =
+SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
+		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
+		,GHInsights.USql.Utility.GetInteger(Data, "number") AS Number
+        ,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueId
+		,GHInsights.USql.Utility.GetInteger(Data, "assignee.id") AS AssigneeId
+		,GHInsights.USql.Utility.GetString(Data, "assignee.login") AS AssigneeLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "assignee.site_admin") AS AssigneeSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "assignee.type") AS AssigneeType
+		,GHInsights.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GHInsights.USql.Utility.GetDateTime(Data, "closed_at") AS ClosedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "closed_by.id") AS ClosedById
+		,GHInsights.USql.Utility.GetString(Data, "closed_by.login") AS ClosedByLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "closed_by.site_admin") AS ClosedBySiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "closed_by.type") AS ClosedByType
+		,GHInsights.USql.Utility.GetInteger(Data, "comments") AS Comments
+		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+		,GHInsights.USql.Utility.GetBoolean(Data, "locked") AS Locked
+		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.closed_at") AS MilestoneClosedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "milestone.closed_issues") AS MilestoneClosedIssues
+		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.created_at") AS MilestoneCreatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "milestone.creator.id") AS MilestoneCreatorId
+		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.login") AS MilestoneCreatorLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "milestone.creator.site_admin") AS MilestoneCreatorSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.type") AS MilestoneCreatorType
+		,GHInsights.USql.Utility.GetString(Data, "milestone.description") AS MilestoneDescription
+		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.due_on") AS MilestoneDueOn
+		,GHInsights.USql.Utility.GetInteger(Data, "milestone.id") AS MilestoneId
+		,GHInsights.USql.Utility.GetInteger(Data, "milestone.number") AS MilestoneNumber
+		,GHInsights.USql.Utility.GetInteger(Data, "milestone.open_issues") AS MilestoneOpenIssues
+		,GHInsights.USql.Utility.GetString(Data, "milestone.state") AS MilestoneState
+		,GHInsights.USql.Utility.GetString(Data, "milestone.title") AS MilestoneTitle
+		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.updated_at") AS MilestoneUpdatedAt
+		,GHInsights.USql.Utility.GetString(Data, "pull_request.url") AS PullRequestUrl
+		,GHInsights.USql.Utility.GetString(Data, "state") AS State
+		,GHInsights.USql.Utility.GetString(Data, "title") AS Title
+		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "user.id") AS UserId
+		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
+		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
+		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "issues";
+
+@IssueDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY IssueId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @Issue;
+
+DROP TABLE IF EXISTS dbo.Issue;
+
+CREATE TABLE dbo.Issue
+(
+    INDEX IX_Issue
+    CLUSTERED(Repo)
+    PARTITIONED BY
+    HASH(Repo, Owner, Number)
+    INTO 20
+)
+AS
+SELECT   Repo
+		,Owner
+		,Number
+        ,IssueId
+		,AssigneeId
+		,AssigneeLogin
+		,AssigneeSiteAdmin
+		,AssigneeType
+		,Body
+		,ClosedAt
+		,ClosedById
+		,ClosedByLogin
+		,ClosedBySiteAdmin
+		,ClosedByType
+		,Comments
+		,CreatedAt
+		,Locked
+		,MilestoneClosedAt
+		,MilestoneClosedIssues
+		,MilestoneCreatedAt
+		,MilestoneCreatorId
+		,MilestoneCreatorLogin
+		,MilestoneCreatorSiteAdmin
+		,MilestoneCreatorType
+		,MilestoneDescription
+		,MilestoneDueOn
+		,MilestoneId
+		,MilestoneNumber
+		,MilestoneOpenIssues
+		,MilestoneState
+		,MilestoneTitle
+		,MilestoneUpdatedAt
+		,State
+		,Title
+		,UpdatedAt
+		,UserId
+		,UserLogin
+		,UserSiteAdmin
+		,UserType
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @IssueDeDupe
+WHERE RowNumber == 1;
