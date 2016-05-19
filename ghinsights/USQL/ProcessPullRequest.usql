@@ -55,7 +55,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "base.user.login") AS BaseUserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "base.user.site_admin") AS BaseUserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "base.user.type") AS BaseUserType
-		,GHInsights.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GHInsights.USql.Utility.GetUsqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetInteger(Data, "changed_files") AS ChangedFiles
 		,GHInsights.USql.Utility.GetDateTime(Data, "closed_at") AS ClosedAt
 		,GHInsights.USql.Utility.GetInteger(Data, "comments") AS Comments

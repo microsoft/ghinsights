@@ -10,7 +10,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "_links.html.href") AS LinksHtmlHref
 		,GHInsights.USql.Utility.GetString(Data, "_links.pull_request.href") AS LinksPullRequestHref
 		,GHInsights.USql.Utility.GetString(Data, "_links.self.href") AS LinksSelfHref
-		,GHInsights.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitId
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "diff_hunk") AS DiffHunk

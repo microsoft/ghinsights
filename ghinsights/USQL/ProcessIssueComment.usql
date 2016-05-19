@@ -10,7 +10,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetInteger(Data, "issue_id") AS IssueId
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueCommentId
-		,GHInsights.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
 		,GHInsights.USql.Utility.GetInteger(Data, "user.id") AS UserId
