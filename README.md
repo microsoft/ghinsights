@@ -14,7 +14,7 @@ GHInsights makes the data available as Web HDFS files.  As such you can setup a 
 *Instructions coming*
 
 ## Getting started with Spark
-GHInsights makes the data available as Web HDFS files.  As such you can setup a Hadoop cluster and process the data.  
+GHInsights makes the data available as Web HDFS files.  As such you can setup a Spark cluster and process the data.  
 
 *Instructions coming*
 
