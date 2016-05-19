@@ -47,7 +47,7 @@ foreach ($table in $tables)
 {
     $tablename = $table.DatabaseName+"."+$table.SchemaName+"."+$table.Name
     $outputpath = "@" + (doublequote ($staging_location + "/" + $staging_folder_name + "/" + $tablename))
-    "OUTPUT $tablename TO $outputpath USING Outputters.Tsv();" | Out-File -FilePath $export_file_path -Append
+    "OUTPUT $tablename TO $outputpath USING Outputters.Tsv(escapeCharacter: '\\', quoting: true);" | Out-File -FilePath $export_file_path -Append
 }
  
 "
@@ -168,7 +168,7 @@ foreach ($table in $tables)
 
 
 "
-
+ 
 
 
 "  | Out-File -FilePath $import_file_path -Append
@@ -206,7 +206,7 @@ foreach ($table in $tables)
     $tablename = $table.DatabaseName+"."+$table.SchemaName+"."+$table.Name
     $srcfile = $src_adls + "/" + $staging_folder_name + "/" + $tablename 
     $srcfile = "@" + (doublequote $srcfile)
-    $base += "FROM $srcfile USING Extractors.Tsv(); "
+    $base += "FROM $srcfile USING Extractors.Tsv(escapeCharacter: '\\', quoting: true); "
     $base += "INSERT INTO $tablename SELECT * FROM @populate;";
     $base | Out-File -FilePath $import_file_path -Append
 }
