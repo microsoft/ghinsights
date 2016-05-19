@@ -29,7 +29,7 @@ U-SQL is a new, SQL-like big data query language from Microsoft.
 
 1. Run U-SQL jobs to query your data.
 
-**Note:** In this process, the data will be copied over to your Data Lake storage. Keep in mind you are paying for the costs of storing and querying it.  Importing the core set of tables takes roughly 50 compute hours.  Pricing can vary by region and currency but is currently about US$1/hour.  By default importing skips the `CommitFile` information as it is very large and can take considerably longer (300+ compute hours).  See [the Azure Data Lake pricing site](https://azure.microsoft.com/en-us/pricing/details/data-lake-analytics/) for the most up to date information.
+**Note:** In this process, the data will be copied over to your Data Lake storage. Keep in mind you are paying for the costs of storing and querying it.  Importing the core set of tables takes roughly 50 compute hours.  Pricing can vary by region and currency but is currently about US$1/hour.  By default importing skips the `CommitFile` information as it is very large and can take considerably longer (300+ compute hours).  If you want the `CommitFile` info, edit the script and uncomment the lines that fetch those files. For more Azure pricing info, see [the Azure Data Lake pricing site](https://azure.microsoft.com/en-us/pricing/details/data-lake-analytics/).
 
 
 # License
