@@ -13,7 +13,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "assignee.login") AS AssigneeLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "assignee.site_admin") AS AssigneeSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "assignee.type") AS AssigneeType
-		,GHInsights.USql.Utility.GetRawBytes(Data, "body") AS Body
+		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetDateTime(Data, "closed_at") AS ClosedAt
 		,GHInsights.USql.Utility.GetInteger(Data, "closed_by.id") AS ClosedById
 		,GHInsights.USql.Utility.GetString(Data, "closed_by.login") AS ClosedByLogin
