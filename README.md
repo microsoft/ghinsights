@@ -25,9 +25,9 @@ U-SQL is a new, SQL-like big data query language from Microsoft.
 
 1. Request access to the dataset by contacting [@jeffmcaffer](mailto:jmcaffer@microsoft.com) and [@kelewis](mailto:kelewis@microsoft.com). We will work with you to get your Azure account enabled for Azure Data Lake Analytics (still in early preview) as well as setting up proper permission for that account to read the GitHub data.
 
-1. Import the dataset to your account.  *Right now you have to copy the data into your account.  This is a one-time setup step that will go away as soon as Data Lake table sharing is enabled.*  To import the data, submit the `[import.usql] (https://github.com/Microsoft/ghinsights/tree/master/DataExport/import.usql)` script in your Azure Data Lake Analytics account.  This will take a while (a couple hours), once it is done you will have a copy of the GHInsights U-SQL Database in your account.
+1. Import the dataset to your account.  *Right now you have to copy the data into your account.  This is a one-time setup step that will go away as soon as Data Lake table sharing is enabled.*  To import the data, submit the [import.usql] (https://github.com/Microsoft/ghinsights/tree/master/DataExport/import.usql) script in your Azure Data Lake Analytics account.  This will take a while (a couple hours), once it is done you will have a copy of the GHInsights U-SQL Database in your account.
 
-1. Run U-SQL jobs to query your data.
+1. Run U-SQL jobs to query your data.  See the [U-SQL intro](https://azure.microsoft.com/en-us/blog/u-sql-the-new-big-data-language-for-azure-data-lake/) for examples and more details.
 
 **Note:** In this process, the data will be copied over to your Data Lake storage. Keep in mind you are paying for the costs of storing and querying it.  Importing the core set of tables takes roughly 50 compute hours.  Pricing can vary by region and currency but is currently about US$1/hour.  By default importing skips the `CommitFile` information as it is very large and can take considerably longer (300+ compute hours).  If you want the `CommitFile` info, edit the script and uncomment the lines that fetch those files. For more Azure pricing info, see [the Azure Data Lake pricing site](https://azure.microsoft.com/en-us/pricing/details/data-lake-analytics/).
 
