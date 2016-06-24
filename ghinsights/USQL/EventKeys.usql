@@ -1,0 +1,14 @@
+﻿@EventColumnInfo =
+    SELECT EventName
+           ,JsonPath
+           ,MAX(Encoding.UTF8.GetString(Value).Length) AS MaxColumnLength
+    FROM Staging.GHTorrent.GitHubData AS e
+    CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+    WHERE EventName == "events"
+    GROUP BY EventName, JsonPath;
+    
+
+OUTPUT @EventColumnInfo
+TO "/users/t-shche/EventColumnInfoMS.csv"
+ORDER BY EventName, JsonPath
+USING Outputters.Csv();

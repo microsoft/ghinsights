@@ -1,12 +1,12 @@
 ﻿{
-    "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
-    "name": "MongoDbDump",
+  "$schema": "http://datafactories.schema.management.azure.com/schemas/2015-08-01/Microsoft.DataFactory.Table.json",
+  "name": "MSMongoDbDump",
   "properties": {
     "type": "AzureBlob",
-    "linkedServiceName": "GHTorrentAzureStorage",
+    "linkedServiceName": "MSGHTorrentAzureStorage",
     // "structure": [],
     "typeProperties": {
-      "folderPath": "downloads/",
+      "folderPath": "msght-azure-storage/downloads/",
       "fileName": "mongo-dump-{Year}-{Month}-{Day}.tar.gz",
       "partitionedBy": [
         {
@@ -48,14 +48,14 @@
       "interval": 1
     },
     "policy": {
-        "validation": {
-          "minimumSizeMB": 0.1
-        },
-        "externalData": {
-          "retryInterval": "01:00:00",
-          "retryTimeout": "00:10:00",
-          "maximumRetry": 10
-        }
+      "validation": {
+        "minimumSizeMB": 0.1
+      },
+      "externalData": {
+        "retryInterval": "01:00:00",
+        "retryTimeout": "00:10:00",
+        "maximumRetry": 10
       }
     }
+  }
 }
