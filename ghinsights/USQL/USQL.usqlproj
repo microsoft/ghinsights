@@ -67,6 +67,15 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
+    <Script Include="ProcessDaily.usql">
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
+      <LocalDatabase>master</LocalDatabase>
+      <LocalSchema>dbo</LocalSchema>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
+      <ClusterSchema>dbo</ClusterSchema>
+    </Script>
     <Script Include="ProcessEvent.usql">
       <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
@@ -181,7 +190,7 @@
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
       <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
-      <ClusterDatabase>master</ClusterDatabase>
+      <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessPullRequest.usql">
@@ -194,7 +203,7 @@
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessPullRequestComment.usql">
-      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
@@ -203,7 +212,7 @@
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessRepo.usql">
-      <UseLocalComputeAccount>true</UseLocalComputeAccount>
+      <UseLocalComputeAccount>false</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
@@ -221,7 +230,7 @@
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
     <Script Include="ProcessUser.usql">
-      <UseLocalComputeAccount>false</UseLocalComputeAccount>
+      <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>master</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
@@ -243,7 +252,7 @@
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
       <LocalDatabase>ghtorrent</LocalDatabase>
       <LocalSchema>dbo</LocalSchema>
-      <ClusterComputeAccount>ghtdev</ClusterComputeAccount>
+      <ClusterComputeAccount>ghinsights</ClusterComputeAccount>
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
