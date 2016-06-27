@@ -41,7 +41,7 @@ CREATE TABLE dbo.IssueEvent
     INDEX IX_IssueEvent
     CLUSTERED(Repo, Owner, IssueId, IssueEventId)
     PARTITIONED BY
-    HASH(Repo, Owner, IssueId, IssueEventId)
+    HASH(IssueEventId)
     INTO 20
 )
 AS

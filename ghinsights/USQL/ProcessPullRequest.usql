@@ -147,7 +147,7 @@ CREATE TABLE dbo.PullRequest
     INDEX IX_PullRequest
     CLUSTERED(Repo, Owner, Number)
     PARTITIONED BY
-    HASH(Repo, Owner, Number)
+    HASH(PullRequestId, UpdatedAt)
     INTO 20
 )
 AS
