@@ -33,7 +33,7 @@ CREATE TABLE dbo.CommitComment
     INDEX IX_CommitComment
     CLUSTERED(CommitSha)
     PARTITIONED BY
-    HASH(CommitSha, CommitCommentId)
+    HASH(CommitSha, UpdatedAt)
     INTO 20
 )
 AS

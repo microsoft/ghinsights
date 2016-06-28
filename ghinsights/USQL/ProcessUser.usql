@@ -37,7 +37,7 @@ CREATE TABLE dbo.User
     INDEX IX_User
     CLUSTERED(Login)
     PARTITIONED BY
-    HASH(Login)
+    HASH(UserId, UpdatedAt)
 )
 AS
 SELECT   Login

@@ -106,7 +106,7 @@ CREATE TABLE dbo.Fork
     INDEX IX_Fork
     CLUSTERED(Repo, Owner, ForkId)
     PARTITIONED BY
-    HASH(Repo, Owner, ForkId)
+    HASH(ForkId, UpdatedAt)
     INTO 20
 )
 AS

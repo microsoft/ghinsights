@@ -2,8 +2,6 @@
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-
-
 @OrgMember =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "org") AS Org
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
@@ -17,7 +15,7 @@ WHERE EventName == "org_members";
 
 @OrgMemberDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY OrgMemberId ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Org, OrgMemberId, Login, Type ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @OrgMember;
 
 DROP TABLE IF EXISTS dbo.OrgMember;
@@ -27,7 +25,7 @@ CREATE TABLE dbo.OrgMember
     INDEX IX_OrgMember
     CLUSTERED(Org)
     PARTITIONED BY
-    HASH(Org)
+    HASH(Org, OrgMemberId, Login, Type)
     INTO 20
 )
 AS

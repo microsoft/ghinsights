@@ -25,7 +25,7 @@ CREATE TABLE dbo.RepoLabel
     INDEX IX_RepoLabel
     CLUSTERED(Repo, Owner)
     PARTITIONED BY
-    HASH(Repo, Owner)
+    HASH(Repo, Owner, Name)
     INTO 20
 )
 AS

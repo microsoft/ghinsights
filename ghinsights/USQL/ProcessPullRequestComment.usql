@@ -40,7 +40,7 @@ CREATE TABLE dbo.PullRequestComment
     INDEX IX_PullRequestComment
     CLUSTERED(Repo, Owner, PullRequestId, PullRequestCommentId)
     PARTITIONED BY
-    HASH(Repo, Owner, PullRequestId, PullRequestCommentId)
+    HASH(PullRequestCommentId, UpdatedAt)
     INTO 20
 )
 AS

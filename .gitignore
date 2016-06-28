@@ -251,4 +251,3 @@ paket-files/
 .idea/
 *.sln.iml
 
-/ghinsights/DataFactory/ProductionEnvironment.json

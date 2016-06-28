@@ -138,7 +138,7 @@ CREATE TABLE dbo.EventPayloadPullRequest
     INDEX IX_EventPayloadPullRequest
     CLUSTERED(EventId)
     PARTITIONED BY
-    HASH(EventId, EtlSourceId)
+    HASH(EventId)
     INTO 60
 )
 AS
