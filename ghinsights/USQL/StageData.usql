@@ -3,14 +3,14 @@
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-DECLARE @IngestDate = DateTime.Parse("{SliceDate}", null, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+DECLARE @IngestDate = DateTime.Parse("2016-06-13", null, DateTimeStyles.AssumeUniversal).ToUniversalTime();
 DECLARE @IngestDatePartition = @IngestDate.ToString("yyyy-MM-dd");
 
 @ExtractedData =
     EXTRACT  EventName string
             ,IngestDate DateTime
             ,Data SqlMap<string, byte[]>
-    FROM "wasb://raw@ghinsights.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
+    FROM "wasb://raw@ghinsightsms.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
     USING GHInsights.USql.Extractors.FlatJson(outputColumnName: "Data");
 
 ALTER TABLE Staging.GHTorrent.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);

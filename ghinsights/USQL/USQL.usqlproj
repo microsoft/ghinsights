@@ -11,7 +11,7 @@
     <Name>USQL</Name>
     <RootNamespace>USQL</RootNamespace>
     <RuntimeVersion>default</RuntimeVersion>
-    <OutputStreamPath>C:\Data</OutputStreamPath>
+    <OutputStreamPath>C:\Users\t-shche.REDMOND\AppData\Local\USQLDataRoot</OutputStreamPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -238,6 +238,7 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
+    <Script Include="EventKeys.usql" />
     <Script Include="StageData.usql">
       <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
@@ -247,6 +248,11 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
+  </ItemGroup>
+  <ItemGroup>
+    <ScriptCode Include="EventKeys.usql.cs">
+      <DependentUpon>EventKeys.usql</DependentUpon>
+    </ScriptCode>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
   <PropertyGroup>
