@@ -52,7 +52,7 @@
         "minimumSizeMB": 0.1
       },
       "externalData": {
-        "retryInterval": "01:00:00",
+        "retryInterval": "03:00:00",
         "retryTimeout": "00:10:00",
         "maximumRetry": 10
       }
