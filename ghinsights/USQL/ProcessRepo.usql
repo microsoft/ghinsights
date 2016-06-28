@@ -114,7 +114,7 @@ CREATE TABLE dbo.Repo
     INDEX IX_Repo
     CLUSTERED(Name, OwnerLogin)
     PARTITIONED BY
-    HASH(Name, OwnerLogin)
+    HASH(RepoId, UpdatedAt)
     INTO 20
 )
 AS

@@ -1,0 +1,13 @@
+﻿{
+  "name": "StageData",
+  "properties": {
+    "published": false,
+    "type": "CustomDataset",
+    "linkedServiceName": "GHInsightsDataLakeStore",
+    "typeProperties": { },
+    "availability": {
+      "frequency": "Day",
+      "interval": 1
+    }
+  }
+}

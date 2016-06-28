@@ -34,7 +34,7 @@ CREATE TABLE dbo.IssueComment
     INDEX IX_IssueComment
     CLUSTERED(Repo, Owner, IssueId, IssueCommentId)
     PARTITIONED BY
-    HASH(Repo, Owner, IssueId, IssueCommentId)
+    HASH(IssueCommentId, UpdatedAt)
     INTO 20
 )
 AS

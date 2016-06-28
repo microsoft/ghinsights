@@ -60,9 +60,9 @@ DROP TABLE IF EXISTS dbo.Issue;
 CREATE TABLE dbo.Issue
 (
     INDEX IX_Issue
-    CLUSTERED(Repo)
+    CLUSTERED(Repo, Owner, Number)
     PARTITIONED BY
-    HASH(Repo, Owner, Number)
+    HASH(IssueId, UpdatedAt)
     INTO 20
 )
 AS
@@ -98,6 +98,7 @@ SELECT   Repo
 		,MilestoneState
 		,MilestoneTitle
 		,MilestoneUpdatedAt
+        ,PullRequestUrl
 		,State
 		,Title
 		,UpdatedAt

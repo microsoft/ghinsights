@@ -31,16 +31,20 @@
     <Script Include="MSMongoDbDump.json" />
     <Script Include="MSPrestagedEventsAzureStorage.json" />
     <Script Include="MSEventDetail.json" />
+    <Script Include="ProcessedData.json" />
     <Script Include="BatchProcessor.json" />
     <Script Include="ConfigTemplate.json" />
     <Script Include="MSGHTEventDetailPipeline.json" />
     <Script Include="DevEnvironment.json" />
     <Script Include="EventDetail.json" />
+    <Script Include="GHInsightsDataLakeStore.json" />
+    <Script Include="GHInsightsUSQL.json" />
     <Script Include="GHTorrentAzureStorage.json" />
     <Script Include="GHTorrentEventDetailPipeline.json" />
     <Script Include="GHInsightsAzureStorage.json" />
     <Script Include="MongoDbDump.json" />
     <Script Include="ProductionEnvironment.json" />
+    <Script Include="StageData.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GHInsights.DataFactory\GHInsights.DataFactory.csproj">

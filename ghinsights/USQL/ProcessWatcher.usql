@@ -39,11 +39,31 @@ CREATE TABLE dbo.Watcher
     INDEX IX_Watcher
     CLUSTERED(Repo, Owner, Login)
     PARTITIONED BY
-    HASH(Repo, Owner, Login)
+    HASH(WatcherId, UpdatedAt)
     INTO 20
 )
 AS
-SELECT *
+SELECT	 Repo
+		,Owner
+		,Login
+		,WatcherId
+		,Bio
+		,Blog
+		,Company
+		,CreatedAt
+		,Email
+		,Followers
+		,Following
+		,Hireable
+		,Location
+		,Name
+		,PublicGists
+		,PublicRepos
+		,SiteAdmin
+		,Type
+		,UpdatedAt
+		,EtlSourceId
+        ,EtlIngestDate
 FROM @WatcherDeDupe
 WHERE RowNumber == 1;
 

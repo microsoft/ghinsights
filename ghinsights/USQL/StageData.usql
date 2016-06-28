@@ -1,16 +1,23 @@
-﻿USE GHInsights;
+﻿
+DROP PROCEDURE IF EXISTS GHInsights.dbo.StageData;
+
+CREATE PROCEDURE GHInsights.dbo.StageData(@Year string, @Month string, @Day string)
+AS
+BEGIN
+
+USE GHInsights;
 
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-DECLARE @IngestDate = DateTime.Parse("{SliceDate}", null, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+DECLARE @IngestDate = DateTime.Parse(string.Format("{0:D4}-{1:D2}-{2:D3}", @Year, @Month, @Day), null, DateTimeStyles.AssumeUniversal).ToUniversalTime();
 DECLARE @IngestDatePartition = @IngestDate.ToString("yyyy-MM-dd");
 
 @ExtractedData =
     EXTRACT  EventName string
             ,IngestDate DateTime
             ,Data SqlMap<string, byte[]>
-    FROM "wasb://raw@ghinsights.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
+    FROM "wasb://raw@ghinsightspublic.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
     USING GHInsights.USql.Extractors.FlatJson(outputColumnName: "Data");
 
 ALTER TABLE Staging.GHTorrent.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);
@@ -23,3 +30,5 @@ SELECT  EventName
        ,Data
 FROM @ExtractedData
 WHERE IngestDate == @IngestDate;
+
+END;

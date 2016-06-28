@@ -139,7 +139,7 @@ CREATE TABLE dbo.Event
     INDEX IX_Event
     CLUSTERED(EventId)
     PARTITIONED BY
-    HASH(EventId, EtlSourceId)
+    HASH(EventId)
     INTO 60
 )
 AS
