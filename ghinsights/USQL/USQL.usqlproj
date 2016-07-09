@@ -247,7 +247,7 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
-    <Script Include="EventKeys.usql" />
+    <Script Include="QueryDates.usql" />
     <Script Include="StageData.usql">
       <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
@@ -259,8 +259,8 @@
     </Script>
   </ItemGroup>
   <ItemGroup>
-    <ScriptCode Include="EventKeys.usql.cs">
-      <DependentUpon>EventKeys.usql</DependentUpon>
+    <ScriptCode Include="QueryDates.usql.cs">
+      <DependentUpon>QueryDates.usql</DependentUpon>
     </ScriptCode>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />

@@ -10,7 +10,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS ForkId
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "default_branch") AS DefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "description") AS Description
+		,GHInsights.USql.Utility.GetUSqlString(Data, "description") AS Description
 		,GHInsights.USql.Utility.GetBoolean(Data, "fork") AS Fork
 		,GHInsights.USql.Utility.GetInteger(Data, "forks") AS Forks
 		,GHInsights.USql.Utility.GetInteger(Data, "forks_count") AS ForksCount

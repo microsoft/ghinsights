@@ -29,7 +29,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.login") AS MilestoneCreatorLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "milestone.creator.site_admin") AS MilestoneCreatorSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.type") AS MilestoneCreatorType
-		,GHInsights.USql.Utility.GetString(Data, "milestone.description") AS MilestoneDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "milestone.description") AS MilestoneDescription
 		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.due_on") AS MilestoneDueOn
 		,GHInsights.USql.Utility.GetInteger(Data, "milestone.id") AS MilestoneId
 		,GHInsights.USql.Utility.GetInteger(Data, "milestone.number") AS MilestoneNumber

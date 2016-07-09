@@ -27,6 +27,10 @@
     <Folder Include="Dependencies\" />
   </ItemGroup>
   <ItemGroup>
+    <Script Include="GHInsightsMSDataLakeStore.json" />
+    <Script Include="ProcessedDataMS.json" />
+    <Script Include="StagedDataMS.json" />
+    <Script Include="GHInsightsMSUSQL.json" />
     <Script Include="MSGHTorrentAzureStorage.json" />
     <Script Include="MSMongoDbDump.json" />
     <Script Include="MSPrestagedEventsAzureStorage.json" />

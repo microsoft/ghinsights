@@ -9,7 +9,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "name") AS Name
 		,GHInsights.USql.Utility.GetString(Data, "owner.login") AS OwnerLogin
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "default_branch") AS DefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "description") AS Description
+		,GHInsights.USql.Utility.GetUSqlString(Data, "description") AS Description
 		,GHInsights.USql.Utility.GetBoolean(Data, "fork") AS Fork
 		,GHInsights.USql.Utility.GetInteger(Data, "forks") AS Forks
 		,GHInsights.USql.Utility.GetInteger(Data, "forks_count") AS ForksCount
@@ -32,7 +32,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "name") AS Name
 		,GHInsights.USql.Utility.GetString(Data, "owner.type") AS OwnerType
 		,GHInsights.USql.Utility.GetDateTime(Data, "parent.created_at") AS ParentCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "parent.default_branch") AS ParentDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "parent.description") AS ParentDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "parent.description") AS ParentDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "parent.fork") AS ParentFork
 		,GHInsights.USql.Utility.GetInteger(Data, "parent.forks") AS ParentForks
 		,GHInsights.USql.Utility.GetInteger(Data, "parent.forks_count") AS ParentForksCount
@@ -66,7 +66,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "name") AS Name
 		,GHInsights.USql.Utility.GetInteger(Data, "size") AS Size
 		,GHInsights.USql.Utility.GetDateTime(Data, "source.created_at") AS SourceCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "source.default_branch") AS SourceDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "source.description") AS SourceDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "source.description") AS SourceDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "source.fork") AS SourceFork
 		,GHInsights.USql.Utility.GetInteger(Data, "source.forks") AS SourceForks
 		,GHInsights.USql.Utility.GetInteger(Data, "source.forks_count") AS SourceForksCount

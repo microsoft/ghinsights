@@ -24,7 +24,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "base.ref") AS BaseRef
 		,GHInsights.USql.Utility.GetDateTime(Data, "base.repo.created_at") AS BaseRepoCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "base.repo.default_branch") AS BaseRepoDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "base.repo.description") AS BaseRepoDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "base.repo.description") AS BaseRepoDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "base.repo.fork") AS BaseRepoFork
 		,GHInsights.USql.Utility.GetInteger(Data, "base.repo.forks") AS BaseRepoForks
 		,GHInsights.USql.Utility.GetInteger(Data, "base.repo.forks_count") AS BaseRepoForksCount
@@ -66,7 +66,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "head.ref") AS HeadRef
 		,GHInsights.USql.Utility.GetDateTime(Data, "head.repo.created_at") AS HeadRepoCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "head.repo.default_branch") AS HeadRepoDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "head.repo.description") AS HeadRepoDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "head.repo.description") AS HeadRepoDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "head.repo.fork") AS HeadRepoFork
 		,GHInsights.USql.Utility.GetInteger(Data, "head.repo.forks") AS HeadRepoForks
 		,GHInsights.USql.Utility.GetInteger(Data, "head.repo.forks_count") AS HeadRepoForksCount
@@ -114,7 +114,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.login") AS MilestoneCreatorLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "milestone.creator.site_admin") AS MilestoneCreatorSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "milestone.creator.type") AS MilestoneCreatorType
-		,GHInsights.USql.Utility.GetString(Data, "milestone.description") AS MilestoneDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "milestone.description") AS MilestoneDescription
 		,GHInsights.USql.Utility.GetDateTime(Data, "milestone.due_on") AS MilestoneDueOn
 		,GHInsights.USql.Utility.GetInteger(Data, "milestone.id") AS MilestoneId
 		,GHInsights.USql.Utility.GetInteger(Data, "milestone.number") AS MilestoneNumber

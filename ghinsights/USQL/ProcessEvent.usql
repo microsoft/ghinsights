@@ -3,7 +3,7 @@ REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @Event =
-SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
+SELECT	 GHInsights.USql.Utility.GetString(Data, "id") AS EventId
 		,GHInsights.USql.Utility.GetInteger(Data, "actor.id") AS ActorId
 		,GHInsights.USql.Utility.GetString(Data, "actor.login") AS ActorLogin
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
@@ -29,11 +29,11 @@ SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GHInsights.USql.Utility.GetString(Data, "payload.comment.user.login") AS PayloadCommentUserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.comment.user.site_admin") AS PayloadCommentUserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "payload.comment.user.type") AS PayloadCommentUserType
-		,GHInsights.USql.Utility.GetString(Data, "payload.description") AS PayloadDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.description") AS PayloadDescription
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.distinct_size") AS PayloadDistinctSize
 		,GHInsights.USql.Utility.GetDateTime(Data, "payload.forkee.created_at") AS PayloadForkeeCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "payload.forkee.default_branch") AS PayloadForkeeDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "payload.forkee.description") AS PayloadForkeeDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.forkee.description") AS PayloadForkeeDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.forkee.fork") AS PayloadForkeeFork
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.forkee.forks") AS PayloadForkeeForks
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.forkee.forks_count") AS PayloadForkeeForksCount
@@ -78,7 +78,7 @@ SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GHInsights.USql.Utility.GetString(Data, "payload.issue.milestone.creator.login") AS PayloadIssueMilestoneCreatorLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.issue.milestone.creator.site_admin") AS PayloadIssueMilestoneCreatorSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "payload.issue.milestone.creator.type") AS PayloadIssueMilestoneCreatorType
-		,GHInsights.USql.Utility.GetString(Data, "payload.issue.milestone.description") AS PayloadIssueMilestoneDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.issue.milestone.description") AS PayloadIssueMilestoneDescription
 		,GHInsights.USql.Utility.GetDateTime(Data, "payload.issue.milestone.due_on") AS PayloadIssueMilestoneDueOn
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.issue.milestone.id") AS PayloadIssueMilestoneId
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.issue.milestone.number") AS PayloadIssueMilestoneNumber
