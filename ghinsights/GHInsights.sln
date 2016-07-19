@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{3466B219-07DB-46AE-8697-CFD2A1650EC8}") = "DataFactory", "DataFactory\DataFactory.dfproj", "{FFA75F62-780F-4997-9EA5-251B0A2A5863}"
 EndProject

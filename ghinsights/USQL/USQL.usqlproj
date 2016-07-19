@@ -257,6 +257,8 @@
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
   </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
   <PropertyGroup>
   </PropertyGroup>

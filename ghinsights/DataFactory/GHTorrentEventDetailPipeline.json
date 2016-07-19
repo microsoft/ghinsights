@@ -40,7 +40,6 @@
         "typeProperties": {
           "priority": 0,
           "degreeOfParallelism": 5,
-          "scriptLinkedService": "GHInsightsAzureStorage",
           "script": "GHInsights.dbo.StageData(@Year, @Month, @Day);",
           "parameters": {
             "Year": "$$Text.Format('{0:yyyy}',SliceStart)",
@@ -68,7 +67,6 @@
         "typeProperties": {
           "priority": 0,
           "degreeOfParallelism": 200,
-          "scriptLinkedService": "GHInsightsAzureStorage",
           "script": "GHInsights.dbo.ProcessDaily(@Year, @Month, @Day);",
           "parameters": {
             "Year": "$$Text.Format('{0:yyyy}',SliceStart)",
