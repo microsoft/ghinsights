@@ -387,7 +387,7 @@ SELECT	 EventId
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.release.draft") AS PayloadReleaseDraft
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.release.id") AS PayloadReleaseId
 		,GHInsights.USql.Utility.GetString(Data, "payload.release.name") AS PayloadReleaseName
-		,GHInsights.USql.Utility.GetBoolean(Data, "payload.rlemeease.prerelease") AS PayloadReleasePrerelease
+		,GHInsights.USql.Utility.GetBoolean(Data, "payload.release.prerelease") AS PayloadReleasePrerelease
 		,GHInsights.USql.Utility.GetDateTime(Data, "payload.release.published_at") AS PayloadReleasePublishedAt
 		,GHInsights.USql.Utility.GetString(Data, "payload.release.tag_name") AS PayloadReleaseTagName
 		,GHInsights.USql.Utility.GetString(Data, "payload.release.target_commitish") AS PayloadReleaseTargetCommitish

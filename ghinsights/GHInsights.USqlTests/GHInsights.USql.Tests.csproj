@@ -57,7 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GHInsights.USql\GHInsights.USql.csproj">
       <Project>{1B3E7106-6D16-4B96-87C5-F15E18FFC08F}</Project>
-      <Name>GitHubAnalytics.USql</Name>
+      <Name>GHInsights.USql</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

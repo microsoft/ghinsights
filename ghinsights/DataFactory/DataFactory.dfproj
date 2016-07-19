@@ -27,6 +27,8 @@
     <Folder Include="Dependencies\" />
   </ItemGroup>
   <ItemGroup>
+    <Script Include="MaxAnalyticsRepoAttributes.json" />
+    <Script Include="MaxAnalyticsDailyRepoActivity.json" />
     <Script Include="GHInsightsMSDataLakeStore.json" />
     <Script Include="ProcessedDataMS.json" />
     <Script Include="StagedDataMS.json" />
