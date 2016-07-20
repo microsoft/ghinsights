@@ -4,6 +4,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @Commit =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
 		,GHInsights.USql.Utility.GetInteger(Data, "author.id") AS AuthorId
 		,GHInsights.USql.Utility.GetString(Data, "author.login") AS AuthorLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "author.site_admin") AS AuthorSiteAdmin
@@ -46,6 +47,7 @@ CREATE TABLE dbo.Commit
 )
 AS
 SELECT   CommitSha
+        ,Url
 		,AuthorId
 		,AuthorLogin
 		,AuthorSiteAdmin
