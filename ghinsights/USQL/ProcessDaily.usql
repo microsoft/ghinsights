@@ -29,6 +29,7 @@ AND   IngestDate == @IngestDatePartition;
 
 @NewCommit =
 SELECT	 CommitSha
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
 		,GHInsights.USql.Utility.GetInteger(Data, "author.id") AS AuthorId
 		,GHInsights.USql.Utility.GetString(Data, "author.login") AS AuthorLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "author.site_admin") AS AuthorSiteAdmin
@@ -69,6 +70,7 @@ TRUNCATE TABLE dbo.Commit;
 
 INSERT dbo.Commit
 SELECT   CommitSha
+        ,Url
 		,AuthorId
 		,AuthorLogin
 		,AuthorSiteAdmin
@@ -412,6 +414,8 @@ SELECT   *
         ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Event;
 
+TRUNCATE TABLE dbo.Event;
+    
 INSERT dbo.Event
 SELECT   EventId
 		,ActorId
