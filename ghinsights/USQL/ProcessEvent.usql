@@ -3,7 +3,7 @@ REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @Event =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "id") AS EventId
+SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
 		,GHInsights.USql.Utility.GetInteger(Data, "actor.id") AS ActorId
 		,GHInsights.USql.Utility.GetString(Data, "actor.login") AS ActorLogin
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
