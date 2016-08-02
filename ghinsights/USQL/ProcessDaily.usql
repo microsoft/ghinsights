@@ -270,7 +270,7 @@ WHERE RowNumber == 1;
 //  60
 
 @NewRawEvent =
-SELECT   GHInsights.USql.Utility.GetString(Data, "id") AS EventId 
+SELECT   GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId 
         ,Data
         ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate

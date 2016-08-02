@@ -3,7 +3,7 @@ REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @Event =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "id") AS EventId
+SELECT	 GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
         ,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.id") AS EventPayloadPullRequestId
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.additions") AS Additions
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.assignee.id") AS AssigneeId
