@@ -1962,10 +1962,7 @@ FROM @PullRequestDeDupe
 WHERE RowNumber == 1;
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-//  Process PullRequestComment
-//  10
+
 
 ////////////////////////////////////////////////////
 //
@@ -2005,6 +2002,11 @@ SELECT
 FROM @PullRequestCommitDedupe
 WHERE RowNumber == 1;
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Process PullRequestComment
+//  10
+
 
 @NewPullRequestComment =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
@@ -2032,6 +2034,8 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 FROM Staging.GHTorrent.GitHubData AS e
 WHERE EventName == "pull_request_comments"
 AND   IngestDate == @IngestDatePartition;
+
+
 
 @PullRequestComment =
     SELECT *

@@ -24,7 +24,7 @@ CREATE TABLE dbo.PullRequestCommit
     CLUSTERED(CommitSha)
     PARTITIONED BY
     HASH(CommitSha)
-    INTO 200
+    INTO 20
 )
 AS
 SELECT   CommitSha
