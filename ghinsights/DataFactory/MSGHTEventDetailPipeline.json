@@ -87,7 +87,7 @@
         }
       },
       {
-        "name": "RunDaily1",
+        "name": "RunDaily",
         "type": "DataLakeAnalyticsU-SQL",
         "inputs": [ { "name": "ProcessedDataMS" } ],
         "outputs": [ { "name": "GHInsightsMSDatalakeAnalytics" } ],
