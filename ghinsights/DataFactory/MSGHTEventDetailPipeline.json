@@ -87,41 +87,14 @@
         }
       },
       {
-        "name": "DailyRepoActivity",
+        "name": "RunDaily1",
         "type": "DataLakeAnalyticsU-SQL",
         "inputs": [ { "name": "ProcessedDataMS" } ],
-        "outputs": [ { "name": "MaxAnalyticsDailyRepoActivity" } ],
+        "outputs": [ { "name": "GHInsightsMSDatalakeAnalytics" } ],
         "typeProperties": {
           "priority": 0,
           "degreeOfParallelism": 20,
-          "script": "GHInsights.dbo.DailyRepoActivity(@Year, @Month, @Day);",
-          "parameters": {
-            "Year": "$$Text.Format('{0:yyyy}',SliceStart)",
-            "Month": "$$Text.Format('{0:MM}',SliceStart)",
-            "Day": "$$Text.Format('{0:dd}',SliceStart)"
-          }
-        },
-        "linkedServiceName": "GHInsightsMSUSQL",
-        "policy": {
-          "concurrency": 1,
-          "executionPriorityOrder": "OldestFirst",
-          "retry": 0,
-          "timeout": "04:00:00"
-        },
-        "scheduler": {
-          "frequency": "Day",
-          "interval": 1
-        }
-      },
-      {
-        "name": "RepoAttributes",
-        "type": "DataLakeAnalyticsU-SQL",
-        "inputs": [ { "name": "ProcessedDataMS" } ],
-        "outputs": [ { "name": "MaxAnalyticsRepoAttributes" } ],
-        "typeProperties": {
-          "priority": 0,
-          "degreeOfParallelism": 20,
-          "script": "GHInsights.dbo.RepoAttributes(@Year, @Month, @Day);",
+          "script": "Extended.dbo.RunDaily(@Year, @Month, @Day);",
           "parameters": {
             "Year": "$$Text.Format('{0:yyyy}',SliceStart)",
             "Month": "$$Text.Format('{0:MM}',SliceStart)",
@@ -142,7 +115,7 @@
       }
     ],
     "isPaused": false,
-    "start": "2016-06-13T00:00:00Z",
+    "start": "2016-08-07T00:00:00Z",
     "end": "9999-09-09T00:00:00Z"
   }
 }

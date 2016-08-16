@@ -1967,6 +1967,44 @@ WHERE RowNumber == 1;
 //  Process PullRequestComment
 //  10
 
+////////////////////////////////////////////////////
+//
+//   Process PullRequestCommits
+//
+@NewPullRequestCommit =
+SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,GHInsights.USql.Utility.GetString(Data, "pull_request_id") AS PullRequestId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "pull_request_commits"
+      AND IngestDate == @IngestDatePartition;
+    
+@PullRequestCommit = 
+SELECT *
+    FROM dbo.PullRequestCommit
+        UNION ALL
+    SELECT *
+    FROM @NewPullRequestCommit;
+
+@PullRequestCommitDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @Watcher;
+
+TRUNCATE TABLE dbo.PullRequestCommit;
+    
+INSERT dbo.PullRequestCommit
+SELECT 
+     CommitSha
+    ,Url
+    ,EtlSourceId
+    ,PullRequestId
+    ,EtlIngestDate
+FROM @PullRequestCommitDedupe
+WHERE RowNumber == 1;
+
 
 @NewPullRequestComment =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
@@ -2430,6 +2468,6 @@ SELECT   Repo
         ,EtlIngestDate
 FROM @WatcherDeDupe
 WHERE RowNumber == 1;
-
-
+    
+    
 END;
