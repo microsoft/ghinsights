@@ -247,6 +247,7 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
+    <Script Include="ProcessPullRequestCommit.usql" />
     <Script Include="StageData.usql">
       <UseLocalComputeAccount>true</UseLocalComputeAccount>
       <LocalComputeAccount>localcomputeaccount</LocalComputeAccount>
@@ -256,8 +257,6 @@
       <ClusterDatabase>GHInsights</ClusterDatabase>
       <ClusterSchema>dbo</ClusterSchema>
     </Script>
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
   <PropertyGroup>

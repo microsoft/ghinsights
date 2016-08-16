@@ -1,0 +1,36 @@
+﻿
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@PullRequestCommit =
+SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
+		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+        ,GHInsights.USql.Utility.GetString(Data, "pull_request_id") AS PullRequestId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHTorrent.GitHubData AS e
+WHERE EventName == "pull_request_commits";
+
+@PullRequestCommitDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @PullRequestCommit;
+
+DROP TABLE IF EXISTS dbo.PullRequestCommit;
+
+CREATE TABLE dbo.PullRequestCommit
+(
+    INDEX IX_Commit
+    CLUSTERED(CommitSha)
+    PARTITIONED BY
+    HASH(CommitSha)
+    INTO 20
+)
+AS
+SELECT   CommitSha
+        ,Url
+        ,PullRequestId
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @PullRequestCommitDeDupe
+WHERE RowNumber == 1;

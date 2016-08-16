@@ -1,0 +1,13 @@
+﻿{
+  "name": "GHInsightsMSDatalakeAnalytics",
+  "properties": {
+    "published": false,
+    "type": "CustomDataset",
+    "linkedServiceName": "GHInsightsMSDataLakeStore",
+    "typeProperties": { },
+    "availability": {
+      "frequency": "Day",
+      "interval": 1
+    }
+  }
+}
