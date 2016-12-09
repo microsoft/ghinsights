@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Analytics.Types.Sql;
 using Newtonsoft.Json.Linq;
 using System.IO;
@@ -125,6 +123,25 @@ namespace GHInsights.USql
                 DateTime dateTime;
                 DateTime.TryParse(value, out dateTime);
                 return dateTime;
+            }
+            catch (FormatException)
+            {
+                throw new FormatException($"Error trying to parse using GetDateTime - {value}");
+            }
+        }
+        public static Guid? GetGuid(SqlMap<string, byte[]> inputColumn, string path)
+        {
+            var value = GetValue(inputColumn, path);
+            if (value == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                Guid guid;
+                Guid.TryParse(value, out guid);
+                return guid;
             }
             catch (FormatException)
             {
