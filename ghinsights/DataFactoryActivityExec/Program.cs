@@ -18,7 +18,7 @@ namespace DataFactoryActivityExec
 
             var config =
                 JObject.Parse(
-                    File.ReadAllText(@"..\..\..\..\..\LocalSettings-DataFactory.json"));
+                    File.ReadAllText(@"..\..\DevEnvironment.json"));
 
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",

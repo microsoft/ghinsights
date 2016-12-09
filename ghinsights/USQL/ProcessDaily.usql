@@ -215,7 +215,7 @@ WHERE RowNumber == 1;
 
 @NewCommitComment =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitSha
-		,(int)GHInsights.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
+		,GHInsights.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
 		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetInteger(Data, "line") AS Line
@@ -231,7 +231,25 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitSha
 FROM Staging.GHTorrent.GitHubData AS e
 WHERE EventName == "commit_comments"
 AND   IngestDate == @IngestDatePartition;
-    
+
+@NewCommitComment =
+SELECT	 CommitSha
+		,(int)CommitCommentId AS CommitCommentId
+		,Body
+		,CreatedAt
+		,Line
+		,Path
+		,Position
+		,UpdatedAt
+		,UserId
+		,UserLogin
+		,UserSiteAdmin
+		,UserType
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @NewCommitComment AS e
+WHERE CommitCommentId IS NOT NULL;
+
 @CommitComment =
     SELECT *
     FROM dbo.CommitComment
@@ -1679,7 +1697,6 @@ WHERE RowNumber == 1;
 //  Process PullRequest
 //  10
 
-
 @NewPullRequest =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
@@ -1961,13 +1978,11 @@ SELECT   Repo
 FROM @PullRequestDeDupe
 WHERE RowNumber == 1;
 
-
-
-
 ////////////////////////////////////////////////////
 //
-//   Process PullRequestCommits
+//   Process PullRequestCommit
 //
+
 @NewPullRequestCommit =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
         ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
@@ -1988,7 +2003,7 @@ SELECT *
 @PullRequestCommitDeDupe =
 SELECT   *
         ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @Watcher;
+FROM @PullRequestCommit;
 
 TRUNCATE TABLE dbo.PullRequestCommit;
     
@@ -1999,14 +2014,14 @@ SELECT
     ,EtlSourceId
     ,PullRequestId
     ,EtlIngestDate
-FROM @PullRequestCommitDedupe
+FROM @PullRequestCommitDeDupe
 WHERE RowNumber == 1;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Process PullRequestComment
 //  10
-
 
 @NewPullRequestComment =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
@@ -2034,8 +2049,6 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 FROM Staging.GHTorrent.GitHubData AS e
 WHERE EventName == "pull_request_comments"
 AND   IngestDate == @IngestDatePartition;
-
-
 
 @PullRequestComment =
     SELECT *
@@ -2412,7 +2425,7 @@ WHERE RowNumber == 1;
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
-		,GHInsights.USql.Utility.GetInteger(Data, "id") AS WatcherId
+		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
 		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
 		,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
 		,GHInsights.USql.Utility.GetPiiString(Data, "company") AS Company
@@ -2443,7 +2456,7 @@ AND   IngestDate == @IngestDatePartition;
 
 @WatcherDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY WatcherId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Login, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Watcher;
 
 TRUNCATE TABLE dbo.Watcher;
@@ -2452,7 +2465,7 @@ INSERT dbo.Watcher
 SELECT   Repo
 	    ,Owner
 	    ,Login
-	    ,WatcherId
+	    ,UserId
 	    ,Bio
 	    ,Blog
 	    ,Company

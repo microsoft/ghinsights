@@ -6,7 +6,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
-		,GHInsights.USql.Utility.GetInteger(Data, "id") AS WatcherId
+		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
 		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
 		,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
 		,GHInsights.USql.Utility.GetPiiString(Data, "company") AS Company
@@ -29,7 +29,7 @@ WHERE EventName == "watchers";
 
 @WatcherDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY WatcherId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Login, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
 FROM @Watcher;
 
 DROP TABLE IF EXISTS dbo.Watcher;
@@ -38,15 +38,15 @@ CREATE TABLE dbo.Watcher
 (
     INDEX IX_Watcher
     CLUSTERED(Repo, Owner, Login)
-    PARTITIONED BY
-    HASH(WatcherId, UpdatedAt)
+    DISTRIBUTED BY
+    HASH(Repo, Owner, Login, UpdatedAt)
     INTO 20
 )
 AS
 SELECT	 Repo
 		,Owner
 		,Login
-		,WatcherId
+		,UserId
 		,Bio
 		,Blog
 		,Company
