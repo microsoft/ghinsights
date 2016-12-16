@@ -14,6 +14,7 @@ SELECT Urn
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
+		,ProcessedAt
 		,Urn AS EtlSourceId
     ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHCrawler.GitHubData AS e
@@ -21,7 +22,7 @@ WHERE EventName == "issue_comment";
 
 @IssueCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Urn ORDER BY UpdatedAt DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @IssueComment;
 
 DROP TABLE IF EXISTS dbo.IssueComment;
@@ -44,6 +45,7 @@ SELECT  Urn
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,ProcessedAt
 		,EtlSourceId
     ,EtlIngestDate
 FROM @IssueCommentDeDupe

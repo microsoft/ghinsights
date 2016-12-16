@@ -48,6 +48,7 @@ SELECT Urn
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.closed_by.href") AS ClosedByUrn
+		,ProcessedAt
 		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHCrawler.GitHubData AS e
@@ -55,7 +56,7 @@ WHERE EventName == "issue";
 
 @IssueDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Urn ORDER BY UpdatedAt DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @Issue;
 
 DROP TABLE IF EXISTS dbo.Issue;
@@ -111,6 +112,7 @@ SELECT   Urn
 		,UserType
 		,UserUrn
 		,ClosedByUrn
+		,ProcessedAt
 		,EtlSourceId
     ,EtlIngestDate
 FROM @IssueDeDupe

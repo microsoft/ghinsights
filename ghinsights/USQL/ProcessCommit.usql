@@ -27,6 +27,7 @@ SELECT	Urn
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.additions") AS StatsAdditions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.deletions") AS StatsDeletions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.total") AS StatsTotal
+		,ProcessedAt AS ProcessedAt
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHCrawler.GitHubData AS e
@@ -34,7 +35,7 @@ WHERE EventName == "commit";
 
 @CommitDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @Commit;
 
 DROP TABLE IF EXISTS dbo.Commit;
@@ -43,7 +44,7 @@ CREATE TABLE dbo.Commit
 (
     INDEX IX_Commit
     CLUSTERED(Urn)
-    PARTITIONED BY
+    DISTRIBUTE
     HASH(Urn)
     INTO 200
 )
@@ -73,6 +74,7 @@ SELECT  Urn
 		,StatsAdditions
 		,StatsDeletions
 		,StatsTotal
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @CommitDeDupe

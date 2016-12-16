@@ -105,14 +105,15 @@ SELECT	Urn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.subscribers.href") AS SubscribersPageUrn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issues.href") AS IssuesUrn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.commits.href") AS CommitsUrn
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+				,ProcessedAt
+				,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHCrawler.GitHubData AS e
 WHERE EventName == "repo";
 
 @RepoDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY RepoId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @Repo;
 
 DROP TABLE IF EXISTS dbo.Repo;
@@ -221,13 +222,14 @@ SELECT  Urn
 		,UpdatedAt
 		,Watchers
 		,WatchersCount
-        ,TeamsPageUrn
-        ,CollaboratorsPageUrn
-        ,ContributorsPageUrn
-        ,SubscribersPageUrn
-        ,IssuesUrn
-        ,CommitsUrn
-		,Urn AS EtlSourceId
+		,TeamsPageUrn
+		,CollaboratorsPageUrn
+		,ContributorsPageUrn
+		,SubscribersPageUrn
+		,IssuesUrn
+		,CommitsUrn
+		,ProcessedAt
+		,EtlSourceId
         ,EtlIngestDate
 FROM @RepoDeDupe
 WHERE RowNumber == 1;

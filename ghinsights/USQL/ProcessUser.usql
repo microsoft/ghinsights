@@ -1,9 +1,11 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @User =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
+SELECT	Urn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
 		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
         ,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
@@ -20,14 +22,15 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+		,ProcessedAt
+		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "users";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "user";
 
 @UserDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY UserId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC ) AS RowNumber
 FROM @User;
 
 DROP TABLE IF EXISTS dbo.User;
@@ -35,12 +38,13 @@ DROP TABLE IF EXISTS dbo.User;
 CREATE TABLE dbo.User
 (
     INDEX IX_User
-    CLUSTERED(Login)
-    PARTITIONED BY
-    HASH(UserId, UpdatedAt)
+    CLUSTERED(Urn)
+    DISTRIBUTE HASH(Urn, UpdatedAt)
 )
 AS
-SELECT   Login
+SELECT  Urn
+		,SiblingsUrn
+		,Login
 		,UserId
 		,Bio
 		,Blog
@@ -57,6 +61,7 @@ SELECT   Login
 		,SiteAdmin
 		,Type
 		,UpdatedAt
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @UserDeDupe

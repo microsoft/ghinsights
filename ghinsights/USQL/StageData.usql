@@ -1,11 +1,9 @@
-﻿
-DROP PROCEDURE IF EXISTS GHInsights.dbo.StageData;
-
-CREATE PROCEDURE GHInsights.dbo.StageData(@Year string, @Month string, @Day string)
+﻿DROP PROCEDURE IF EXISTS GHInsightsDev.dbo.StageData;
+CREATE PROCEDURE GHInsightsDev.dbo.StageData(@Year string, @Month string, @Day string)
 AS
 BEGIN
 
-USE GHInsights;
+USE GHInsightsDev;
 
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
@@ -14,19 +12,20 @@ DECLARE @IngestDate = DateTime.Parse(string.Format("{0:D4}-{1:D2}-{2:D3}", @Year
 DECLARE @IngestDatePartition = @IngestDate.ToString("yyyy-MM-dd");
 
 @ExtractedData =
-    EXTRACT  EventName string
+    EXTRACT  FileName string
             ,IngestDate DateTime
             ,Data SqlMap<string, byte[]>
-    FROM "wasb://raw@ghinsightspublic.blob.core.windows.net/{EventName:*}/v1/{IngestDate:yyyy}/{IngestDate:MM}/{EventName:*}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json.gz"
-    USING GHInsights.USql.Extractors.FlatJson(outputColumnName: "Data");
+    FROM "wasb://crawlerprod-log@ospobackup/v1/{IngestDate:yyyy}/{IngestDate:MM}/{IngestDate:dd}/{FileName}.json"
+    USING GHInsights.USql.Extractors.FlatJson(outputColumnName: "Data", silent: true);
 
-ALTER TABLE Staging.GHTorrent.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);
-ALTER TABLE Staging.GHTorrent.GitHubData ADD PARTITION (@IngestDatePartition);
+ALTER TABLE Staging.GHCrawler.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);
+ALTER TABLE Staging.GHCrawler.GitHubData ADD PARTITION (@IngestDatePartition);
 
-INSERT Staging.GHTorrent.GitHubData
+INSERT Staging.GHCrawler.GitHubData
 PARTITION (@IngestDatePartition)
-SELECT  EventName
-       ,GHInsights.USql.Utility.GetString(Data,"_id") AS MongoId
+SELECT  GHInsights.USql.Utility.GetString(Data,"_metadata.type") AS EventName
+       ,GHInsights.USql.Utility.GetDateTime(Data,"_metadata.processedAt") AS ProcessedAt
+       ,GHInsights.USql.Utility.GetString(Data,"_metadata.links.self.href") AS Urn
        ,Data
 FROM @ExtractedData
 WHERE IngestDate == @IngestDate;
