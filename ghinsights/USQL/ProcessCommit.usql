@@ -1,9 +1,11 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
-
 @Commit =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
+SELECT	Urn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+        ,GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
         ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
 		,GHInsights.USql.Utility.GetInteger(Data, "author.id") AS AuthorId
 		,GHInsights.USql.Utility.GetString(Data, "author.login") AS AuthorLogin
@@ -25,10 +27,10 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.additions") AS StatsAdditions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.deletions") AS StatsDeletions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.total") AS StatsTotal
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "commits";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "commit";
 
 @CommitDeDupe =
 SELECT   *
@@ -40,13 +42,16 @@ DROP TABLE IF EXISTS dbo.Commit;
 CREATE TABLE dbo.Commit
 (
     INDEX IX_Commit
-    CLUSTERED(CommitSha)
+    CLUSTERED(Urn)
     PARTITIONED BY
-    HASH(CommitSha)
+    HASH(Urn)
     INTO 200
 )
 AS
-SELECT   CommitSha
+SELECT  Urn
+        ,RepoUrn
+        ,SiblingsUrn
+        ,CommitSha
         ,Url
 		,AuthorId
 		,AuthorLogin

@@ -1,4 +1,5 @@
 ﻿
+USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
@@ -16,10 +17,10 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitSha
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
+    ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "commit_comments";
+WHERE EventName == "comments";
 
 @CommitCommentDeDupe =
 SELECT   *

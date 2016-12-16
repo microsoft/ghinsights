@@ -1,11 +1,13 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
 
 @Issue =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
+SELECT Urn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetInteger(Data, "number") AS Number
         ,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueId
@@ -45,14 +47,16 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.closed_by.href") AS ClosedByUrn
+		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "issues";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "issue";
 
 @IssueDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Urn ORDER BY UpdatedAt DESC) AS RowNumber
 FROM @Issue;
 
 DROP TABLE IF EXISTS dbo.Issue;
@@ -60,16 +64,17 @@ DROP TABLE IF EXISTS dbo.Issue;
 CREATE TABLE dbo.Issue
 (
     INDEX IX_Issue
-    CLUSTERED(Repo, Owner, Number)
-    PARTITIONED BY
-    HASH(IssueId, UpdatedAt)
+    CLUSTERED(Urn, RepoUrn, Number)
+    DISTRIBUTE HASH(Urn, UpdatedAt)
     INTO 20
 )
 AS
-SELECT   Repo
+SELECT   Urn
+		,RepoUrn
+		,SiblingsUrn
 		,Owner
 		,Number
-        ,IssueId
+    ,IssueId
 		,AssigneeId
 		,AssigneeLogin
 		,AssigneeSiteAdmin
@@ -106,7 +111,9 @@ SELECT   Repo
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,UserUrn
+		,ClosedByUrn
 		,EtlSourceId
-        ,EtlIngestDate
+    ,EtlIngestDate
 FROM @IssueDeDupe
 WHERE RowNumber == 1;

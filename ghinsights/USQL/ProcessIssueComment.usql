@@ -1,14 +1,11 @@
-﻿
+﻿USE GHInsightsDev;
+
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-
-
-
 @IssueComment =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
-		,GHInsights.USql.Utility.GetInteger(Data, "issue_id") AS IssueId
+SELECT Urn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueCommentId
 		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
@@ -17,14 +14,14 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "issue_comments";
+		,Urn AS EtlSourceId
+    ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "issue_comment";
 
 @IssueCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY Urn ORDER BY UpdatedAt DESC) AS RowNumber
 FROM @IssueComment;
 
 DROP TABLE IF EXISTS dbo.IssueComment;
@@ -32,15 +29,13 @@ DROP TABLE IF EXISTS dbo.IssueComment;
 CREATE TABLE dbo.IssueComment
 (
     INDEX IX_IssueComment
-    CLUSTERED(Repo, Owner, IssueId, IssueCommentId)
-    PARTITIONED BY
-    HASH(IssueCommentId, UpdatedAt)
+    CLUSTERED(Urn)
+    DISTRIBUTE HASH(IssueCommentId, UpdatedAt)
     INTO 20
 )
 AS
-SELECT   Repo
-		,Owner
-		,IssueId
+SELECT  Urn
+		,SiblingsUrn
 		,IssueCommentId
 		,Body
 		,CreatedAt
@@ -50,6 +45,6 @@ SELECT   Repo
 		,UserSiteAdmin
 		,UserType
 		,EtlSourceId
-        ,EtlIngestDate
+    ,EtlIngestDate
 FROM @IssueCommentDeDupe
 WHERE RowNumber == 1;

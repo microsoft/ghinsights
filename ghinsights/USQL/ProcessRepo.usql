@@ -1,10 +1,12 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-
 @Repo =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "name") AS Name
+SELECT	Urn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.owner.href") AS OwnerUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+        ,GHInsights.USql.Utility.GetString(Data, "name") AS Name
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS RepoId
 		,GHInsights.USql.Utility.GetString(Data, "owner.login") AS OwnerLogin
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
@@ -97,10 +99,16 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "name") AS Name
 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
 		,GHInsights.USql.Utility.GetInteger(Data, "watchers") AS Watchers
 		,GHInsights.USql.Utility.GetInteger(Data, "watchers_count") AS WatchersCount
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.teams.href") AS TeamsPageUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.collaborators.href") AS CollaboratorsPageUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.contributors.href") AS ContributorsPageUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.subscribers.href") AS SubscribersPageUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issues.href") AS IssuesUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.commits.href") AS CommitsUrn
 		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "repos";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "repo";
 
 @RepoDeDupe =
 SELECT   *
@@ -112,13 +120,15 @@ DROP TABLE IF EXISTS dbo.Repo;
 CREATE TABLE dbo.Repo
 (
     INDEX IX_Repo
-    CLUSTERED(Name, OwnerLogin)
-    PARTITIONED BY
-    HASH(RepoId, UpdatedAt)
+    CLUSTERED(Urn, OwnerUrn)
+    DISTRIBUTE HASH(Urn)
     INTO 20
 )
 AS
-SELECT   Name
+SELECT  Urn
+        ,OwnerUrn
+        ,SiblingsUrn
+        ,Name
 		,OwnerLogin
 		,CreatedAt
 		,DefaultBranch
@@ -211,7 +221,13 @@ SELECT   Name
 		,UpdatedAt
 		,Watchers
 		,WatchersCount
-		,EtlSourceId
+        ,TeamsPageUrn
+        ,CollaboratorsPageUrn
+        ,ContributorsPageUrn
+        ,SubscribersPageUrn
+        ,IssuesUrn
+        ,CommitsUrn
+		,Urn AS EtlSourceId
         ,EtlIngestDate
 FROM @RepoDeDupe
 WHERE RowNumber == 1;

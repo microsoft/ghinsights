@@ -4,19 +4,18 @@ CREATE DATABASE IF NOT EXISTS Staging;
 
 USE Staging;
 
-CREATE SCHEMA IF NOT EXISTS GHTorrent;
+CREATE SCHEMA IF NOT EXISTS GHCrawler;
 
-DROP TABLE IF EXISTS GHTorrent.GitHubData;
+DROP TABLE IF EXISTS GHCrawler.GitHubData;
 
-CREATE TABLE IF NOT EXISTS GHTorrent.GitHubData (
-     EventName string
+CREATE TABLE Staging.GHCrawler.GitHubData (
+    EventName string
     ,IngestDate string
-    ,MongoId string
+    ,Urn string
     ,Data SqlMap<string, byte[]>
-    ,INDEX IX_Stage_GitHubData
-        CLUSTERED (EventName, MongoId)
+    ,INDEX IX_Stage_GhCrawlerData
+        CLUSTERED (EventName, Urn)
         PARTITIONED BY
             BUCKETS (IngestDate)
-            HASH(EventName, MongoId) INTO 20
+            HASH (EventName, Urn) INTO 20
 );
-
