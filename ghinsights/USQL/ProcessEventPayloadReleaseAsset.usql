@@ -1,84 +1,84 @@
 ﻿
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-@RawEventPayloadReleaseAsset =
-SELECT  GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId 
-        ,Data
-        ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-        FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "events";
+// @RawEventPayloadReleaseAsset =
+// SELECT  GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
+//         ,Data
+//         ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+//         FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "events";
 
-@EventPayloadReleaseAssetDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @RawEventPayloadReleaseAsset;
+// @EventPayloadReleaseAssetDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
+// FROM @RawEventPayloadReleaseAsset;
 
-@EventPayloadReleaseAssetExplode =
-SELECT	 EtlIngestDate
-        ,EventId
-        ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadReleaseAssetId
-        ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-        ,Value AS Value
-        ,EtlSourceId
-FROM @EventPayloadReleaseAssetDeDupe AS e
-CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-WHERE JsonPath.StartsWith("payload.release.assets[")
-AND RowNumber == 1;
+// @EventPayloadReleaseAssetExplode =
+// SELECT	 EtlIngestDate
+//         ,EventId
+//         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadReleaseAssetId
+//         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
+//         ,Value AS Value
+//         ,EtlSourceId
+// FROM @EventPayloadReleaseAssetDeDupe AS e
+// CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+// WHERE JsonPath.StartsWith("payload.release.assets[")
+// AND RowNumber == 1;
 
-@EventPayloadReleaseAssetPrePivot =
-SELECT	 EtlIngestDate
-        ,EventId
-        ,EventPayloadReleaseAssetId
-        ,MAP_AGG(ColumnName, Value) AS Data
-        ,EtlSourceId
-FROM @EventPayloadReleaseAssetExplode AS e
-GROUP BY EtlIngestDate, EventId, EventPayloadReleaseAssetId, EtlSourceId;
+// @EventPayloadReleaseAssetPrePivot =
+// SELECT	 EtlIngestDate
+//         ,EventId
+//         ,EventPayloadReleaseAssetId
+//         ,MAP_AGG(ColumnName, Value) AS Data
+//         ,EtlSourceId
+// FROM @EventPayloadReleaseAssetExplode AS e
+// GROUP BY EtlIngestDate, EventId, EventPayloadReleaseAssetId, EtlSourceId;
 
-@EventPayloadReleaseAsset =
-SELECT   EventId
-        ,GHInsights.USql.Utility.GetInteger(Data, "id") AS EventPayloadReleaseAssetId
-		,GHInsights.USql.Utility.GetString(Data, "content_type") AS ContentType
-		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
-		,GHInsights.USql.Utility.GetInteger(Data, "download_count") AS DownloadCount
-		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
-		,GHInsights.USql.Utility.GetInteger(Data, "size") AS Size
-		,GHInsights.USql.Utility.GetString(Data, "state") AS State
-		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
-		,GHInsights.USql.Utility.GetInteger(Data, "uploader.id") AS UploaderId
-		,GHInsights.USql.Utility.GetString(Data, "uploader.login") AS UploaderLogin
-		,GHInsights.USql.Utility.GetBoolean(Data, "uploader.site_admin") AS UploaderSiteAdmin
-		,GHInsights.USql.Utility.GetString(Data, "uploader.type") AS UploaderType
-        ,EtlSourceId
-        ,EtlIngestDate
-FROM @EventPayloadReleaseAssetPrePivot AS e;
+// @EventPayloadReleaseAsset =
+// SELECT   EventId
+//         ,GHInsights.USql.Utility.GetInteger(Data, "id") AS EventPayloadReleaseAssetId
+// 		,GHInsights.USql.Utility.GetString(Data, "content_type") AS ContentType
+// 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+// 		,GHInsights.USql.Utility.GetInteger(Data, "download_count") AS DownloadCount
+// 		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+// 		,GHInsights.USql.Utility.GetInteger(Data, "size") AS Size
+// 		,GHInsights.USql.Utility.GetString(Data, "state") AS State
+// 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+// 		,GHInsights.USql.Utility.GetInteger(Data, "uploader.id") AS UploaderId
+// 		,GHInsights.USql.Utility.GetString(Data, "uploader.login") AS UploaderLogin
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "uploader.site_admin") AS UploaderSiteAdmin
+// 		,GHInsights.USql.Utility.GetString(Data, "uploader.type") AS UploaderType
+//         ,EtlSourceId
+//         ,EtlIngestDate
+// FROM @EventPayloadReleaseAssetPrePivot AS e;
 
-DROP TABLE IF EXISTS dbo.EventPayloadReleaseAsset;
+// DROP TABLE IF EXISTS dbo.EventPayloadReleaseAsset;
 
-CREATE TABLE dbo.EventPayloadReleaseAsset
-(
-    INDEX IX_EventPayloadReleaseAsset
-    CLUSTERED(EventId, EventPayloadReleaseAssetId)
-    PARTITIONED BY
-    HASH(EventId, EventPayloadReleaseAssetId, UpdatedAt)
-    INTO 20
-)
-AS
-SELECT   EventId
-        ,EventPayloadReleaseAssetId
-		,ContentType
-		,CreatedAt
-		,DownloadCount
-		,Name
-		,Size
-		,State
-		,UpdatedAt
-		,UploaderId
-		,UploaderLogin
-		,UploaderSiteAdmin
-		,UploaderType
-        ,EtlSourceId
-        ,EtlIngestDate
-FROM @EventPayloadReleaseAsset;
+// CREATE TABLE dbo.EventPayloadReleaseAsset
+// (
+//     INDEX IX_EventPayloadReleaseAsset
+//     CLUSTERED(EventId, EventPayloadReleaseAssetId)
+//     PARTITIONED BY
+//     HASH(EventId, EventPayloadReleaseAssetId, UpdatedAt)
+//     INTO 20
+// )
+// AS
+// SELECT   EventId
+//         ,EventPayloadReleaseAssetId
+// 		,ContentType
+// 		,CreatedAt
+// 		,DownloadCount
+// 		,Name
+// 		,Size
+// 		,State
+// 		,UpdatedAt
+// 		,UploaderId
+// 		,UploaderLogin
+// 		,UploaderSiteAdmin
+// 		,UploaderType
+//         ,EtlSourceId
+//         ,EtlIngestDate
+// FROM @EventPayloadReleaseAsset;
 

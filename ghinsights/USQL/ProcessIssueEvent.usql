@@ -1,71 +1,71 @@
 ﻿
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
-@IssueEvent =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
-		,GHInsights.USql.Utility.GetInteger(Data, "issue_id") AS IssueId
-		,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueEventId
-		,GHInsights.USql.Utility.GetInteger(Data, "actor.id") AS ActorId
-		,GHInsights.USql.Utility.GetString(Data, "actor.login") AS ActorLogin
-		,GHInsights.USql.Utility.GetBoolean(Data, "actor.site_admin") AS ActorSiteAdmin
-		,GHInsights.USql.Utility.GetString(Data, "actor.type") AS ActorType
-		,GHInsights.USql.Utility.GetInteger(Data, "assignee.id") AS AssigneeId
-		,GHInsights.USql.Utility.GetString(Data, "assignee.login") AS AssigneeLogin
-		,GHInsights.USql.Utility.GetBoolean(Data, "assignee.site_admin") AS AssigneeSiteAdmin
-		,GHInsights.USql.Utility.GetString(Data, "assignee.type") AS AssigneeType
-		,GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitId
-		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
-		,GHInsights.USql.Utility.GetString(Data, "event") AS EventName
-		,GHInsights.USql.Utility.GetString(Data, "label.color") AS LabelColor
-		,GHInsights.USql.Utility.GetString(Data, "label.name") AS LabelName
-		,GHInsights.USql.Utility.GetString(Data, "milestone.title") AS MilestoneTitle
-		,GHInsights.USql.Utility.GetString(Data, "rename.from") AS RenameFrom
-		,GHInsights.USql.Utility.GetString(Data, "rename.to") AS RenameTo
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "issue_events";
+// @IssueEvent =
+// SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
+// 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
+// 		,GHInsights.USql.Utility.GetInteger(Data, "issue_id") AS IssueId
+// 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueEventId
+// 		,GHInsights.USql.Utility.GetInteger(Data, "actor.id") AS ActorId
+// 		,GHInsights.USql.Utility.GetString(Data, "actor.login") AS ActorLogin
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "actor.site_admin") AS ActorSiteAdmin
+// 		,GHInsights.USql.Utility.GetString(Data, "actor.type") AS ActorType
+// 		,GHInsights.USql.Utility.GetInteger(Data, "assignee.id") AS AssigneeId
+// 		,GHInsights.USql.Utility.GetString(Data, "assignee.login") AS AssigneeLogin
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "assignee.site_admin") AS AssigneeSiteAdmin
+// 		,GHInsights.USql.Utility.GetString(Data, "assignee.type") AS AssigneeType
+// 		,GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitId
+// 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+// 		,GHInsights.USql.Utility.GetString(Data, "event") AS EventName
+// 		,GHInsights.USql.Utility.GetString(Data, "label.color") AS LabelColor
+// 		,GHInsights.USql.Utility.GetString(Data, "label.name") AS LabelName
+// 		,GHInsights.USql.Utility.GetString(Data, "milestone.title") AS MilestoneTitle
+// 		,GHInsights.USql.Utility.GetString(Data, "rename.from") AS RenameFrom
+// 		,GHInsights.USql.Utility.GetString(Data, "rename.to") AS RenameTo
+// 		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+// FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "issue_events";
 
-@IssueEventDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY IssueEventId ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @IssueEvent;
+// @IssueEventDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY IssueEventId ORDER BY EtlSourceId DESC) AS RowNumber
+// FROM @IssueEvent;
 
-DROP TABLE IF EXISTS dbo.IssueEvent;
+// DROP TABLE IF EXISTS dbo.IssueEvent;
 
-CREATE TABLE dbo.IssueEvent
-(
-    INDEX IX_IssueEvent
-    CLUSTERED(Repo, Owner, IssueId, IssueEventId)
-    PARTITIONED BY
-    HASH(IssueEventId)
-    INTO 20
-)
-AS
-SELECT   Repo
-		,Owner
-		,IssueId
-		,IssueEventId
-		,ActorId
-		,ActorLogin
-		,ActorSiteAdmin
-		,ActorType
-		,AssigneeId
-		,AssigneeLogin
-		,AssigneeSiteAdmin
-		,AssigneeType
-		,CommitId
-		,CreatedAt
-		,EventName
-		,LabelColor
-		,LabelName
-		,MilestoneTitle
-		,RenameFrom
-		,RenameTo
-		,EtlSourceId
-        ,EtlIngestDate
-FROM @IssueEventDeDupe
-WHERE RowNumber == 1;
+// CREATE TABLE dbo.IssueEvent
+// (
+//     INDEX IX_IssueEvent
+//     CLUSTERED(Repo, Owner, IssueId, IssueEventId)
+//     PARTITIONED BY
+//     HASH(IssueEventId)
+//     INTO 20
+// )
+// AS
+// SELECT   Repo
+// 		,Owner
+// 		,IssueId
+// 		,IssueEventId
+// 		,ActorId
+// 		,ActorLogin
+// 		,ActorSiteAdmin
+// 		,ActorType
+// 		,AssigneeId
+// 		,AssigneeLogin
+// 		,AssigneeSiteAdmin
+// 		,AssigneeType
+// 		,CommitId
+// 		,CreatedAt
+// 		,EventName
+// 		,LabelColor
+// 		,LabelName
+// 		,MilestoneTitle
+// 		,RenameFrom
+// 		,RenameTo
+// 		,EtlSourceId
+//         ,EtlIngestDate
+// FROM @IssueEventDeDupe
+// WHERE RowNumber == 1;

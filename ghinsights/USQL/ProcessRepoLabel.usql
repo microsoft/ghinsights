@@ -1,39 +1,39 @@
 ﻿
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
-@RepoLabel =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
-		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
-		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "repo_labels";
+// @RepoLabel =
+// SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
+// 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
+// 		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
+// 		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+// 		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+// FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "repo_labels";
 
-@RepoLabelDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Name ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @RepoLabel;
+// @RepoLabelDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY Repo, Owner, Name ORDER BY EtlSourceId DESC) AS RowNumber
+// FROM @RepoLabel;
 
-DROP TABLE IF EXISTS dbo.RepoLabel;
+// DROP TABLE IF EXISTS dbo.RepoLabel;
 
-CREATE TABLE dbo.RepoLabel
-(
-    INDEX IX_RepoLabel
-    CLUSTERED(Repo, Owner)
-    PARTITIONED BY
-    HASH(Repo, Owner, Name)
-    INTO 20
-)
-AS
-SELECT   Repo
-		,Owner
-		,Color
-		,Name
-		,EtlSourceId
-        ,EtlIngestDate
-FROM @RepoLabelDeDupe
-WHERE RowNumber == 1;
+// CREATE TABLE dbo.RepoLabel
+// (
+//     INDEX IX_RepoLabel
+//     CLUSTERED(Repo, Owner)
+//     PARTITIONED BY
+//     HASH(Repo, Owner, Name)
+//     INTO 20
+// )
+// AS
+// SELECT   Repo
+// 		,Owner
+// 		,Color
+// 		,Name
+// 		,EtlSourceId
+//         ,EtlIngestDate
+// FROM @RepoLabelDeDupe
+// WHERE RowNumber == 1;

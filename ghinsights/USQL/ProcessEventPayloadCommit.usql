@@ -1,71 +1,71 @@
 ﻿
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-@RawEvent =
-SELECT   GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId 
-        ,Data
-        ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-        FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "events";
+// @RawEvent =
+// SELECT   GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
+//         ,Data
+//         ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+//         FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "events";
 
-@EventDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @RawEvent;
+// @EventDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
+// FROM @RawEvent;
 
-@EventPayloadCommitExplode =
-SELECT	 EtlIngestDate
-        ,EventId
-        ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadCommitId
-        ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-        ,Value AS Value
-        ,EtlSourceId
-FROM @EventDeDupe AS e
-CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-WHERE JsonPath.StartsWith("payload.commits[")
-AND RowNumber == 1;
+// @EventPayloadCommitExplode =
+// SELECT	 EtlIngestDate
+//         ,EventId
+//         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadCommitId
+//         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
+//         ,Value AS Value
+//         ,EtlSourceId
+// FROM @EventDeDupe AS e
+// CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+// WHERE JsonPath.StartsWith("payload.commits[")
+// AND RowNumber == 1;
 
-@EventPayloadCommitPrePivot =
-SELECT	 EtlIngestDate
-        ,EventId
-        ,EventPayloadCommitId
-        ,MAP_AGG(ColumnName, Value) AS Data
-        ,EtlSourceId
-FROM @EventPayloadCommitExplode AS e
-GROUP BY EtlIngestDate, EventId, EventPayloadCommitId, EtlSourceId;
+// @EventPayloadCommitPrePivot =
+// SELECT	 EtlIngestDate
+//         ,EventId
+//         ,EventPayloadCommitId
+//         ,MAP_AGG(ColumnName, Value) AS Data
+//         ,EtlSourceId
+// FROM @EventPayloadCommitExplode AS e
+// GROUP BY EtlIngestDate, EventId, EventPayloadCommitId, EtlSourceId;
 
-@EventPayloadCommit =
-SELECT   EventId
-        ,EventPayloadCommitId
-        ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadCommitSha
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
-		,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
-		,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
-        ,EtlIngestDate
-        ,EtlSourceId
-FROM @EventPayloadCommitPrePivot AS e;
+// @EventPayloadCommit =
+// SELECT   EventId
+//         ,EventPayloadCommitId
+//         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadCommitSha
+// 		,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
+// 		,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
+// 		,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
+//         ,EtlIngestDate
+//         ,EtlSourceId
+// FROM @EventPayloadCommitPrePivot AS e;
 
-DROP TABLE IF EXISTS dbo.EventPayloadCommit;
+// DROP TABLE IF EXISTS dbo.EventPayloadCommit;
 
-CREATE TABLE dbo.EventPayloadCommit
-(
-    INDEX IX_EventPayloadCommit
-    CLUSTERED(EventId)
-    PARTITIONED BY
-    HASH(EventId, EventPayloadCommitSha)
-    INTO 60
-)
-AS
-SELECT   EventId
-        ,EventPayloadCommitId
-        ,EventPayloadCommitSha
-		,AuthorEmail
-		,AuthorName
-		,Distinct
-		,Message
-        ,EtlIngestDate
-        ,EtlSourceId
-FROM @EventPayloadCommit;
+// CREATE TABLE dbo.EventPayloadCommit
+// (
+//     INDEX IX_EventPayloadCommit
+//     CLUSTERED(EventId)
+//     PARTITIONED BY
+//     HASH(EventId, EventPayloadCommitSha)
+//     INTO 60
+// )
+// AS
+// SELECT   EventId
+//         ,EventPayloadCommitId
+//         ,EventPayloadCommitSha
+// 		,AuthorEmail
+// 		,AuthorName
+// 		,Distinct
+// 		,Message
+//         ,EtlIngestDate
+//         ,EtlSourceId
+// FROM @EventPayloadCommit;
