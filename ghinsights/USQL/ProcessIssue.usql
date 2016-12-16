@@ -8,7 +8,6 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 SELECT Urn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetInteger(Data, "number") AS Number
         ,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueId
 		,GHInsights.USql.Utility.GetInteger(Data, "assignee.id") AS AssigneeId
@@ -72,7 +71,6 @@ AS
 SELECT   Urn
 		,RepoUrn
 		,SiblingsUrn
-		,Owner
 		,Number
     ,IssueId
 		,AssigneeId
