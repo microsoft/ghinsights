@@ -1,0 +1,60 @@
+USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+@Team = SELECT	Urn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.org.href") AS OrganizationUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+        ,GHInsights.USql.Utility.GetInteger(Data, "id") AS TeamId
+        ,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+        ,GHInsights.USql.Utility.GetString(Data, "slug") AS Slug
+        ,GHInsights.USql.Utility.GetString(Data, "description") AS Description
+        ,GHInsights.USql.Utility.GetString(Data, "privacy") AS Privacy
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
+        ,GHInsights.USql.Utility.GetString(Data, "permission") AS Permission
+        ,GHInsights.USql.Utility.GetInteger(Data, "members_count") AS MembersCount
+        ,GHInsights.USql.Utility.GetInteger(Data, "repos_count") AS ReposCount
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.members.href") AS MembersUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repos.href") AS ReposUrn
+        ,GHInsights.USql.Utility.GetDateTime(Data, "_metadata.fetchedAt") AS FetchedAt
+        ,ProcessedAt AS ProcessedAt
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "team";
+
+@TeamDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @Team;
+
+DROP TABLE IF EXISTS dbo.Team;
+
+CREATE TABLE dbo.Team
+(
+    INDEX IX_Team
+    CLUSTERED(Urn)
+    DISTRIBUTE
+    HASH(Urn)
+    INTO 200
+)
+AS
+SELECT Urn
+        ,OrganizationUrn
+        ,SiblingsUrn
+        ,TeamId
+        ,Name
+        ,Slug
+        ,Description
+        ,Privacy
+        ,Url
+        ,Permission
+        ,MembersCount
+        ,ReposCount
+        ,MembersUrn
+        ,ReposUrn
+        ,FetchedAt
+        ,ProcessedAt
+        ,EtlSourceId
+        ,EtlIngestDate
+FROM @TeamDeDupe
+WHERE RowNumber == 1;
