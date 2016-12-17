@@ -1,0 +1,90 @@
+USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+@Org = SELECT	Urn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+        ,GHInsights.USql.Utility.GetString(Data, "login") AS Login
+        ,GHInsights.USql.Utility.GetString(Data, "url") AS Url
+		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgId
+		,GHInsights.USql.Utility.GetString(Data, "description") AS Description
+		,GHInsights.USql.Utility.GetBoolean(Data, "name") AS Name
+		,GHInsights.USql.Utility.GetString(Data, "company") AS Company
+		,GHInsights.USql.Utility.GetString(Data, "blog") AS Blog
+        ,GHInsights.USql.Utility.GetPiiString(Data, "email") AS Email
+		,GHInsights.USql.Utility.GetInteger(Data, "public_repos") AS PublicRepos
+    ,GHInsights.USql.Utility.GetInteger(Data, "public_gists") AS PublicGists
+    ,GHInsights.USql.Utility.GetInteger(Data, "followers") AS Followers
+    ,GHInsights.USql.Utility.GetInteger(Data, "following") AS Following
+    ,GHInsights.USql.Utility.GetString(Data, "html_url") AS HtmlUrl
+    ,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+    ,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+    ,GHInsights.USql.Utility.GetString(Data, "type") AS Type
+    ,GHInsights.USql.Utility.GetInteger(Data, "total_private_repos") AS TotalPrivateRepos
+    ,GHInsights.USql.Utility.GetInteger(Data, "owned_private_repos") AS OwnedPrivateRepos
+    ,GHInsights.USql.Utility.GetInteger(Data, "private_gists") AS PrivateGists
+    ,GHInsights.USql.Utility.GetInteger(Data, "disk_usage") AS DiskUsage
+    ,GHInsights.USql.Utility.GetInteger(Data, "collaborators") AS Collaborators
+    ,GHInsights.USql.Utility.GetPiiString(Data, "billing_email") AS BillingEmail
+    ,GHInsights.USql.Utility.GetString(Data, "plan.name") AS PlanName
+    ,GHInsights.USql.Utility.GetInteger(Data, "plan.space") AS PlanSpace
+    ,GHInsights.USql.Utility.GetInteger(Data, "plan.filled_seats") AS PlanFilledSeats
+    ,GHInsights.USql.Utility.GetInteger(Data, "plan.seats") AS PlanSeats
+    ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repos.href") AS ReposUrn
+    ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.members.href") AS MembersUrn
+		,ProcessedAt AS ProcessedAt
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "org";
+
+@OrgDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @Org;
+
+DROP TABLE IF EXISTS dbo.Org;
+
+CREATE TABLE dbo.Org
+(
+    INDEX IX_Org
+    CLUSTERED(Urn)
+    DISTRIBUTE
+    HASH(Urn)
+    INTO 200
+)
+AS
+SELECT  Urn
+        , SiblingsUrn
+        ,Login
+        ,Url
+		,OrgId
+		,Description
+		,Name
+		,Company
+		,Blog
+    ,Email
+		,PublicRepos
+    ,PublicGists
+    ,Followers
+    ,Following
+    ,HtmlUrl
+    ,CreatedAt
+    ,UpdatedAt
+    ,Type
+    ,TotalPrivateRepos
+    ,OwnedPrivateRepos
+    ,PrivateGists
+    ,DiskUsage
+    ,Collaborators
+    ,BillingEmail
+    ,PlanName
+    ,PlanSpace
+    ,PlanFilledSeats
+    ,PlanSeats
+    ,ReposUrn
+    ,MembersUrn
+		,ProcessedAt
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @OrgDeDupe
+WHERE RowNumber == 1;
