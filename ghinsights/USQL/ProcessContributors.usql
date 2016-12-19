@@ -1,0 +1,52 @@
+USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+//get all
+@Raw =
+SELECT  GHInsights.USql.Utility.GetString(Data, "_metadata.links.origin.href") AS OriginUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.unique.href") AS UniqueUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetDateTime(Data, "_metadata.fetchedAt") AS FetchedAt
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "contributors";
+
+//find most recent unique for origin
+
+@UniqueNumbered =
+SELECT   UniqueUrn
+        ,ROW_NUMBER() OVER (PARTITION BY OriginUrn ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @Raw;
+
+@UniqueMostRecent = SELECT DISTINCT UniqueUrn FROM @UniqueNumbered WHERE RowNumber == 1;
+
+@CollectionExplode =
+SELECT	 EtlIngestDate
+        ,OriginUrn
+        ,JsonPath
+        ,GHInsights.USql.Utility.GetUSqlString(Value) AS CollectionUrn
+        ,EtlSourceId
+        ,ProcessedAt
+        ,FetchedAt
+FROM @UniqueMostRecent AS u INNER JOIN @Raw AS e ON u.UniqueUrn == e.UniqueUrn
+CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+WHERE JsonPath.StartsWith("_metadata.links.resources.hrefs[");
+
+
+DROP TABLE IF EXISTS dbo.RepoContributors;
+
+CREATE TABLE dbo.RepoContributors
+(
+    INDEX IX_RepoContributors
+    CLUSTERED(RepoUrn, UserUrn)
+    DISTRIBUTE
+    HASH(UserUrn)
+    INTO 20
+)
+AS
+SELECT  OriginUrn AS RepoUrn,
+        CollectionUrn AS UserUrn
+FROM @CollectionExplode;
