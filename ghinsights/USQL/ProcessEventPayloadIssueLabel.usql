@@ -1,66 +1,72 @@
-﻿
-// REFERENCE ASSEMBLY [GHInsights.USql];
-// REFERENCE ASSEMBLY [Newtonsoft.Json];
+﻿USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
-// @RawEventPayloadIssueLabel =
-// SELECT  GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
-//         ,Data
-//         ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-//         FROM Staging.GHTorrent.GitHubData AS e
-// WHERE EventName == "events";
+@RawEventPayloadIssueLabel =
+SELECT  Urn AS EventUrn
+        ,ProcessedAt
+        ,GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
+        ,Data
+        ,Urn AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "IssueEvent" || EventName == "IssueCommentEvent";
 
-// @EventPayloadIssueLabelDeDupe =
-// SELECT   *
-//         ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
-// FROM @RawEventPayloadIssueLabel;
+@EventPayloadIssueLabelDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY EventUrn ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @RawEventPayloadIssueLabel;
 
-// @EventPayloadIssueLabelExplode =
-// SELECT	 EtlIngestDate
-//         ,EventId
-//         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadIssueLabelId
-//         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-//         ,Value AS Value
-//         ,EtlSourceId
-// FROM @EventPayloadIssueLabelDeDupe AS e
-// CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-// WHERE JsonPath.StartsWith("payload.issue.labels[")
-// AND RowNumber == 1;
+@EventPayloadIssueLabelExplode =
+SELECT	 EtlIngestDate
+        ,EventUrn
+        ,ProcessedAt
+        ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadIssueLabelId
+        ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
+        ,Value AS Value
+        ,EtlSourceId
+FROM @EventPayloadIssueLabelDeDupe AS e
+CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+WHERE JsonPath.StartsWith("payload.issue.labels[")
+AND RowNumber == 1;
 
-// @EventPayloadIssueLabelPrePivot =
-// SELECT	 EtlIngestDate
-//         ,EventId
-//         ,EventPayloadIssueLabelId
-//         ,MAP_AGG(ColumnName, Value) AS Data
-//         ,EtlSourceId
-// FROM @EventPayloadIssueLabelExplode AS e
-// GROUP BY EtlIngestDate, EventId, EventPayloadIssueLabelId, EtlSourceId;
+@EventPayloadIssueLabelPrePivot =
+SELECT	 EtlIngestDate
+        ,EventUrn
+        ,ProcessedAt
+        ,EventPayloadIssueLabelId
+        ,MAP_AGG(ColumnName, Value) AS Data
+        ,EtlSourceId
+FROM @EventPayloadIssueLabelExplode AS e
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadIssueLabelId, EtlSourceId;
 
-// @EventPayloadIssueLabel =
-// SELECT   EventId
-//         ,EventPayloadIssueLabelId
-//         ,EtlIngestDate
-// 		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
-// 		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
-//         ,EtlSourceId
-// FROM @EventPayloadIssueLabelPrePivot AS e;
+@EventPayloadIssueLabel =
+SELECT   EventUrn
+        ,ProcessedAt
+        ,EventPayloadIssueLabelId
+        ,EtlIngestDate
+		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
+		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+        ,EtlSourceId
+FROM @EventPayloadIssueLabelPrePivot AS e;
 
-// DROP TABLE IF EXISTS dbo.EventPayloadIssueLabel;
+DROP TABLE IF EXISTS dbo.EventPayloadIssueLabel;
 
-// CREATE TABLE dbo.EventPayloadIssueLabel
-// (
-//     INDEX IX_EventPayloadIssueLabel
-//     CLUSTERED(EventId, Name)
-//     PARTITIONED BY
-//     HASH(EventId, Name)
-//     INTO 20
-// )
-// AS
-// SELECT   EventId
-//         ,EventPayloadIssueLabelId
-//         ,EtlIngestDate
-// 	    ,Color
-// 	    ,Name
-//         ,EtlSourceId
-// FROM @EventPayloadIssueLabel;
+CREATE TABLE dbo.EventPayloadIssueLabel
+(
+    INDEX IX_EventPayloadIssueLabel
+    CLUSTERED(EventUrn, Name)
+    DISTRIBUTE
+    HASH(EventUrn, Name)
+    INTO 20
+)
+AS
+SELECT   EventUrn
+        ,ProcessedAt
+        ,EventPayloadIssueLabelId
+        ,EtlIngestDate
+	    ,Color
+	    ,Name
+        ,EtlSourceId
+FROM @EventPayloadIssueLabel;

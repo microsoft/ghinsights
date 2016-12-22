@@ -1,72 +1,77 @@
-﻿
-// REFERENCE ASSEMBLY [GHInsights.USql];
-// REFERENCE ASSEMBLY [Newtonsoft.Json];
+﻿USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-// @RawEventPayloadPage =
-// SELECT  GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
-//         ,Data
-//         ,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-//         FROM Staging.GHTorrent.GitHubData AS e
-// WHERE EventName == "events";
+@RawEventPayloadPage =
+SELECT  Urn AS EventUrn
+        ,ProcessedAt
+        ,Data
+        ,Urn AS EtlSourceId
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "GollumEvent";
 
-// @EventPayloadPageDeDupe =
-// SELECT   *
-//         ,ROW_NUMBER() OVER (PARTITION BY EventId ORDER BY EtlSourceId DESC) AS RowNumber
-// FROM @RawEventPayloadPage;
+@EventPayloadPageDeDupe =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY EventUrn ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @RawEventPayloadPage;
 
-// @EventPayloadPageExplode =
-// SELECT	 EtlIngestDate
-//         ,EventId
-//         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadPageId
-//         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-//         ,Value AS Value
-//         ,EtlSourceId
-// FROM @EventPayloadPageDeDupe AS e
-// CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-// WHERE JsonPath.StartsWith("payload.pages[")
-// AND RowNumber == 1;
+@EventPayloadPageExplode =
+SELECT	 EtlIngestDate
+        ,EventUrn
+        ,ProcessedAt
+        ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadPageId
+        ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
+        ,Value AS Value
+        ,EtlSourceId
+FROM @EventPayloadPageDeDupe AS e
+CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+WHERE JsonPath.StartsWith("payload.pages[")
+AND RowNumber == 1;
 
-// @EventPayloadPagePrePivot =
-// SELECT	 EtlIngestDate
-//         ,EventId
-//         ,EventPayloadPageId
-//         ,MAP_AGG(ColumnName, Value) AS Data
-//         ,EtlSourceId
-// FROM @EventPayloadPageExplode AS e
-// GROUP BY EtlIngestDate, EventId, EventPayloadPageId, EtlSourceId;
+@EventPayloadPagePrePivot =
+SELECT	 EtlIngestDate
+        ,EventUrn
+        ,ProcessedAt
+        ,EventPayloadPageId
+        ,MAP_AGG(ColumnName, Value) AS Data
+        ,EtlSourceId
+FROM @EventPayloadPageExplode AS e
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadPageId, EtlSourceId;
 
-// @EventPayloadPage =
-// SELECT   EventId
-//         ,EventPayloadPageId
-//         ,EtlIngestDate
-//         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadPageSha
-// 		,GHInsights.USql.Utility.GetString(Data, "action") AS Action
-// 		,GHInsights.USql.Utility.GetString(Data, "page_name") AS PageName
-// 		,GHInsights.USql.Utility.GetString(Data, "summary") AS Summary
-// 		,GHInsights.USql.Utility.GetString(Data, "title") AS Title
-//         ,EtlSourceId
-// FROM @EventPayloadPagePrePivot AS e;
+@EventPayloadPage =
+SELECT   EventUrn
+        ,ProcessedAt
+        ,EventPayloadPageId
+        ,EtlIngestDate
+        ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadPageSha
+		,GHInsights.USql.Utility.GetString(Data, "action") AS Action
+		,GHInsights.USql.Utility.GetString(Data, "page_name") AS PageName
+		,GHInsights.USql.Utility.GetString(Data, "summary") AS Summary
+		,GHInsights.USql.Utility.GetString(Data, "title") AS Title
+        ,EtlSourceId
+FROM @EventPayloadPagePrePivot AS e;
 
-// DROP TABLE IF EXISTS dbo.EventPayloadPage;
+DROP TABLE IF EXISTS dbo.EventPayloadPage;
 
-// CREATE TABLE dbo.EventPayloadPage
-// (
-//     INDEX IX_EventPayloadPage
-//     CLUSTERED(EventId, EventPayloadPageSha)
-//     PARTITIONED BY
-//     HASH(EventId, EventPayloadPageSha)
-//     INTO 20
-// )
-// AS
-// SELECT   EventId
-//         ,EventPayloadPageId
-//         ,EtlIngestDate
-//         ,EventPayloadPageSha
-// 		,Action
-// 		,PageName
-// 		,Summary
-// 		,Title
-//         ,EtlSourceId
-// FROM @EventPayloadPage;
+CREATE TABLE dbo.EventPayloadPage
+(
+    INDEX IX_EventPayloadPage
+    CLUSTERED(EventUrn, EventPayloadPageSha)
+    DISTRIBUTE
+    HASH(EventUrn, EventPayloadPageSha)
+    INTO 20
+)
+AS
+SELECT   EventUrn
+        ,EventPayloadPageId
+        ,EtlIngestDate
+        ,EventPayloadPageSha
+		,Action
+		,PageName
+		,Summary
+		,Title
+    ,ProcessedAt
+    ,EtlSourceId
+FROM @EventPayloadPage;
 
