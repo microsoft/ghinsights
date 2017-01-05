@@ -1,0 +1,131 @@
+USE GHInsightsDev;
+DROP PROCEDURE IF EXISTS dbo.GetRepoData;
+
+CREATE PROCEDURE dbo.GetRepoData(@OrganizationName string, @RepoName string)
+AS
+BEGIN
+
+USE GHInsightsDev;
+
+@Repo = SELECT * FROM dbo.Repo WHERE OwnerLogin == @OrganizationName AND Name == @RepoName;
+
+
+DECLARE CONST @Folder string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.Repo.tsv");
+OUTPUT @Repo
+    TO @Folder
+    USING Outputters.Tsv();
+
+// @RepoActivity = SELECT a.* FROM @Repo AS r INNER JOIN dbo.RepoActivity AS a ON r.Urn = a.RepoUrn;
+
+// DECLARE CONST @Folder1 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.RepoActivity.tsv");
+// OUTPUT @RepoActivity
+//     TO @Folder1
+//     USING Outputters.Tsv();
+
+// @RepoLabel = SELECT a.* FROM @Repo AS r INNER JOIN dbo.RepoLabel AS a ON r.Urn = a.RepoUrn;
+
+// DECLARE CONST @Folder2 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.RepoLabel.tsv");
+// OUTPUT @RepoLabel
+//     TO @Folder2
+//     USING Outputters.Tsv();
+
+@Event = SELECT a.* FROM @Repo AS r INNER JOIN dbo.Event AS a ON r.Urn == a.RepoUrn;
+
+DECLARE CONST @Folder3 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.Event.tsv");
+OUTPUT @Event
+    TO @Folder3
+    USING Outputters.Tsv();
+
+@EventPayloadCommit = SELECT c.* FROM @Event AS e INNER JOIN dbo.EventPayloadCommit AS c ON e.Urn == c.EventUrn;
+
+DECLARE CONST @Folder4 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.EventPayloadCommit.tsv");
+OUTPUT @EventPayloadCommit
+    TO @Folder4
+    USING Outputters.Tsv();
+
+@EventPayloadIssueLabel = SELECT c.* FROM @Event AS e INNER JOIN dbo.EventPayloadIssueLabel AS c ON e.Urn == c.EventUrn;
+
+DECLARE CONST @Folder5 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.EventPayloadIssueLabel.tsv");
+OUTPUT @EventPayloadIssueLabel
+    TO @Folder5
+    USING Outputters.Tsv();
+
+@EventPayloadPage = SELECT c.* FROM @Event AS e INNER JOIN dbo.EventPayloadPage AS c ON e.Urn == c.EventUrn;
+
+DECLARE CONST @Folder6 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.EventPayloadPage.tsv");
+OUTPUT @EventPayloadPage
+    TO @Folder6
+    USING Outputters.Tsv();
+
+@EventPayloadPullRequest = SELECT c.* FROM @Event AS e INNER JOIN dbo.EventPayloadPullRequest AS c ON e.Urn == c.EventUrn;
+
+DECLARE CONST @Folder7 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.EventPayloadPullRequest.tsv");
+OUTPUT @EventPayloadPullRequest
+    TO @Folder7
+    USING Outputters.Tsv();
+
+@EventPayloadReleaseAsset = SELECT c.* FROM @Event AS e INNER JOIN dbo.EventPayloadReleaseAsset AS c ON e.Urn == c.EventUrn;
+
+DECLARE CONST @Folder8 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.EventPayloadReleaseAsset.tsv");
+OUTPUT @EventPayloadReleaseAsset
+    TO @Folder8
+    USING Outputters.Tsv();
+
+// @Fork = SELECT f.* FROM @Repo AS r INNER JOIN dbo.Fork AS f ON r.RepoId == f.ParentId; //this should maybe be a recursion
+
+// DECLARE CONST @Folder9 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.Fork.tsv");
+// OUTPUT @Fork
+//     TO @Folder9
+//     USING Outputters.Tsv();
+
+@Issue = SELECT f.* FROM @Repo AS r INNER JOIN dbo.Issue AS f ON r.Urn == f.RepoUrn;
+
+DECLARE CONST @Folder10 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.Issue.tsv");
+OUTPUT @Issue
+    TO @Folder10
+    USING Outputters.Tsv();
+
+// @IssueComment = SELECT c.* FROM @Issue AS i INNER JOIN dbo.IssueComment AS c ON i.Urn = c.IssueUrn;
+
+// DECLARE CONST @Folder11 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.IssueComment.tsv");
+// OUTPUT @IssueComment
+//     TO @Folder11
+//     USING Outputters.Tsv();
+
+// @IssueEvent = SELECT c.* FROM @Issue AS i INNER JOIN dbo.IssueEvent AS c ON i.IssueId == c.IssueId && i.Repo == c.Repo && i.Owner == c.Owner;
+
+// DECLARE CONST @Folder12 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.IssueEvent.tsv");
+// OUTPUT @IssueEvent
+//     TO @Folder12
+//     USING Outputters.Tsv();
+
+@IssueLabel = SELECT c.* FROM @Issue AS i INNER JOIN dbo.IssueLabel AS c ON i.Urn == c.IssueUrn;
+
+DECLARE CONST @Folder13 string  = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.IssueLabel.tsv");
+OUTPUT @IssueLabel
+    TO @Folder13
+    USING Outputters.Tsv();
+
+// @PullRequest = SELECT f.* FROM @Repo AS r INNER JOIN dbo.PullRequest AS f ON r.Name == f.Repo && r.OwnerLogin == f.Owner;
+
+// DECLARE CONST @Folder14 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.PullRequest.tsv");
+// OUTPUT @PullRequest
+//     TO @Folder14
+//     USING Outputters.Tsv();
+
+
+// @PullRequestComment = SELECT c.* FROM @PullRequest AS i INNER JOIN dbo.PullRequestComment AS c ON i.PullRequestId == c.PullRequestId && i.Repo == c.Repo && i.Owner == c.Owner;
+
+// DECLARE CONST @Folder15 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.PullRequestComment.tsv");
+// OUTPUT @PullRequestComment
+//     TO @Folder15
+//     USING Outputters.Tsv();
+
+// @PullRequestCommit = SELECT c.* FROM @PullRequest AS i INNER JOIN dbo.PullRequestCommit AS c ON i.PullRequestId == c.PullRequestId && i.Repo == c.Repo && i.Owner == c.Owner;
+
+// DECLARE CONST @Folder16 string = String.Join("/Outputs/", @OrganizationName, "/" , @RepoName , "/GHInsights.dbo.PullRequestCommit.tsv");
+// OUTPUT @PullRequestCommit
+//     TO @Folder16
+//     USING Outputters.Tsv();
+
+END;

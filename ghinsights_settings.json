@@ -239,6 +239,26 @@
                 "degreeOfParallelism": "",
                 "jobInformationOutputPath": ""
             }
+        },
+        {
+            "path": "ghinsights/usql/getrepodata.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "15",
+                "jobInformationOutputPath": ""
+            }
+        },
+        {
+            "path": "ghinsights/usql/getrepodatanew.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
         }
     ],
     "port": 12341
