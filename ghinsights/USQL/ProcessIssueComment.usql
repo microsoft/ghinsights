@@ -5,6 +5,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @IssueComment =
 SELECT Urn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issue.href") AS IssueUrn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS IssueCommentId
 		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
@@ -14,6 +15,7 @@ SELECT Urn
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
 		,ProcessedAt
 		,Urn AS EtlSourceId
     ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -36,6 +38,7 @@ CREATE TABLE dbo.IssueComment
 )
 AS
 SELECT  Urn
+		,IssueUrn
 		,SiblingsUrn
 		,IssueCommentId
 		,Body
@@ -45,6 +48,7 @@ SELECT  Urn
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,UserUrn
 		,ProcessedAt
 		,EtlSourceId
     ,EtlIngestDate

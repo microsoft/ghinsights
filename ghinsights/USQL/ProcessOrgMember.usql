@@ -1,40 +1,40 @@
 ﻿
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-@OrgMember =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "org") AS Org
-		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
-		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
-		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
-		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "org_members";
+// @OrgMember =
+// SELECT	 GHInsights.USql.Utility.GetString(Data, "org") AS Org
+// 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
+// 		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
+// 		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
+// 		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+// FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "org_members";
 
-@OrgMemberDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY Org, OrgMemberId, Login, Type ORDER BY EtlSourceId DESC) AS RowNumber
-FROM @OrgMember;
+// @OrgMemberDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY Org, OrgMemberId, Login, Type ORDER BY EtlSourceId DESC) AS RowNumber
+// FROM @OrgMember;
 
-DROP TABLE IF EXISTS dbo.OrgMember;
+// DROP TABLE IF EXISTS dbo.OrgMember;
 
-CREATE TABLE dbo.OrgMember
-(
-    INDEX IX_OrgMember
-    CLUSTERED(Org)
-    PARTITIONED BY
-    HASH(Org, OrgMemberId, Login, Type)
-    INTO 20
-)
-AS
-SELECT   Org
-		,OrgMemberId
-		,Login
-		,SiteAdmin
-		,Type
-		,EtlSourceId
-        ,EtlIngestDate
-FROM @OrgMemberDeDupe
-WHERE RowNumber == 1;
+// CREATE TABLE dbo.OrgMember
+// (
+//     INDEX IX_OrgMember
+//     CLUSTERED(Org)
+//     PARTITIONED BY
+//     HASH(Org, OrgMemberId, Login, Type)
+//     INTO 20
+// )
+// AS
+// SELECT   Org
+// 		,OrgMemberId
+// 		,Login
+// 		,SiteAdmin
+// 		,Type
+// 		,EtlSourceId
+//         ,EtlIngestDate
+// FROM @OrgMemberDeDupe
+// WHERE RowNumber == 1;
