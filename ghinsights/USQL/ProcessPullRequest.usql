@@ -1,10 +1,11 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @PullRequest =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
+SELECT	 Urn
+				,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
 		,GHInsights.USql.Utility.GetInteger(Data, "number") AS Number
         ,GHInsights.USql.Utility.GetInteger(Data, "id") AS PullRequestId
 		,GHInsights.USql.Utility.GetString(Data, "_links.comments.href") AS LinksCommentsHref
@@ -130,14 +131,24 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.merged_by.href") AS MergedByUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.assignee.href") AS AssigneeUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.head.href") AS HeadUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.base.href") AS BaseUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.statuses.href") AS StatusesUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.commits.href") AS CommitsUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issue.href") AS IssueUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issue_comments.href") AS IssueCommentsUrn
+		,ProcessedAt AS ProcessedAt
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "pull_requests";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "pull_request";
 
 @PullRequestDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY PullRequestId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @PullRequest;
 
 DROP TABLE IF EXISTS dbo.PullRequest;
@@ -145,14 +156,15 @@ DROP TABLE IF EXISTS dbo.PullRequest;
 CREATE TABLE dbo.PullRequest
 (
     INDEX IX_PullRequest
-    CLUSTERED(Repo, Owner, Number)
+    CLUSTERED(RepoUrn)
     PARTITIONED BY
-    HASH(PullRequestId, UpdatedAt)
+    HASH(RepoUrn, ProcessedAt)
     INTO 20
 )
 AS
-SELECT   Repo
-		,Owner
+SELECT Urn
+		,RepoUrn
+		,SiblingsUrn
 		,Number
         ,PullRequestId
 		,LinksCommentsHref
@@ -278,6 +290,16 @@ SELECT   Repo
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,UserUrn
+		,MergedByUrn
+		,AssigneeUrn
+		,HeadUrn
+		,BaseUrn
+		,StatusesUrn
+		,CommitsUrn
+		,IssueUrn
+		,IssueCommentsUrn
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @PullRequestDeDupe

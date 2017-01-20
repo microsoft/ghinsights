@@ -1,12 +1,11 @@
-﻿
+﻿USE GHInsightsDev;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 @PullRequestComment =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
-		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
-		,GHInsights.USql.Utility.GetInteger(Data, "pullreq_id") AS PullRequestId
-		,GHInsights.USql.Utility.GetInteger(Data, "id") AS PullRequestCommentId
+SELECT	 Urn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.siblings.href") AS SiblingsUrn
+		,GHInsights.USql.Utility.GetInteger(Data, "pull_request_review_id") AS PullRequestReviewId
 		,GHInsights.USql.Utility.GetString(Data, "_links.html.href") AS LinksHtmlHref
 		,GHInsights.USql.Utility.GetString(Data, "_links.pull_request.href") AS LinksPullRequestHref
 		,GHInsights.USql.Utility.GetString(Data, "_links.self.href") AS LinksSelfHref
@@ -23,14 +22,17 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.pull_request.href") AS PullRequestUrn
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
+		,ProcessedAt AS ProcessedAt
+		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "pull_request_comments";
+FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "review_comment";
 
 @PullRequestCommentDeDupe =
 SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY PullRequestCommentId, UpdatedAt ORDER BY EtlSourceId DESC) AS RowNumber
+        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
 FROM @PullRequestComment;
 
 DROP TABLE IF EXISTS dbo.PullRequestComment;
@@ -38,16 +40,15 @@ DROP TABLE IF EXISTS dbo.PullRequestComment;
 CREATE TABLE dbo.PullRequestComment
 (
     INDEX IX_PullRequestComment
-    CLUSTERED(Repo, Owner, PullRequestId, PullRequestCommentId)
+    CLUSTERED(PullRequestReviewId)
     PARTITIONED BY
-    HASH(PullRequestCommentId, UpdatedAt)
+    HASH(PullRequestReviewId, UpdatedAt)
     INTO 20
 )
 AS
-SELECT   Repo
-		,Owner
-		,PullRequestId
-		,PullRequestCommentId
+SELECT   Urn
+		,SiblingsUrn
+		,PullRequestReviewId
 		,LinksHtmlHref
 		,LinksPullRequestHref
 		,LinksSelfHref
@@ -64,6 +65,9 @@ SELECT   Repo
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,PullRequestUrn
+		,UserUrn
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @PullRequestCommentDeDupe
