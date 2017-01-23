@@ -1,58 +1,58 @@
 ﻿
-USE GHInsightsDev;
-REFERENCE ASSEMBLY [GHInsights.USql];
-REFERENCE ASSEMBLY [Newtonsoft.Json];
+// USE GHInsightsDev;
+// REFERENCE ASSEMBLY [GHInsights.USql];
+// REFERENCE ASSEMBLY [Newtonsoft.Json];
 
 
-@CommitComment =
-SELECT	 GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitSha
-		,(int)GHInsights.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
-		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
-		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
-		,GHInsights.USql.Utility.GetInteger(Data, "line") AS Line
-		,GHInsights.USql.Utility.GetString(Data, "path") AS Path
-		,GHInsights.USql.Utility.GetInteger(Data, "position") AS Position
-		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
-		,GHInsights.USql.Utility.GetInteger(Data, "user.id") AS UserId
-		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
-		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
-		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
-		,ProcessedAt
-		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
-    ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-FROM Staging.GHTorrent.GitHubData AS e
-WHERE EventName == "comments";
+// @CommitComment =
+// SELECT	 GHInsights.USql.Utility.GetString(Data, "commit_id") AS CommitSha
+// 		,(int)GHInsights.USql.Utility.GetInteger(Data, "id") AS CommitCommentId
+// 		,GHInsights.USql.Utility.GetUSqlString(Data, "body") AS Body
+// 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
+// 		,GHInsights.USql.Utility.GetInteger(Data, "line") AS Line
+// 		,GHInsights.USql.Utility.GetString(Data, "path") AS Path
+// 		,GHInsights.USql.Utility.GetInteger(Data, "position") AS Position
+// 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+// 		,GHInsights.USql.Utility.GetInteger(Data, "user.id") AS UserId
+// 		,GHInsights.USql.Utility.GetString(Data, "user.login") AS UserLogin
+// 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
+// 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
+// 		,ProcessedAt
+// 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
+//     ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+// FROM Staging.GHTorrent.GitHubData AS e
+// WHERE EventName == "comments";
 
-@CommitCommentDeDupe =
-SELECT   *
-        ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
-FROM @CommitComment;
+// @CommitCommentDeDupe =
+// SELECT   *
+//         ,ROW_NUMBER() OVER (PARTITION BY EtlSourceId ORDER BY ProcessedAt DESC) AS RowNumber
+// FROM @CommitComment;
 
-DROP TABLE IF EXISTS dbo.CommitComment;
+// DROP TABLE IF EXISTS dbo.CommitComment;
 
-CREATE TABLE dbo.CommitComment
-(
-    INDEX IX_CommitComment
-    CLUSTERED(CommitSha)
-    PARTITIONED BY
-    HASH(CommitSha, UpdatedAt)
-    INTO 20
-)
-AS
-SELECT   CommitSha
-		,CommitCommentId
-		,Body
-		,CreatedAt
-		,Line
-		,Path
-		,Position
-		,UpdatedAt
-		,UserId
-		,UserLogin
-		,UserSiteAdmin
-		,UserType
-		,ProcessedAt
-		,EtlSourceId
-        ,EtlIngestDate
-FROM @CommitCommentDeDupe
-WHERE RowNumber == 1;
+// CREATE TABLE dbo.CommitComment
+// (
+//     INDEX IX_CommitComment
+//     CLUSTERED(CommitSha)
+//     PARTITIONED BY
+//     HASH(CommitSha, UpdatedAt)
+//     INTO 20
+// )
+// AS
+// SELECT   CommitSha
+// 		,CommitCommentId
+// 		,Body
+// 		,CreatedAt
+// 		,Line
+// 		,Path
+// 		,Position
+// 		,UpdatedAt
+// 		,UserId
+// 		,UserLogin
+// 		,UserSiteAdmin
+// 		,UserType
+// 		,ProcessedAt
+// 		,EtlSourceId
+//         ,EtlIngestDate
+// FROM @CommitCommentDeDupe
+// WHERE RowNumber == 1;

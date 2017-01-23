@@ -259,6 +259,36 @@
                 "degreeOfParallelism": "",
                 "jobInformationOutputPath": ""
             }
+        },
+        {
+            "path": "ghinsights/usql/processpullrequest.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
+        },
+        {
+            "path": "ghinsights/usql/processpullrequestreviewcomment.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "5",
+                "jobInformationOutputPath": ""
+            }
+        },
+        {
+            "path": "ghinsights/usql/processcommitfile.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
         }
     ],
     "port": 12341
