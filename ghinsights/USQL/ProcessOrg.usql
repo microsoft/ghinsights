@@ -31,6 +31,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
     ,GHInsights.USql.Utility.GetInteger(Data, "plan.seats") AS PlanSeats
     ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repos.href") AS ReposUrn
     ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.members.href") AS MembersUrn
+    ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
 		,ProcessedAt AS ProcessedAt
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -83,6 +84,7 @@ SELECT  Urn
     ,PlanSeats
     ,ReposUrn
     ,MembersUrn
+    ,UserUrn
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
