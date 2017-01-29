@@ -96,7 +96,7 @@
             "optionalSettings": {
                 "runtimeVersion": "",
                 "priority": "",
-                "degreeOfParallelism": "",
+                "degreeOfParallelism": "7",
                 "jobInformationOutputPath": ""
             }
         },
