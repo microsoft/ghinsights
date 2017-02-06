@@ -289,6 +289,16 @@
                 "degreeOfParallelism": "",
                 "jobInformationOutputPath": ""
             }
+        },
+        {
+            "path": "ghinsights/usql/processstars.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
         }
     ],
     "port": 12341
