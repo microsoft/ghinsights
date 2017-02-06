@@ -233,3 +233,120 @@ SELECT  Urn
         ,EtlIngestDate
 FROM @RepoDeDupe
 WHERE RowNumber == 1;
+
+DROP TABLE IF EXISTS dbo.RepoLog;
+
+CREATE TABLE dbo.RepoLog
+(
+    INDEX IX_Repo
+    CLUSTERED(Urn, OwnerUrn)
+    DISTRIBUTE HASH(Urn)
+    INTO 20
+)
+AS
+SELECT  Urn
+        ,OwnerUrn
+        ,SiblingsUrn
+        ,Name
+		,OwnerLogin
+		,CreatedAt
+		,DefaultBranch
+		,Description
+		,Fork
+		,Forks
+		,ForksCount
+		,FullName
+		,HasDownloads
+		,HasIssues
+		,HasPages
+		,HasWiki
+		,Homepage
+		,RepoId
+		,Language
+		,NetworkCount
+		,OpenIssues
+		,OpenIssuesCount
+		,OrganizationId
+		,OrganizationLogin
+		,OrganizationSiteAdmin
+		,OrganizationType
+		,OwnerId
+		,OwnerSiteAdmin
+		,OwnerType
+		,ParentCreatedAt
+		,ParentDefaultBranch
+		,ParentDescription
+		,ParentFork
+		,ParentForks
+		,ParentForksCount
+		,ParentFullName
+		,ParentHasDownloads
+		,ParentHasIssues
+		,ParentHasPages
+		,ParentHasWiki
+		,ParentHomepage
+		,ParentId
+		,ParentLanguage
+		,ParentName
+		,ParentOpenIssues
+		,ParentOpenIssuesCount
+		,ParentOwnerId
+		,ParentOwnerLogin
+		,ParentOwnerSiteAdmin
+		,ParentOwnerType
+		,ParentPrivate
+		,ParentPushedAt
+		,ParentSize
+		,ParentStargazersCount
+		,ParentUpdatedAt
+		,ParentWatchers
+		,ParentWatchersCount
+		,PermissionsAdmin
+		,PermissionsPull
+		,PermissionsPush
+		,IsPrivate
+		,PushedAt
+		,Size
+		,SourceCreatedAt
+		,SourceDefaultBranch
+		,SourceDescription
+		,SourceFork
+		,SourceForks
+		,SourceForksCount
+		,SourceFullName
+		,SourceHasDownloads
+		,SourceHasIssues
+		,SourceHasPages
+		,SourceHasWiki
+		,SourceHomepage
+		,SourceId
+		,SourceLanguage
+		,SourceName
+		,SourceOpenIssues
+		,SourceOpenIssuesCount
+		,SourceOwnerId
+		,SourceOwnerLogin
+		,SourceOwnerSiteAdmin
+		,SourceOwnerType
+		,SourcePrivate
+		,SourcePushedAt
+		,SourceSize
+		,SourceStargazersCount
+		,SourceUpdatedAt
+		,SourceWatchers
+		,SourceWatchersCount
+		,StargazersCount
+		,SubscribersCount
+		,UpdatedAt
+		,Watchers
+		,WatchersCount
+		,TeamsPageUrn
+		,CollaboratorsPageUrn
+		,ContributorsPageUrn
+		,SubscribersPageUrn
+		,IssuesUrn
+		,CommitsUrn
+		,ProcessedAt
+		,EtlSourceId
+        ,EtlIngestDate
+FROM @Repo;
