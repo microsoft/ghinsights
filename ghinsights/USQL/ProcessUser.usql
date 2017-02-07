@@ -22,6 +22,7 @@ SELECT	Urn
 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
 		,GHInsights.USql.Utility.GetDateTime(Data, "updated_at") AS UpdatedAt
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,ProcessedAt
 		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -61,6 +62,7 @@ SELECT  Urn
 		,SiteAdmin
 		,Type
 		,UpdatedAt
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate

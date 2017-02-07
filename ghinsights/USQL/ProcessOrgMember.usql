@@ -1,40 +1,52 @@
-﻿
-// REFERENCE ASSEMBLY [GHInsights.USql];
-// REFERENCE ASSEMBLY [Newtonsoft.Json];
+﻿USE GHInsightsDev;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
 
-// @OrgMember =
-// SELECT	 GHInsights.USql.Utility.GetString(Data, "org") AS Org
-// 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS OrgMemberId
-// 		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
-// 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
-// 		,GHInsights.USql.Utility.GetString(Data, "type") AS Type
-// 		,GHInsights.USql.Utility.GetString(Data, "_id") AS EtlSourceId
-//         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
-// FROM Staging.GHTorrent.GitHubData AS e
-// WHERE EventName == "org_members";
+//get all
+@Raw =
+SELECT  GHInsights.USql.Utility.GetString(Data, "_metadata.links.origin.href") AS OriginUrn
+        ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.unique.href") AS UniqueUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetDateTime(Data, "_metadata.fetchedAt") AS FetchedAt
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "members";
 
-// @OrgMemberDeDupe =
-// SELECT   *
-//         ,ROW_NUMBER() OVER (PARTITION BY Org, OrgMemberId, Login, Type ORDER BY EtlSourceId DESC) AS RowNumber
-// FROM @OrgMember;
+//find most recent unique for origin
 
-// DROP TABLE IF EXISTS dbo.OrgMember;
+@UniqueNumbered =
+SELECT   UniqueUrn
+        ,ROW_NUMBER() OVER (PARTITION BY OriginUrn ORDER BY ProcessedAt DESC) AS RowNumber
+FROM @Raw;
 
-// CREATE TABLE dbo.OrgMember
-// (
-//     INDEX IX_OrgMember
-//     CLUSTERED(Org)
-//     PARTITIONED BY
-//     HASH(Org, OrgMemberId, Login, Type)
-//     INTO 20
-// )
-// AS
-// SELECT   Org
-// 		,OrgMemberId
-// 		,Login
-// 		,SiteAdmin
-// 		,Type
-// 		,EtlSourceId
-//         ,EtlIngestDate
-// FROM @OrgMemberDeDupe
-// WHERE RowNumber == 1;
+@UniqueMostRecent = SELECT DISTINCT UniqueUrn FROM @UniqueNumbered WHERE RowNumber == 1;
+
+@CollectionExplode =
+SELECT	 EtlIngestDate
+        ,OriginUrn
+        ,JsonPath
+        ,GHInsights.USql.Utility.GetUSqlString(Value) AS CollectionUrn
+        ,EtlSourceId
+        ,ProcessedAt
+        ,FetchedAt
+FROM @UniqueMostRecent AS u INNER JOIN @Raw AS e ON u.UniqueUrn == e.UniqueUrn
+CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
+WHERE JsonPath.StartsWith("_metadata.links.resources.hrefs[");
+
+
+DROP TABLE IF EXISTS dbo.OrgMembers;
+
+CREATE TABLE dbo.OrgMembers
+(
+    INDEX IX_RepoContributors
+    CLUSTERED(OrgUrn, UserUrn)
+    DISTRIBUTE
+    HASH(OrgUrn, UserUrn)
+    INTO 20
+)
+AS
+SELECT  OriginUrn AS OrgUrn,
+        CollectionUrn AS UserUrn
+FROM @CollectionExplode;

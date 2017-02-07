@@ -130,6 +130,7 @@ SELECT	 Urn AS Urn
     ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issue.href") AS IssueUrn
     ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.pull_request.href") AS PullRequestUrn
     ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.comment.href") AS CommentUrn
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
     ,ProcessedAt AS ProcessedAt
 		,Urn AS EtlSourceId
     ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -278,6 +279,8 @@ SELECT   Urn
     ,IssueUrn
     ,PullRequestUrn
     ,CommentUrn
+		,SchemaVersion
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @EventDeDupe

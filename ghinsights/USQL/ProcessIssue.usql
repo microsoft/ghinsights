@@ -48,6 +48,7 @@ SELECT Urn
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.closed_by.href") AS ClosedByUrn
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,ProcessedAt
 		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -112,6 +113,7 @@ SELECT   Urn
 		,UserType
 		,UserUrn
 		,ClosedByUrn
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
     ,EtlIngestDate

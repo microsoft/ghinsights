@@ -6,6 +6,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 SELECT   Urn AS EventUrn
         ,Data
         ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
         ,ProcessedAt
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
         FROM Staging.GHCrawler.GitHubData AS e
@@ -22,6 +23,7 @@ SELECT	 EtlIngestDate
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadCommitId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
         ,Value AS Value
+        ,SchemaVersion
         ,ProcessedAt
         ,EtlSourceId
 FROM @EventDeDupe AS e
@@ -35,19 +37,21 @@ SELECT	 EtlIngestDate
         ,ProcessedAt
         ,EventPayloadCommitId
         ,MAP_AGG(ColumnName, Value) AS Data
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadCommitExplode AS e
-GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadCommitId, EtlSourceId;
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadCommitId, EtlSourceId, SchemaVersion;
 
 @EventPayloadCommit =
 SELECT   EventUrn
         ,ProcessedAt
         ,EventPayloadCommitId
         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadCommitSha
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
-		,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
-		,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
+	,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
+	,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
+	,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
+	,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
+        ,SchemaVersion
         ,EtlIngestDate
         ,EtlSourceId
 FROM @EventPayloadCommitPrePivot AS e;
@@ -67,10 +71,11 @@ SELECT   EventUrn
         ,ProcessedAt
         ,EventPayloadCommitId
         ,EventPayloadCommitSha
-		,AuthorEmail
-		,AuthorName
-		,Distinct
-		,Message
+	,AuthorEmail
+	,AuthorName
+	,Distinct
+	,Message
+        ,SchemaVersion
         ,EtlIngestDate
         ,EtlSourceId
 FROM @EventPayloadCommit;

@@ -6,6 +6,7 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 SELECT  Urn AS EventUrn
         ,ProcessedAt
         ,Data
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
         ,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
         FROM Staging.GHCrawler.GitHubData AS e
@@ -23,6 +24,7 @@ SELECT	 EtlIngestDate
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadReleaseAssetId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
         ,Value AS Value
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadReleaseAssetDeDupe AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
@@ -35,9 +37,10 @@ SELECT	 EtlIngestDate
         ,ProcessedAt
         ,EventPayloadReleaseAssetId
         ,MAP_AGG(ColumnName, Value) AS Data
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadReleaseAssetExplode AS e
-GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadReleaseAssetId, EtlSourceId;
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadReleaseAssetId, EtlSourceId, SchemaVersion;
 
 @EventPayloadReleaseAsset =
 SELECT   EventUrn
@@ -54,6 +57,7 @@ SELECT   EventUrn
 		,GHInsights.USql.Utility.GetString(Data, "uploader.login") AS UploaderLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "uploader.site_admin") AS UploaderSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "uploader.type") AS UploaderType
+        ,SchemaVersion
         ,EtlSourceId
         ,EtlIngestDate
 FROM @EventPayloadReleaseAssetPrePivot AS e;
@@ -82,7 +86,8 @@ SELECT   EventUrn
 		,UploaderLogin
 		,UploaderSiteAdmin
 		,UploaderType
-    ,ProcessedAt
+                ,SchemaVersion
+        ,ProcessedAt
         ,EtlSourceId
         ,EtlIngestDate
 FROM @EventPayloadReleaseAsset;

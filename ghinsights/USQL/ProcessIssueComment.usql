@@ -16,6 +16,7 @@ SELECT Urn
 		,GHInsights.USql.Utility.GetBoolean(Data, "user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,ProcessedAt
 		,Urn AS EtlSourceId
     ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -49,6 +50,7 @@ SELECT  Urn
 		,UserSiteAdmin
 		,UserType
 		,UserUrn
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
     ,EtlIngestDate

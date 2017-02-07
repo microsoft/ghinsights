@@ -7,6 +7,7 @@ SELECT  Urn AS EventUrn
         ,ProcessedAt
         ,Data
         ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
         FROM Staging.GHCrawler.GitHubData AS e
 WHERE EventName == "GollumEvent";
@@ -23,6 +24,7 @@ SELECT	 EtlIngestDate
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadPageId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
         ,Value AS Value
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadPageDeDupe AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
@@ -35,9 +37,10 @@ SELECT	 EtlIngestDate
         ,ProcessedAt
         ,EventPayloadPageId
         ,MAP_AGG(ColumnName, Value) AS Data
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadPageExplode AS e
-GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadPageId, EtlSourceId;
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadPageId, EtlSourceId, SchemaVersion;
 
 @EventPayloadPage =
 SELECT   EventUrn
@@ -45,10 +48,11 @@ SELECT   EventUrn
         ,EventPayloadPageId
         ,EtlIngestDate
         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadPageSha
-		,GHInsights.USql.Utility.GetString(Data, "action") AS Action
-		,GHInsights.USql.Utility.GetString(Data, "page_name") AS PageName
-		,GHInsights.USql.Utility.GetString(Data, "summary") AS Summary
-		,GHInsights.USql.Utility.GetString(Data, "title") AS Title
+	,GHInsights.USql.Utility.GetString(Data, "action") AS Action
+	,GHInsights.USql.Utility.GetString(Data, "page_name") AS PageName
+	,GHInsights.USql.Utility.GetString(Data, "summary") AS Summary
+	,GHInsights.USql.Utility.GetString(Data, "title") AS Title
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadPagePrePivot AS e;
 
@@ -71,6 +75,7 @@ SELECT   EventUrn
 		,PageName
 		,Summary
 		,Title
+        ,SchemaVersion
     ,ProcessedAt
     ,EtlSourceId
 FROM @EventPayloadPage;

@@ -27,6 +27,7 @@ SELECT	Urn
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.additions") AS StatsAdditions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.deletions") AS StatsDeletions
 		,GHInsights.USql.Utility.GetInteger(Data, "stats.total") AS StatsTotal
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,ProcessedAt AS ProcessedAt
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -74,6 +75,7 @@ SELECT  Urn
 		,StatsAdditions
 		,StatsDeletions
 		,StatsTotal
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate

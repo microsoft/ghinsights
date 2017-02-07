@@ -8,6 +8,7 @@ SELECT  Urn AS EventUrn
         ,ProcessedAt
         ,GHInsights.USql.Utility.GetInteger(Data, "id") AS EventId
         ,Data
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
         ,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
         FROM Staging.GHCrawler.GitHubData AS e
@@ -25,6 +26,7 @@ SELECT	 EtlIngestDate
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS EventPayloadIssueLabelId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
         ,Value AS Value
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadIssueLabelDeDupe AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
@@ -37,17 +39,19 @@ SELECT	 EtlIngestDate
         ,ProcessedAt
         ,EventPayloadIssueLabelId
         ,MAP_AGG(ColumnName, Value) AS Data
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadIssueLabelExplode AS e
-GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadIssueLabelId, EtlSourceId;
+GROUP BY EtlIngestDate, EventUrn, ProcessedAt, EventPayloadIssueLabelId, EtlSourceId, SchemaVersion;
 
 @EventPayloadIssueLabel =
 SELECT   EventUrn
         ,ProcessedAt
         ,EventPayloadIssueLabelId
         ,EtlIngestDate
-		,GHInsights.USql.Utility.GetString(Data, "color") AS Color
-		,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+	,GHInsights.USql.Utility.GetString(Data, "color") AS Color
+	,GHInsights.USql.Utility.GetString(Data, "name") AS Name
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadIssueLabelPrePivot AS e;
 
@@ -68,5 +72,6 @@ SELECT   EventUrn
         ,EtlIngestDate
 	    ,Color
 	    ,Name
+        ,SchemaVersion
         ,EtlSourceId
 FROM @EventPayloadIssueLabel;

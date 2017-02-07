@@ -105,6 +105,7 @@ SELECT	Urn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.subscribers.href") AS SubscribersPageUrn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.issues.href") AS IssuesUrn
         ,GHInsights.USql.Utility.GetString(Data, "_metadata.links.commits.href") AS CommitsUrn
+				,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 				,ProcessedAt
 				,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -228,6 +229,7 @@ SELECT  Urn
 		,SubscribersPageUrn
 		,IssuesUrn
 		,CommitsUrn
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
@@ -346,6 +348,7 @@ SELECT  Urn
 		,SubscribersPageUrn
 		,IssuesUrn
 		,CommitsUrn
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate

@@ -24,6 +24,7 @@ SELECT	 Urn
 		,GHInsights.USql.Utility.GetString(Data, "user.type") AS UserType
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.pull_request.href") AS PullRequestUrn
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.user.href") AS UserUrn
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,ProcessedAt AS ProcessedAt
 		,GHInsights.USql.Utility.GetString(Data, "_metadata.links.self.href") AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
@@ -67,6 +68,7 @@ SELECT   Urn
 		,UserType
 		,PullRequestUrn
 		,UserUrn
+		,SchemaVersion
 		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate

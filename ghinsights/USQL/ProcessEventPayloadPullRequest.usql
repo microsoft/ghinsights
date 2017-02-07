@@ -122,6 +122,7 @@ SELECT	 Urn AS EventUrn
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.user.login") AS UserLogin
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.user.site_admin") AS UserSiteAdmin
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.user.type") AS UserType
+		,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
 		,Urn AS EtlSourceId
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
 FROM Staging.GHCrawler.GitHubData AS e
@@ -144,7 +145,6 @@ CREATE TABLE dbo.EventPayloadPullRequest
 )
 AS
 SELECT   EventUrn
-    ,ProcessedAt
 		,EventPayloadPullRequestId
 		,Additions
 		,AssigneeId
@@ -262,6 +262,8 @@ SELECT   EventUrn
 		,UserLogin
 		,UserSiteAdmin
 		,UserType
+		,SchemaVersion
+		,ProcessedAt
 		,EtlSourceId
         ,EtlIngestDate
 FROM @EventDeDupe
