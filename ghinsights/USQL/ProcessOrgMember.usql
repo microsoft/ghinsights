@@ -40,7 +40,7 @@ DROP TABLE IF EXISTS dbo.OrgMembers;
 
 CREATE TABLE dbo.OrgMembers
 (
-    INDEX IX_RepoContributors
+    INDEX IX_OrgMembers
     CLUSTERED(OrgUrn, UserUrn)
     DISTRIBUTE
     HASH(OrgUrn, UserUrn)

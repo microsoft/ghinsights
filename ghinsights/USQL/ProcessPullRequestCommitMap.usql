@@ -12,7 +12,7 @@ SELECT  GHInsights.USql.Utility.GetString(Data, "_metadata.links.origin.href") A
         ,ProcessedAt
         ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
         FROM Staging.GHCrawler.GitHubData AS e
-WHERE EventName == "subscribers";
+WHERE EventName == "commits" AND Urn LIKE "%pull_request%";
 
 //find most recent unique for origin
 
@@ -36,11 +36,11 @@ CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
 WHERE JsonPath.StartsWith("_metadata.links.resources.hrefs[");
 
 
-DROP TABLE IF EXISTS dbo.RepoSubscribers;
+DROP TABLE IF EXISTS dbo.PullRequestCommitMap;
 
-CREATE TABLE dbo.RepoSubscribers
+CREATE TABLE dbo.PullRequestCommitMap
 (
-    INDEX IX_RepoSubscribers
+    INDEX IX_PullRequestCommitMap
     CLUSTERED(RepoUrn, UserUrn)
     DISTRIBUTE
     HASH(UserUrn)
