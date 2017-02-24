@@ -136,6 +136,7 @@ SELECT  Urn
         ,OwnerUrn
         ,SiblingsUrn
         ,Name
+				,RepoId
 		,OwnerLogin
 		,CreatedAt
 		,DefaultBranch
@@ -149,7 +150,6 @@ SELECT  Urn
 		,HasPages
 		,HasWiki
 		,Homepage
-		,RepoId
 		,Language
 		,NetworkCount
 		,OpenIssues
@@ -257,6 +257,7 @@ SELECT  Urn
         ,OwnerUrn
         ,SiblingsUrn
         ,Name
+				,RepoId
 		,OwnerLogin
 		,CreatedAt
 		,DefaultBranch
@@ -270,7 +271,6 @@ SELECT  Urn
 		,HasPages
 		,HasWiki
 		,Homepage
-		,RepoId
 		,Language
 		,NetworkCount
 		,OpenIssues
