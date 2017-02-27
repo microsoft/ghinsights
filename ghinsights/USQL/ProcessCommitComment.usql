@@ -1,5 +1,5 @@
 ﻿
-USE GHInsightsDev;
+USE GHInsights;
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
 

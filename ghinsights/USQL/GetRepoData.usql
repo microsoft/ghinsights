@@ -1,11 +1,11 @@
-USE GHInsightsDev;
+USE GHInsights;
 DROP PROCEDURE IF EXISTS dbo.GetRepoData;
 
 CREATE PROCEDURE dbo.GetRepoData(@OrganizationName string, @RepoName string)
 AS
 BEGIN
 
-USE GHInsightsDev;
+USE GHInsights;
 
 @Repo = SELECT * FROM dbo.Repo WHERE OwnerLogin == @OrganizationName AND Name == @RepoName;
 

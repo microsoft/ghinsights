@@ -1,9 +1,9 @@
-﻿DROP PROCEDURE IF EXISTS GHInsightsDev.dbo.StageData;
-CREATE PROCEDURE GHInsightsDev.dbo.StageData(@Year string, @Month string, @Day string)
+﻿DROP PROCEDURE IF EXISTS GHInsights.dbo.StageData;
+CREATE PROCEDURE GHInsights.dbo.StageData(@Year string, @Month string, @Day string)
 AS
 BEGIN
 
-USE GHInsightsDev;
+USE GHInsights;
 
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];

@@ -1,11 +1,11 @@
 ﻿
-DROP PROCEDURE IF EXISTS GHInsightsDev.dbo.ProcessDaily;
+DROP PROCEDURE IF EXISTS GHInsights.dbo.ProcessDaily;
 
-CREATE PROCEDURE GHInsightsDev.dbo.ProcessDaily (@Year string, @Month string, @Day string)
+CREATE PROCEDURE GHInsights.dbo.ProcessDaily (@Year string, @Month string, @Day string)
 AS
 BEGIN
 
-USE GHInsightsDev;
+USE GHInsights;
 
 REFERENCE ASSEMBLY [GHInsights.USql];
 REFERENCE ASSEMBLY [Newtonsoft.Json];
