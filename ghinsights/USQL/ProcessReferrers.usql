@@ -1,0 +1,102 @@
+USE GHInsights;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@RawReferrer =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "referrers";
+
+    @GitHubReferrers =
+        SELECT Urn,
+							RepoUrn,
+               JsonReferrer.Substring(JsonReferrer.IndexOf("[")+1, JsonReferrer.IndexOf("]")-JsonReferrer.IndexOf("[")) AS RowIdx,
+               JsonReferrer.Substring(JsonReferrer.IndexOf("]")+2, JsonReferrer.Length - 2 - JsonReferrer.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawReferrer CROSS APPLY EXPLODE (Data) AS d(JsonReferrer string, Value byte[])
+        WHERE JsonReferrer.IndexOf("]") > -1
+;
+
+@ReferrersPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubReferrers AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@ReferrersPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetString(Data, "referrer") AS Referrer,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @ReferrersPrePivot;
+                // UNION ALL
+                // SELECT *
+                // FROM GHInsights.dbo.GitHubReferrers;
+
+@ReferrersDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, Referrer, EtlIngestDate ) AS RowNumber
+                FROM @ReferrersPivoted;
+
+
+// TRUNCATE TABLE GHInsights.dbo.GitHubReferrers;
+
+// INSERT GHInsights.dbo.GitHubReferrers
+//     SELECT Urn
+// 					,RepoUrn
+// 					,DataDate
+// 					,Count
+// 					,Uniques
+// 					,SchemaVersion
+// 					,ProcessedAt
+// 					,EtlSourceId
+// 					,EtlIngestDate
+//             FROM @ReferrersDeDupe
+//             WHERE RowNumber == 1;
+
+DROP TABLE IF EXISTS dbo.Referrers;
+
+CREATE TABLE dbo.Referrers
+(
+    INDEX IX_Referrer
+    CLUSTERED(Urn)
+    DISTRIBUTE
+    HASH(Urn)
+    INTO 20
+)
+AS
+SELECT  Urn
+					,RepoUrn
+					,Referrer
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+FROM @ReferrersDeDupe
+WHERE RowNumber == 1;
+

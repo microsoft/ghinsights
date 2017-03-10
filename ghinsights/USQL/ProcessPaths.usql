@@ -1,0 +1,104 @@
+USE GHInsights;
+REFERENCE ASSEMBLY [GHInsights.USql];
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+
+@RawPath =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "paths";
+
+    @GitHubPaths =
+        SELECT Urn,
+							RepoUrn,
+               JsonPath.Substring(JsonPath.IndexOf("[")+1, JsonPath.IndexOf("]")-JsonPath.IndexOf("[")) AS RowIdx,
+               JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawPath CROSS APPLY EXPLODE (Data) AS d(JsonPath string, Value byte[])
+        WHERE JsonPath.IndexOf("]") > -1
+;
+
+@PathsPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubPaths AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@PathsPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetString(Data, "path") AS Path,
+                    GHInsights.USql.Utility.GetString(Data, "title") AS Title,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @PathsPrePivot;
+                // UNION ALL
+                // SELECT *
+                // FROM GHInsights.dbo.GitHubPaths;
+
+@PathsDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, Path, EtlIngestDate ) AS RowNumber
+                FROM @PathsPivoted;
+
+
+// TRUNCATE TABLE GHInsights.dbo.GitHubPaths;
+
+// INSERT GHInsights.dbo.GitHubPaths
+//     SELECT Urn
+// 					,RepoUrn
+// 					,DataDate
+// 					,Count
+// 					,Uniques
+// 					,SchemaVersion
+// 					,ProcessedAt
+// 					,EtlSourceId
+// 					,EtlIngestDate
+//             FROM @PathsDeDupe
+//             WHERE RowNumber == 1;
+
+DROP TABLE IF EXISTS dbo.Paths;
+
+CREATE TABLE dbo.Paths
+(
+    INDEX IX_Path
+    CLUSTERED(Urn)
+    DISTRIBUTE
+    HASH(Urn)
+    INTO 20
+)
+AS
+SELECT  Urn
+					,RepoUrn
+					,Path
+          ,Title
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+FROM @PathsDeDupe
+WHERE RowNumber == 1;
+
