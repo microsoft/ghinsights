@@ -2863,6 +2863,319 @@ FROM @UserDeDupe
 WHERE RowNumber == 1;
 
 
+/////////////////////////////////////////////////////////////////////////
+//Clones
+/////////////////////////////////////////////////////////////////////////
 
+@RawClone =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "clones";
+
+    @GitHubClones =
+        SELECT Urn,
+							RepoUrn,
+               JsonPath.Substring(JsonPath.IndexOf("[")+1, JsonPath.IndexOf("]")-JsonPath.IndexOf("[")) AS RowIdx,
+               JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawClone CROSS APPLY EXPLODE (Data) AS d(JsonPath string, Value byte[])
+        WHERE JsonPath.IndexOf("]") > -1
+;
+
+@ClonesPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubClones AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@ClonesPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetDateTime(Data, "timestamp") AS DataDate,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @ClonesPrePivot
+                UNION ALL
+                SELECT *
+                FROM GHInsights.dbo.Clones;
+
+@ClonesDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, DataDate ORDER BY EtlIngestDate DESC) AS RowNumber
+                FROM @ClonesPivoted;
+
+
+TRUNCATE TABLE GHInsights.dbo.Clones;
+
+INSERT GHInsights.dbo.Clones
+    SELECT Urn
+					,RepoUrn
+					,DataDate
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+            FROM @ClonesDeDupe
+            WHERE RowNumber == 1;
+
+/////////////////////////////////////////////////////////////////////////
+//Referrers
+/////////////////////////////////////////////////////////////////////////
+@RawReferrer =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "referrers";
+
+    @GitHubReferrers =
+        SELECT Urn,
+							RepoUrn,
+               JsonReferrer.Substring(JsonReferrer.IndexOf("[")+1, JsonReferrer.IndexOf("]")-JsonReferrer.IndexOf("[")) AS RowIdx,
+               JsonReferrer.Substring(JsonReferrer.IndexOf("]")+2, JsonReferrer.Length - 2 - JsonReferrer.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawReferrer CROSS APPLY EXPLODE (Data) AS d(JsonReferrer string, Value byte[])
+        WHERE JsonReferrer.IndexOf("]") > -1
+;
+
+@ReferrersPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubReferrers AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@ReferrersPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetString(Data, "referrer") AS Referrer,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @ReferrersPrePivot
+                UNION ALL
+                SELECT *
+                FROM GHInsights.dbo.Referrers;
+
+@ReferrersDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, Referrer, EtlIngestDate ) AS RowNumber
+                FROM @ReferrersPivoted;
+
+
+TRUNCATE TABLE GHInsights.dbo.Referrers;
+
+INSERT GHInsights.dbo.Referrers
+    SELECT Urn
+					,RepoUrn
+					,Referrer
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+            FROM @ReferrersDeDupe
+            WHERE RowNumber == 1;
+/////////////////////////////////////////////////////////////////////////
+// Paths
+/////////////////////////////////////////////////////////////////////////
+@RawPath =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "paths";
+
+    @GitHubPaths =
+        SELECT Urn,
+							RepoUrn,
+               JsonPath.Substring(JsonPath.IndexOf("[")+1, JsonPath.IndexOf("]")-JsonPath.IndexOf("[")) AS RowIdx,
+               JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawPath CROSS APPLY EXPLODE (Data) AS d(JsonPath string, Value byte[])
+        WHERE JsonPath.IndexOf("]") > -1
+;
+
+@PathsPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubPaths AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@PathsPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetString(Data, "path") AS Path,
+                    GHInsights.USql.Utility.GetString(Data, "title") AS Title,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @PathsPrePivot
+                UNION ALL
+                SELECT *
+                FROM GHInsights.dbo.Paths;
+
+@PathsDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, Path, EtlIngestDate ) AS RowNumber
+                FROM @PathsPivoted;
+
+
+TRUNCATE TABLE GHInsights.dbo.Paths;
+
+INSERT GHInsights.dbo.Paths
+    SELECT Urn
+					,RepoUrn
+					,Path
+					,Title
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+            FROM @PathsDeDupe
+            WHERE RowNumber == 1;
+
+/////////////////////////////////////////////////////////////////////////
+// Views
+/////////////////////////////////////////////////////////////////////////
+
+@RawView =
+SELECT  Urn
+,GHInsights.USql.Utility.GetString(Data, "_metadata.links.repo.href") AS RepoUrn
+        ,Data
+        ,Urn AS EtlSourceId
+        ,GHInsights.USql.Utility.GetInteger(Data, "_metadata.version") AS SchemaVersion
+        ,ProcessedAt
+        ,DateTime.Parse(IngestDate, null, System.Globalization.DateTimeStyles.AssumeUniversal).ToUniversalTime() AS EtlIngestDate
+        FROM Staging.GHCrawler.GitHubData AS e
+WHERE EventName == "views";
+
+    @GitHubViews =
+        SELECT Urn,
+							RepoUrn,
+               JsonPath.Substring(JsonPath.IndexOf("[")+1, JsonPath.IndexOf("]")-JsonPath.IndexOf("[")) AS RowIdx,
+               JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName,
+               Value AS Value,
+               SchemaVersion,
+							 ProcessedAt,
+							 EtlSourceId,
+							 EtlIngestDate
+        FROM @RawView CROSS APPLY EXPLODE (Data) AS d(JsonPath string, Value byte[])
+        WHERE JsonPath.IndexOf("]") > -1
+;
+
+@ViewsPrePivot = SELECT Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate,
+                    MAP_AGG(ColumnName, Value) AS Data
+                    FROM @GitHubViews AS e
+                    GROUP BY Urn,
+										RepoUrn,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate;
+
+
+
+@ViewsPivoted = SELECT Urn,
+										RepoUrn,
+                    GHInsights.USql.Utility.GetDateTime(Data, "timestamp") AS DataDate,
+                    GHInsights.USql.Utility.GetInteger(Data, "count") AS Count,
+                    GHInsights.USql.Utility.GetInteger(Data, "uniques") AS Uniques,
+										SchemaVersion,
+										ProcessedAt,
+										EtlSourceId,
+										EtlIngestDate
+                FROM @ViewsPrePivot
+                UNION ALL
+                SELECT *
+                FROM GHInsights.dbo.Views;
+
+@ViewsDeDupe = SELECT *, ROW_NUMBER() OVER(PARTITION BY Urn, DataDate ORDER BY EtlIngestDate DESC) AS RowNumber
+                FROM @ViewsPivoted;
+
+
+TRUNCATE TABLE GHInsights.dbo.Views;
+
+INSERT GHInsights.dbo.Views
+    SELECT Urn
+					,RepoUrn
+					,DataDate
+					,Count
+					,Uniques
+					,SchemaVersion
+					,ProcessedAt
+					,EtlSourceId
+					,EtlIngestDate
+            FROM @ViewsDeDupe
+            WHERE RowNumber == 1;
 
 END;
