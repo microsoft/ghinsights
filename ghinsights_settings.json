@@ -349,6 +349,26 @@
                 "degreeOfParallelism": "50",
                 "jobInformationOutputPath": ""
             }
+        },
+        {
+            "path": "ghinsights/usql/processclones.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
+        },
+        {
+            "path": "ghinsights/usql/processviews.usql",
+            "account": "ghinsightsms",
+            "optionalSettings": {
+                "runtimeVersion": "",
+                "priority": "",
+                "degreeOfParallelism": "",
+                "jobInformationOutputPath": ""
+            }
         }
     ],
     "port": 12341
