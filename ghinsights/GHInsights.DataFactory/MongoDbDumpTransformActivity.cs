@@ -102,8 +102,7 @@ namespace GHInsights.DataFactory
                         var outputBlob = outContainer.GetBlockBlobReference(outputFilenameFormatString.Replace("{EventName}", tableName));
 
                         using (var outBlobStream = outputBlob.OpenWrite())
-                        using (var gzipOut = new GZipStream(outBlobStream, System.IO.Compression.CompressionLevel.Optimal))
-                        using (var outText = new StreamWriter(gzipOut, Encoding.UTF8))
+                        using (var outText = new StreamWriter(outBlobStream, Encoding.UTF8))
                         using (var reader = new BsonReader(tarStream))
                         {
 

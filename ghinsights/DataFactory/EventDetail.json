@@ -6,7 +6,7 @@
     "linkedServiceName": "GHInsightsAzureStorage",
     "typeProperties": {
       "folderPath": "raw/{EventName}/v1/{Year}/{Month}",
-      "fileName": "{EventName}_{Year}_{Month}_{Day}.json.gz",
+      "fileName": "{EventName}_{Year}_{Month}_{Day}.json",
       "partitionedBy": [
         {
           "name": "Year",
