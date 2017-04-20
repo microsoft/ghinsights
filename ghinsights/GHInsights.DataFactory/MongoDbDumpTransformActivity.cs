@@ -98,32 +98,58 @@ namespace GHInsights.DataFactory
                     
                     if (taredFileExtention == ".bson")
                     {
-                        
-                        var outputBlob = outContainer.GetBlockBlobReference(outputFilenameFormatString.Replace("{EventName}", tableName));
+                        int fileNumber = 0;
+                        var outputBlob = outContainer.GetBlockBlobReference(outputFilenameFormatString.Replace("{EventName}", tableName).Replace("{Number}", fileNumber.ToString("D4")));
+                        CloudBlobStream outBlobStream = null;
+                        GZipStream gzipOut = null;
+                        StreamWriter outText = null;
 
-                        using (var outBlobStream = outputBlob.OpenWrite())
-                        using (var outText = new StreamWriter(outBlobStream, Encoding.UTF8))
-                        using (var reader = new BsonReader(tarStream))
+                        try
                         {
-
-                            logger.Write("BlobWrite: {0}/{1}", outputLocation.ContainerName, outputBlob.Name);
-
-                            reader.CloseInput = false;
-
-                            var jsonSerializer = new JsonSerializer();
-
-
-                            reader.ReadRootValueAsArray = false;
-                            reader.SupportMultipleContent = true;
-
-                            while (reader.Read())
+                            outBlobStream = outputBlob.OpenWrite();
+                            gzipOut = new GZipStream(outBlobStream, System.IO.Compression.CompressionLevel.Optimal);
+                            outText = new StreamWriter(gzipOut, Encoding.UTF8);
+                            using (var reader = new BsonReader(tarStream))
                             {
-                                var row = (JObject)jsonSerializer.Deserialize(reader);
 
-                                var outString = row.ToString(Formatting.None);
+                                logger.Write("BlobWrite: {0}/{1}", outputLocation.ContainerName, outputBlob.Name);
 
-                                outText.WriteLine(outString);
+                                reader.CloseInput = false;
+
+                                var jsonSerializer = new JsonSerializer();
+
+
+                                reader.ReadRootValueAsArray = false;
+                                reader.SupportMultipleContent = true;
+
+                                while (reader.Read())
+                                {
+                                    var row = (JObject) jsonSerializer.Deserialize(reader);
+
+                                    var outString = row.ToString(Formatting.None);
+
+                                    outText.WriteLine(outString);
+
+                                    if (outBlobStream.Position > 1024*1024*1024)
+                                    {
+                                        outText.Close();
+                                        gzipOut.Close();
+                                        outBlobStream.Close();
+
+                                        fileNumber++;
+
+                                        outputBlob = outContainer.GetBlockBlobReference(outputFilenameFormatString.Replace("{EventName}", tableName).Replace("{Number}", fileNumber.ToString("D4")));
+                                        outBlobStream = outputBlob.OpenWrite();
+                                        gzipOut = new GZipStream(outBlobStream, System.IO.Compression.CompressionLevel.Optimal);
+                                        outText = new StreamWriter(gzipOut, Encoding.UTF8);
+                                    }
+                                }
                             }
+                        } finally
+                        {
+                            if (outText != null) outText.Close();
+                            if (gzipOut != null) gzipOut.Close();
+                            if (outBlobStream != null) outBlobStream.Close();
                         }
                     }
                 } ;

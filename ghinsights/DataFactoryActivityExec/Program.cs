@@ -18,7 +18,7 @@ namespace DataFactoryActivityExec
 
             var config =
                 JObject.Parse(
-                    File.ReadAllText(@"..\..\DevEnvironment.json"));
+                    File.ReadAllText(@"..\..\..\DataFactory\bin\Debug\ProductionEnvironment.json"));
 
             var linkedServices = new List<LinkedService>()
             {   new LinkedService("GHTorrentAzureStorage",
@@ -63,7 +63,7 @@ namespace DataFactoryActivityExec
                 new DatasetProperties(new AzureBlobDataset()
                 {
                    FolderPath = @"test/{EventName}/v1/{Year}/{Month}",
-                   FileName = "{EventName}_{Year}_{Month}_{Day}.json.gz",
+                   FileName = "{EventName}_{Year}_{Month}_{Day}_{Number}.json.gz",
                     PartitionedBy = new List<Partition>()
                     {
                         {

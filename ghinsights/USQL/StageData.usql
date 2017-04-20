@@ -17,7 +17,7 @@ DECLARE @IngestDatePartition = @IngestDate.ToString("yyyy-MM-dd");
     EXTRACT  EventName string
             ,IngestDate DateTime
             ,Data SqlMap<string, byte[]>
-    FROM "wasb://raw@ghinsightspublic.blob.core.windows.net/{EventName}/v2/{IngestDate:yyyy}/{IngestDate:MM}/{EventName}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}.json"
+    FROM "wasb://raw@ghinsightspublic.blob.core.windows.net/{EventName}/v3/{IngestDate:yyyy}/{IngestDate:MM}/{EventName}_{IngestDate:yyyy}_{IngestDate:MM}_{IngestDate:dd}_{Number}.json.gz"
     USING GHInsights.USql.Extractors.FlatJson(outputColumnName: "Data");
 
 ALTER TABLE Staging.GHTorrent.GitHubData DROP IF EXISTS PARTITION (@IngestDatePartition);

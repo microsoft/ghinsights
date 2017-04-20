@@ -106,7 +106,7 @@ SELECT	 EtlIngestDate
         ,CommitSha
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS CommitFileId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-        ,Value AS Value
+        ,Value IS NULL?NULL:Value.Substring(0, 1024 * 127) AS Value
         ,EtlSourceId
 FROM @NewRawCommit AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
