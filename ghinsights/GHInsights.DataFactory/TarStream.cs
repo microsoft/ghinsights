@@ -11,6 +11,7 @@ namespace GHInsights.DataFactory
         private readonly BinaryReader _binaryReader;
         private long _currentFileLength;
         private long _currentFilePosition;
+        private bool _validHeader;
 
         public TarStream(Stream baseStream)
         {
@@ -38,48 +39,71 @@ namespace GHInsights.DataFactory
             set { throw new NotImplementedException(); }
         }
 
-        private bool ReadHeader(BinaryReader binaryReader)
+        private int ReadHeader()
         {
-            if (!binaryReader.BaseStream.CanRead)
+            _validHeader = false;
+            var bytesRead = 0;
+            try
             {
-                return false;
-            }
-            Debug.Assert(_currentFilePosition % 512 == 0);
-            CurrentFilename = Encoding.ASCII.GetString(binaryReader.ReadBytes(100)).TrimEnd((char) (0));
+                if (!_binaryReader.BaseStream.CanRead)
+                {
+                    return bytesRead;
+                }
+                Debug.Assert(_currentFilePosition%512 == 0);
+                CurrentFilename = Encoding.ASCII.GetString(_binaryReader.ReadBytes(100)).TrimEnd((char) (0));
+                
+                if (string.IsNullOrWhiteSpace(CurrentFilename))
+                {
+                    return bytesRead;
+                }
+                bytesRead += 100;
 
-            if (string.IsNullOrWhiteSpace(CurrentFilename))
+                _binaryReader.ReadInt64(); // FileMode
+                bytesRead += 8;
+                _binaryReader.ReadInt64(); // Owner
+                bytesRead += 8;
+                _binaryReader.ReadInt64(); // Group
+                bytesRead += 8;
+
+                var sizeByteArray = _binaryReader.ReadBytes(12);
+                bytesRead += 12;
+
+                if ((sizeByteArray[0] & 0x80) == 0)
+                {
+                    var sizeString = Encoding.ASCII.GetString(sizeByteArray).TrimEnd((char) (0));
+                    _currentFileLength = Convert.ToInt64(sizeString, 8); // Size
+                } else
+                {
+                    if (BitConverter.IsLittleEndian)
+                        Array.Reverse(sizeByteArray, 4, 8);
+                    _currentFileLength = BitConverter.ToInt64(sizeByteArray, 4);
+                }
+
+                _binaryReader.ReadBytes(12); // LastModificationTime
+                bytesRead += 12;
+                _binaryReader.ReadBytes(8); // Checksum
+                bytesRead += 8;
+                _binaryReader.ReadChar(); // FileType
+                bytesRead += 1;
+                _binaryReader.ReadBytes(100); // Name of linked file
+                bytesRead += 100;
+
+
+                _currentFilePosition = 0;
+
+            } catch (System.FormatException)
             {
-                return false;
-            }
-
-            binaryReader.ReadInt64(); // FileMode
-            binaryReader.ReadInt64(); // Owner
-            binaryReader.ReadInt64(); // Group
-
-            var sizeByteArray = binaryReader.ReadBytes(12);
-
-            if ((sizeByteArray[0] & 0x80) == 0)
+                return bytesRead;
+            } catch (System.ArgumentOutOfRangeException)
             {
-                var sizeString = Encoding.ASCII.GetString(sizeByteArray).TrimEnd((char) (0));
-                _currentFileLength = Convert.ToInt64(sizeString, 8); // Size
-            }
-            else
+                return bytesRead;
+            } finally
             {
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(sizeByteArray, 4, 8);
-                _currentFileLength = BitConverter.ToInt64(sizeByteArray, 4);
+                var restOfBlock = 512 - bytesRead;
+                _binaryReader.ReadBytes(restOfBlock);
             }
-
-            binaryReader.ReadBytes(12); // LastModificationTime
-            binaryReader.ReadBytes(8); // Checksum
-            binaryReader.ReadChar(); // FileType
-            binaryReader.ReadBytes(100); // Name of linked file
-
-            binaryReader.ReadBytes(255); // Rest of header
-
-            _currentFilePosition = 0;
-
-            return true;
+            _validHeader = true;
+            return bytesRead;
         }
 
         public override void Close()
@@ -103,8 +127,16 @@ namespace GHInsights.DataFactory
 
             }
 
-            var isNextHeaderValid = ReadHeader(_binaryReader);
-            return isNextHeaderValid;
+            int headerReadCount = 0;
+            while (ReadHeader() > 0 && !_validHeader)
+            {
+                if (headerReadCount++ > 5)
+                {
+                    throw new FormatException("Unable to find header for next file");
+                }
+            };
+
+            return _validHeader;
         }
 
         public override int Read(byte[] buffer, int offset, int count)

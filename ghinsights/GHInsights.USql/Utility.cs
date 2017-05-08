@@ -278,5 +278,15 @@ namespace GHInsights.USql
             }
         }
 
+        public static byte[] TruncateByteArray(byte[] array, int maxSize)
+        {
+            if (array.Length > maxSize)
+            {
+                Array.Resize(ref array, maxSize);
+            }
+
+            return array;
+        }
+
     }
 }

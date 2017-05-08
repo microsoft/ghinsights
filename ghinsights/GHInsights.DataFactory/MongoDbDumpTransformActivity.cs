@@ -139,6 +139,8 @@ namespace GHInsights.DataFactory
                                         fileNumber++;
 
                                         outputBlob = outContainer.GetBlockBlobReference(outputFilenameFormatString.Replace("{EventName}", tableName).Replace("{Number}", fileNumber.ToString("D4")));
+                                        logger.Write("BlobWrite: {0}/{1}", outputLocation.ContainerName, outputBlob.Name);
+
                                         outBlobStream = outputBlob.OpenWrite();
                                         gzipOut = new GZipStream(outBlobStream, System.IO.Compression.CompressionLevel.Optimal);
                                         outText = new StreamWriter(gzipOut, Encoding.UTF8);
