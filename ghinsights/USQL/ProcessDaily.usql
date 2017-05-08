@@ -101,16 +101,22 @@ WHERE RowNumber == 1;
 //  Process CommitFile
 //  400
 
+@DedupeNewRawCommit =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @NewRawCommit;
+
 @CommitFileExplode =
 SELECT	 EtlIngestDate
         ,CommitSha
         ,Int32.Parse(JsonPath.Substring(JsonPath.IndexOf("[")+1,JsonPath.IndexOf("]") -  JsonPath.IndexOf("[")-1)) AS CommitFileId
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
-        ,Value IS NULL?NULL:Value.Substring(0, 1024 * 127) AS Value
+        ,Value AS Value
         ,EtlSourceId
-FROM @NewRawCommit AS e
+FROM @DedupeNewRawCommit AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-WHERE JsonPath.StartsWith("files[");
+WHERE JsonPath.StartsWith("files[")
+AND RowNumber == 1;
 
 @CommitFilePrePivot =
 SELECT	 EtlIngestDate
@@ -765,7 +771,7 @@ SELECT	 EventId
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.ref") AS BaseRef
 		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.created_at") AS BaseRepoCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.default_branch") AS BaseRepoDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.description") AS BaseRepoDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.pull_request.base.repo.description") AS BaseRepoDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.fork") AS BaseRepoFork
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks") AS BaseRepoForks
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks_count") AS BaseRepoForksCount

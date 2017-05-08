@@ -118,9 +118,9 @@ namespace DataFactoryActivityExec
                 {
                     ExtendedProperties = new Dictionary<string, string>()
                     {
-                        {"Year", "2015"},
-                        {"Month", "12"},
-                        {"Day", "02"}
+                        {"Year", "2017"},
+                        {"Month", "04"},
+                        {"Day", "15"}
                     }
                 }
             };
@@ -137,7 +137,7 @@ namespace DataFactoryActivityExec
     {
         public void Write(string format, params object[] args)
         {
-            Debug.WriteLine(String.Format(format,args));
+            Console.WriteLine(String.Format(format,args));
         }
     }
 }
