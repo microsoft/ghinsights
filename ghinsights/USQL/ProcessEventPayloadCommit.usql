@@ -41,7 +41,7 @@ SELECT   EventId
         ,EventPayloadCommitId
         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadCommitSha
 		,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
+		,"" AS  AS AuthorName
 		,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
 		,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
         ,EtlIngestDate
