@@ -11,11 +11,11 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "sha") AS CommitSha
 		,GHInsights.USql.Utility.GetString(Data, "author.type") AS AuthorType
 		,GHInsights.USql.Utility.GetDateTime(Data, "commit.author.date") AS CommitAuthorDate
         ,GHInsights.USql.Utility.GetPiiString(Data, "commit.author.email") AS CommitAuthorEmail
-        ,GHInsights.USql.Utility.GetPiiString(Data, "commit.author.name") AS CommitAuthorName
+        ,"" AS  AS CommitAuthorName
 		,GHInsights.USql.Utility.GetInteger(Data, "commit.comment_count") AS CommitCommentCount
 		,GHInsights.USql.Utility.GetDateTime(Data, "commit.committer.date") AS CommitCommitterDate
         ,GHInsights.USql.Utility.GetPiiString(Data, "commit.committer.email") AS CommitCommitterEmail
-        ,GHInsights.USql.Utility.GetPiiString(Data, "commit.committer.name") AS CommitCommitterName
+        ,"" AS  AS CommitCommitterName
 		,GHInsights.USql.Utility.GetUSqlString(Data, "commit.message") AS CommitMessage
 		,GHInsights.USql.Utility.GetString(Data, "commit.tree.sha") AS CommitTreeSha
 		,GHInsights.USql.Utility.GetInteger(Data, "committer.id") AS CommitterId

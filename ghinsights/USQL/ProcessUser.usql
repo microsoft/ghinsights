@@ -5,8 +5,8 @@ REFERENCE ASSEMBLY [Newtonsoft.Json];
 @User =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
-		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
-        ,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
+		,"" AS Bio
+        ,"" AS Blog
 		,GHInsights.USql.Utility.GetPiiString(Data, "company") AS Company
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
         ,GHInsights.USql.Utility.GetPiiString(Data, "email") AS Email
@@ -14,7 +14,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "following") AS Following
 		,GHInsights.USql.Utility.GetBoolean(Data, "hireable") AS Hireable
 		,GHInsights.USql.Utility.GetString(Data, "location") AS Location
-        ,GHInsights.USql.Utility.GetPiiString(Data, "name") AS Name
+        ,"" AS Name
 		,GHInsights.USql.Utility.GetInteger(Data, "public_gists") AS PublicGists
 		,GHInsights.USql.Utility.GetInteger(Data, "public_repos") AS PublicRepos
 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin

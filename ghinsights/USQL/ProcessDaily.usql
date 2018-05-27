@@ -36,11 +36,11 @@ SELECT	 CommitSha
 		,GHInsights.USql.Utility.GetString(Data, "author.type") AS AuthorType
 		,GHInsights.USql.Utility.GetDateTime(Data, "commit.author.date") AS CommitAuthorDate
         ,GHInsights.USql.Utility.GetPiiString(Data, "commit.author.email") AS CommitAuthorEmail
-        ,GHInsights.USql.Utility.GetPiiString(Data, "commit.author.name") AS CommitAuthorName
+        ,"" AS CommitAuthorName
 		,GHInsights.USql.Utility.GetInteger(Data, "commit.comment_count") AS CommitCommentCount
 		,GHInsights.USql.Utility.GetDateTime(Data, "commit.committer.date") AS CommitCommitterDate
         ,GHInsights.USql.Utility.GetPiiString(Data, "commit.committer.email") AS CommitCommitterEmail
-        ,GHInsights.USql.Utility.GetPiiString(Data, "commit.committer.name") AS CommitCommitterName
+        ,"" AS CommitCommitterName
 		,GHInsights.USql.Utility.GetUSqlString(Data, "commit.message") AS CommitMessage
 		,GHInsights.USql.Utility.GetString(Data, "commit.tree.sha") AS CommitTreeSha
 		,GHInsights.USql.Utility.GetInteger(Data, "committer.id") AS CommitterId
@@ -77,11 +77,11 @@ SELECT   CommitSha
 		,AuthorType
 		,CommitAuthorDate
         ,CommitAuthorEmail
-		,CommitAuthorName
+		,"" AS CommitAuthorName
 		,CommitCommentCount
 		,CommitCommitterDate
         ,CommitCommitterEmail
-		,CommitCommitterName
+		,"" AS CommitCommitterName
 		,CommitMessage
 		,CommitTreeSha
 		,CommitterId
@@ -101,6 +101,11 @@ WHERE RowNumber == 1;
 //  Process CommitFile
 //  400
 
+@DedupeNewRawCommit =
+SELECT   *
+        ,ROW_NUMBER() OVER (PARTITION BY CommitSha ORDER BY EtlSourceId DESC) AS RowNumber
+FROM @NewRawCommit;
+
 @CommitFileExplode =
 SELECT	 EtlIngestDate
         ,CommitSha
@@ -108,9 +113,10 @@ SELECT	 EtlIngestDate
         ,JsonPath.Substring(JsonPath.IndexOf("]")+2, JsonPath.Length - 2 - JsonPath.IndexOf("]")) AS ColumnName
         ,Value AS Value
         ,EtlSourceId
-FROM @NewRawCommit AS e
+FROM @DedupeNewRawCommit AS e
 CROSS APPLY EXPLODE(Data) AS d(JsonPath string, Value byte[])
-WHERE JsonPath.StartsWith("files[");
+WHERE JsonPath.StartsWith("files[")
+AND RowNumber == 1;
 
 @CommitFilePrePivot =
 SELECT	 EtlIngestDate
@@ -590,7 +596,7 @@ SELECT   EventId
         ,EventPayloadCommitId
         ,GHInsights.USql.Utility.GetString(Data, "sha") AS EventPayloadCommitSha
 		,GHInsights.USql.Utility.GetPiiString(Data, "author.email") AS AuthorEmail
-		,GHInsights.USql.Utility.GetPiiString(Data, "author.name") AS AuthorName
+		,"" AS AuthorName
 		,GHInsights.USql.Utility.GetBoolean(Data, "distinct") AS Distinct
 		,GHInsights.USql.Utility.GetUSqlString(Data, "message") AS Message
         ,EtlIngestDate
@@ -616,7 +622,7 @@ SELECT   EventId
         ,EventPayloadCommitId
         ,EventPayloadCommitSha
 		,AuthorEmail
-		,AuthorName
+		,"" AS AuthorName
 		,Distinct
 		,Message
         ,EtlIngestDate
@@ -765,7 +771,7 @@ SELECT	 EventId
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.ref") AS BaseRef
 		,GHInsights.USql.Utility.GetDateTime(Data, "payload.pull_request.base.repo.created_at") AS BaseRepoCreatedAt
 		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.default_branch") AS BaseRepoDefaultBranch
-		,GHInsights.USql.Utility.GetString(Data, "payload.pull_request.base.repo.description") AS BaseRepoDescription
+		,GHInsights.USql.Utility.GetUSqlString(Data, "payload.pull_request.base.repo.description") AS BaseRepoDescription
 		,GHInsights.USql.Utility.GetBoolean(Data, "payload.pull_request.base.repo.fork") AS BaseRepoFork
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks") AS BaseRepoForks
 		,GHInsights.USql.Utility.GetInteger(Data, "payload.pull_request.base.repo.forks_count") AS BaseRepoForksCount
@@ -2357,8 +2363,8 @@ WHERE RowNumber == 1;
 @NewUser =
 SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
-		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
-        ,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
+		,"" AS Bio
+        ,"" AS Blog
 		,GHInsights.USql.Utility.GetPiiString(Data, "company") AS Company
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
         ,GHInsights.USql.Utility.GetPiiString(Data, "email") AS Email
@@ -2366,7 +2372,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "following") AS Following
 		,GHInsights.USql.Utility.GetBoolean(Data, "hireable") AS Hireable
 		,GHInsights.USql.Utility.GetString(Data, "location") AS Location
-        ,GHInsights.USql.Utility.GetPiiString(Data, "name") AS Name
+        ,"" AS Name
 		,GHInsights.USql.Utility.GetInteger(Data, "public_gists") AS PublicGists
 		,GHInsights.USql.Utility.GetInteger(Data, "public_repos") AS PublicRepos
 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
@@ -2395,8 +2401,8 @@ TRUNCATE TABLE dbo.User;
 INSERT dbo.User
 SELECT   Login
 		,UserId
-		,Bio
-		,Blog
+		,"" AS Bio
+		,"" AS Blog
 		,Company
 		,CreatedAt
 		,Email
@@ -2404,7 +2410,7 @@ SELECT   Login
 		,Following
 		,Hireable
 		,Location
-		,Name
+		,"" AS Name
 		,PublicGists
 		,PublicRepos
 		,SiteAdmin
@@ -2426,8 +2432,8 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetString(Data, "owner") AS Owner
 		,GHInsights.USql.Utility.GetString(Data, "login") AS Login
 		,GHInsights.USql.Utility.GetInteger(Data, "id") AS UserId
-		,GHInsights.USql.Utility.GetString(Data, "bio") AS Bio
-		,GHInsights.USql.Utility.GetPiiString(Data, "blog") AS Blog
+		,"" AS Bio
+		,"" AS Blog
 		,GHInsights.USql.Utility.GetPiiString(Data, "company") AS Company
 		,GHInsights.USql.Utility.GetDateTime(Data, "created_at") AS CreatedAt
 		,GHInsights.USql.Utility.GetPiiString(Data, "email") AS Email
@@ -2435,7 +2441,7 @@ SELECT	 GHInsights.USql.Utility.GetString(Data, "repo") AS Repo
 		,GHInsights.USql.Utility.GetInteger(Data, "following") AS Following
 		,GHInsights.USql.Utility.GetBoolean(Data, "hireable") AS Hireable
 		,GHInsights.USql.Utility.GetPiiString(Data, "location") AS Location
-		,GHInsights.USql.Utility.GetPiiString(Data, "name") AS Name
+		,"" AS Name
 		,GHInsights.USql.Utility.GetInteger(Data, "public_gists") AS PublicGists
 		,GHInsights.USql.Utility.GetInteger(Data, "public_repos") AS PublicRepos
 		,GHInsights.USql.Utility.GetBoolean(Data, "site_admin") AS SiteAdmin
@@ -2466,8 +2472,8 @@ SELECT   Repo
 	    ,Owner
 	    ,Login
 	    ,UserId
-	    ,Bio
-	    ,Blog
+	    ,"" AS Bio
+	    ,"" AS Blog
 	    ,Company
 	    ,CreatedAt
 	    ,Email
@@ -2475,7 +2481,7 @@ SELECT   Repo
 	    ,Following
 	    ,Hireable
 	    ,Location
-	    ,Name
+	    ,"" AS Name
 	    ,PublicGists
 	    ,PublicRepos
 	    ,SiteAdmin
